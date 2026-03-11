@@ -54,7 +54,7 @@ export async function authRoutes(app: FastifyInstance) {
     }
 
     const accessToken = app.jwt.sign({ id: user.id, email: user.email, role: user.role }, { expiresIn: "1h" })
-    const refreshToken = app.jwt.sign({ id: user.id, type: "refresh" }, { expiresIn: "30d" })
+    const refreshToken = app.jwt.sign({ id: user.id, type: "refresh" } as const, { expiresIn: "30d" })
 
     return reply.status(201).send({
       accessToken,
@@ -82,7 +82,7 @@ export async function authRoutes(app: FastifyInstance) {
     }
 
     const accessToken = app.jwt.sign({ id: user.id, email: user.email, role: user.role }, { expiresIn: "1h" })
-    const refreshToken = app.jwt.sign({ id: user.id, type: "refresh" }, { expiresIn: "30d" })
+    const refreshToken = app.jwt.sign({ id: user.id, type: "refresh" } as const, { expiresIn: "30d" })
 
     return reply.send({
       accessToken,
