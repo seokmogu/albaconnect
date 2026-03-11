@@ -13,22 +13,13 @@ import { reviewRoutes } from "./routes/reviews"
 import { paymentRoutes } from "./routes/payments"
 import { setupSocketIO } from "./plugins/socket"
 
-const app = Fastify({
-  logger: {
-    level: process.env.NODE_ENV === "production" ? "info" : "debug",
-  },
-})
+export async function buildApp() {
+  const app = Fastify({
+    logger: {
+      level: process.env.NODE_ENV === "production" ? "info" : "debug",
+    },
+  })
 
-async function start() {
-  // Run migrations
-  try {
-    await runMigrations()
-  } catch (err) {
-    console.error("Migration failed:", err)
-    process.exit(1)
-  }
-
-  // Plugins
   await app.register(cors, {
     origin: process.env.WEB_URL ?? "http://localhost:3000",
     credentials: true,
@@ -40,7 +31,6 @@ async function start() {
 
   await app.register(cookie)
 
-  // Routes
   await app.register(authRoutes)
   await app.register(jobRoutes)
   await app.register(workerRoutes)
@@ -48,19 +38,28 @@ async function start() {
   await app.register(reviewRoutes)
   await app.register(paymentRoutes)
 
-  // Health check
   app.get("/health", async () => ({ status: "ok", uptime: process.uptime() }))
 
-  // Create HTTP server for Socket.io
   const httpServer = createServer(app.server)
   await setupSocketIO(app, httpServer as any)
 
+  return app
+}
+
+export async function start() {
+  try {
+    await runMigrations()
+  } catch (err) {
+    console.error("Migration failed:", err)
+    process.exit(1)
+  }
+
+  const app = await buildApp()
   const port = Number(process.env.PORT ?? 3001)
   await app.listen({ port, host: "0.0.0.0" })
   console.log(`🚀 AlbaConnect API running on port ${port}`)
 }
 
-start().catch((err) => {
-  console.error("Startup failed:", err)
-  process.exit(1)
-})
+if (!process.env.VITEST) {
+  void start()
+}
