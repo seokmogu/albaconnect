@@ -20,7 +20,7 @@ const loginSchema = z.object({
 })
 
 export async function authRoutes(app: FastifyInstance) {
-  app.post("/auth/signup", async (request, reply) => {
+  app.post("/auth/register", async (request, reply) => {
     const body = signupSchema.safeParse(request.body)
     if (!body.success) {
       return reply.status(400).send({ error: "Validation failed", details: body.error.flatten() })
@@ -78,11 +78,14 @@ export async function authRoutes(app: FastifyInstance) {
 
     const valid = await bcrypt.compare(password, user.passwordHash)
     if (!valid) {
+      reply.header("WWW-Authenticate", 'Bearer realm="albaconnect"')
       return reply.status(401).send({ error: "Invalid credentials" })
     }
 
     const accessToken = app.jwt.sign({ id: user.id, email: user.email, role: user.role }, { expiresIn: "1h" })
     const refreshToken = app.jwt.sign({ id: user.id, type: "refresh" } as const, { expiresIn: "30d" })
+
+    reply.header("Set-Cookie", [`accessToken=${accessToken}; Path=/; HttpOnly`, `refreshToken=${refreshToken}; Path=/; HttpOnly`])
 
     return reply.send({
       accessToken,
