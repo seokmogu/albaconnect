@@ -10,6 +10,7 @@ import { jobRoutes } from "./routes/jobs"
 import { workerRoutes } from "./routes/workers"
 import { applicationRoutes } from "./routes/applications"
 import { reviewRoutes } from "./routes/reviews"
+import { employerRoutes } from './routes/employer'
 import { paymentRoutes } from "./routes/payments"
 import { setupSocketIO } from "./plugins/socket"
 
@@ -36,6 +37,7 @@ export async function buildApp() {
   await app.register(workerRoutes)
   await app.register(applicationRoutes)
   await app.register(reviewRoutes)
+  await app.register(employerRoutes)
   await app.register(paymentRoutes)
 
   app.get("/health", async () => ({ status: "ok", uptime: process.uptime() }))
