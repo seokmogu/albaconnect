@@ -2,12 +2,15 @@ import { FastifyRequest, FastifyReply } from "fastify"
 
 export interface AuthUser {
   id: string
-  email: string
-  role: "employer" | "worker"
+  email?: string
+  role?: "employer" | "worker"
+  type?: "refresh"
 }
 
-declare module "fastify" {
-  interface FastifyRequest {
+// @fastify/jwt v9 requires augmenting @fastify/jwt module, not fastify module
+declare module "@fastify/jwt" {
+  interface FastifyJWT {
+    payload: AuthUser
     user: AuthUser
   }
 }
