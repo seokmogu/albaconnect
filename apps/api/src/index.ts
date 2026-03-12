@@ -10,6 +10,7 @@ import { jobRoutes } from "./routes/jobs"
 import { workerRoutes } from "./routes/workers"
 import { applicationRoutes } from "./routes/applications"
 import { reviewRoutes } from "./routes/reviews"
+import { adminRoutes } from './routes/admin'
 import { employerRoutes } from './routes/employer'
 import { notificationRoutes } from './routes/notifications'
 import { paymentRoutes } from "./routes/payments"
@@ -38,6 +39,7 @@ export async function buildApp() {
   await app.register(workerRoutes)
   await app.register(applicationRoutes)
   await app.register(reviewRoutes)
+  await app.register(adminRoutes)
   await app.register(employerRoutes)
   await app.register(notificationRoutes)
   await app.register(paymentRoutes)
