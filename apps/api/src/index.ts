@@ -3,6 +3,7 @@ import Fastify from "fastify"
 import cors from "@fastify/cors"
 import jwt from "@fastify/jwt"
 import cookie from "@fastify/cookie"
+import helmet from "@fastify/helmet"
 import { createServer } from "http"
 import { runMigrations, runNotificationsMigration } from "./db/migrate"
 import { authRoutes } from "./routes/auth"
@@ -15,6 +16,7 @@ import { employerRoutes } from './routes/employer'
 import { notificationRoutes } from './routes/notifications'
 import { paymentRoutes } from "./routes/payments"
 import { setupSocketIO } from "./plugins/socket"
+import { setupRateLimit } from "./plugins/rateLimit"
 
 export async function buildApp() {
   const app = Fastify({
@@ -22,6 +24,10 @@ export async function buildApp() {
       level: process.env.NODE_ENV === "production" ? "info" : "debug",
     },
   })
+
+  // Security
+  await app.register(helmet, { contentSecurityPolicy: false })
+  await setupRateLimit(app)
 
   await app.register(cors, {
     origin: process.env.WEB_URL ?? "http://localhost:3000",
