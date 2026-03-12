@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useParams, useRouter } from "next/navigation"
+import { useParams, useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import api from "@/lib/api"
 
@@ -17,9 +17,11 @@ const APP_STATUS_LABELS: Record<string, { label: string; color: string }> = {
 export default function JobDetailPage() {
   const params = useParams()
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [job, setJob] = useState<any>(null)
   const [applications, setApplications] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const justEscrowed = searchParams.get("escrowed") === "1"
 
   useEffect(() => {
     api.get(`/jobs/${params.id}`).then(({ data }) => {
@@ -49,13 +51,26 @@ export default function JobDetailPage() {
       </div>
 
       <div className="px-4 py-4 space-y-4">
+        {justEscrowed && (
+          <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-green-700 text-sm">
+            ✅ 예치 완료! 구직자 매칭이 시작됩니다.
+          </div>
+        )}
+
         {/* Job info */}
         <div className="card">
           <div className="flex items-center gap-2 mb-3">
             <span className="bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded-full font-medium">{job.category}</span>
             <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-              job.status === "open" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"
+              job.status === "open" ? "bg-green-100 text-green-700" :
+              job.status === "matched" ? "bg-blue-100 text-blue-700" :
+              "bg-gray-100 text-gray-600"
             }`}>{job.status}</span>
+            <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+              job.escrow_status === "escrowed" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"
+            }`}>
+              {job.escrow_status === "escrowed" ? "💰 예치완료" : "⏳ 미예치"}
+            </span>
           </div>
           <div className="space-y-2 text-sm text-gray-600">
             <div>📍 {job.address}</div>
@@ -64,13 +79,25 @@ export default function JobDetailPage() {
             <div>👥 {job.matched_count ?? 0}/{job.headcount}명 매칭</div>
           </div>
           <div className="mt-3 pt-3 border-t text-sm text-gray-700 leading-relaxed">{job.description}</div>
+
+          {/* Escrow CTA */}
+          {job.escrow_status === "pending" && job.status !== "cancelled" && (
+            <Link href={`/employer/jobs/${job.id}/escrow`}
+              className="mt-3 block w-full text-center py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700">
+              💳 임금 예치하기
+            </Link>
+          )}
         </div>
 
         {/* Applications */}
         <div className="card">
-          <h3 className="font-bold text-gray-700 mb-3">매칭된 구직자 ({applications.filter(a => a.status === "accepted").length}명)</h3>
+          <h3 className="font-bold text-gray-700 mb-3">매칭 현황 ({applications.filter(a => a.status === "accepted").length}명 확정)</h3>
           {applications.length === 0 ? (
-            <div className="text-center py-6 text-gray-400 text-sm">아직 매칭된 구직자가 없습니다</div>
+            <div className="text-center py-6 text-gray-400 text-sm">
+              {job.escrow_status === "pending"
+                ? "예치 완료 후 매칭이 시작됩니다"
+                : "아직 매칭된 구직자가 없습니다"}
+            </div>
           ) : (
             <div className="space-y-3">
               {applications.map((app: any) => {
@@ -91,12 +118,20 @@ export default function JobDetailPage() {
                         {statusInfo.label}
                       </span>
                       {app.status === "accepted" && (
-                        <button
-                          onClick={() => handleNoShow(app.id)}
-                          className="text-xs text-red-500 hover:text-red-700"
-                        >
-                          노쇼
-                        </button>
+                        <div className="flex gap-1">
+                          <button
+                            onClick={() => handleNoShow(app.id)}
+                            className="text-xs text-red-500 hover:text-red-700 border border-red-200 px-2 py-0.5 rounded"
+                          >
+                            노쇼
+                          </button>
+                          <Link
+                            href={`/employer/review/${job.id}?workerId=${app.worker_id}&workerName=${app.worker_name}`}
+                            className="text-xs text-blue-500 border border-blue-200 px-2 py-0.5 rounded"
+                          >
+                            리뷰
+                          </Link>
+                        </div>
                       )}
                     </div>
                   </div>
