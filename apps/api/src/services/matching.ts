@@ -2,6 +2,7 @@ import { Server } from "socket.io"
 import { sql, eq, and, ne } from "drizzle-orm"
 import { db, jobPostings, jobApplications, workerProfiles, users } from "../db"
 import { MATCH_RADIUS_KM, OFFER_TIMEOUT_SECONDS, LATE_CANCEL_PENALTY_RATE } from "@albaconnect/shared"
+import { createNotification } from "../routes/notifications"
 
 // Map of userId -> socketId for active workers
 export const workerSockets = new Map<string, string>()
@@ -236,6 +237,24 @@ export async function handleAcceptOffer(applicationId: string, workerId: string)
       matchedCount: newMatchedCount,
       headcount: job.headcount,
     })
+  }
+
+  // Persist notifications
+  if (worker) {
+    await createNotification(
+      job.employerId,
+      "job_matched",
+      "매칭 완료!",
+      `${worker.name}님이 "${job.title}" 공고를 수락했습니다.`,
+      { jobId: job.id }
+    )
+    await createNotification(
+      workerId,
+      "job_matched",
+      "알바 확정!",
+      `"${job.title}" 공고가 확정되었습니다. 근무 시작 시간을 확인하세요.`,
+      { jobId: job.id }
+    )
   }
 
   console.log(`[Matching] Worker ${workerId} accepted job ${job.id}`)

@@ -167,5 +167,22 @@ export async function runMigrations() {
     )
   `)
 
-  console.log("Migrations completed successfully")
+  await runNotificationsMigration()
+  console.log('Migrations completed successfully")
+}
+
+export async function runNotificationsMigration() {
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS notifications (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      user_id UUID NOT NULL,
+      type VARCHAR(50) NOT NULL,
+      title VARCHAR(200) NOT NULL,
+      body TEXT NOT NULL,
+      read BOOLEAN DEFAULT FALSE NOT NULL,
+      data TEXT,
+      created_at TIMESTAMP DEFAULT NOW() NOT NULL
+    )
+  `)
+  await db.execute(sql`CREATE INDEX IF NOT EXISTS idx_notif_user ON notifications(user_id, created_at DESC)`)
 }

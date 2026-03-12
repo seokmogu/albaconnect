@@ -4,13 +4,14 @@ import cors from "@fastify/cors"
 import jwt from "@fastify/jwt"
 import cookie from "@fastify/cookie"
 import { createServer } from "http"
-import { runMigrations } from "./db/migrate"
+import { runMigrations, runNotificationsMigration } from "./db/migrate"
 import { authRoutes } from "./routes/auth"
 import { jobRoutes } from "./routes/jobs"
 import { workerRoutes } from "./routes/workers"
 import { applicationRoutes } from "./routes/applications"
 import { reviewRoutes } from "./routes/reviews"
 import { employerRoutes } from './routes/employer'
+import { notificationRoutes } from './routes/notifications'
 import { paymentRoutes } from "./routes/payments"
 import { setupSocketIO } from "./plugins/socket"
 
@@ -38,6 +39,7 @@ export async function buildApp() {
   await app.register(applicationRoutes)
   await app.register(reviewRoutes)
   await app.register(employerRoutes)
+  await app.register(notificationRoutes)
   await app.register(paymentRoutes)
 
   app.get("/health", async () => ({ status: "ok", uptime: process.uptime() }))
@@ -51,6 +53,7 @@ export async function buildApp() {
 export async function start() {
   try {
     await runMigrations()
+    await runNotificationsMigration()
   } catch (err) {
     console.error("Migration failed:", err)
     process.exit(1)
