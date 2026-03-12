@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import api from "@/lib/api"
 import { JOB_CATEGORIES } from "@albaconnect/shared"
+import KakaoMap from "@/components/KakaoMap"
 
 export default function NewJobPage() {
   const router = useRouter()
@@ -178,9 +179,20 @@ export default function NewJobPage() {
                 {locationLoading ? "⏳" : "📍 현재"}
               </button>
             </div>
-            {form.lat && form.lng && (
-              <div className="text-xs text-green-600">✓ 위치 설정됨 ({form.lat.toFixed(4)}, {form.lng.toFixed(4)})</div>
-            )}
+            {form.lat && form.lng ? (
+              <div className="space-y-2">
+                <div className="text-xs text-green-600">✓ 위치 설정됨 ({form.lat.toFixed(4)}, {form.lng.toFixed(4)})</div>
+                <KakaoMap
+                  lat={form.lat}
+                  lng={form.lng}
+                  zoom={15}
+                  selectable
+                  onSelect={(lat, lng) => setForm(f => ({ ...f, lat, lng }))}
+                  className="w-full h-48 rounded-xl"
+                />
+                <div className="text-xs text-gray-400">지도를 클릭하면 위치를 조정할 수 있습니다</div>
+              </div>
+            ) : null}
           </div>
 
           <div>

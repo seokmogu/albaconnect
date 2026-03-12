@@ -5,6 +5,8 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useAuthStore } from "@/store/auth"
 import api from "@/lib/api"
+import { JobCardSkeleton } from "@/components/Skeleton"
+import NotificationBell from "@/components/NotificationBell"
 
 const STATUS_LABELS: Record<string, { label: string; color: string; emoji: string }> = {
   open: { label: "모집중", color: "bg-green-100 text-green-700", emoji: "🟢" },
@@ -51,7 +53,10 @@ export default function EmployerDashboard() {
           <div className="text-sm text-gray-500">{user.name}님</div>
           <div className="font-bold text-xl">공고 관리</div>
         </div>
-        <button onClick={() => { logout(); router.push("/") }} className="text-gray-400 text-sm">로그아웃</button>
+        <div className="flex items-center gap-3">
+          <NotificationBell />
+          <button onClick={() => { logout(); router.push("/") }} className="text-gray-400 text-sm">로그아웃</button>
+        </div>
       </div>
 
       <div className="px-4 py-4 space-y-3">
@@ -71,7 +76,9 @@ export default function EmployerDashboard() {
 
         {/* Jobs list */}
         {loading ? (
-          <div className="text-center py-12 text-gray-400">불러오는 중...</div>
+          <div className="space-y-3">
+            {[1,2,3].map(i => <JobCardSkeleton key={i} />)}
+          </div>
         ) : jobs.length === 0 ? (
           <div className="text-center py-12">
             <div className="text-4xl mb-3">📋</div>

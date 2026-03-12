@@ -7,6 +7,8 @@ import { useAuthStore } from "@/store/auth"
 import api from "@/lib/api"
 import { useJobOfferListener, sendLocationUpdate, useSocket } from "@/hooks/useSocket"
 import JobOfferModal from "@/components/JobOfferModal"
+import NotificationBell from "@/components/NotificationBell"
+import KakaoMap from "@/components/KakaoMap"
 import type { JobOfferEvent } from "@albaconnect/shared"
 
 export default function WorkerHomePage() {
@@ -16,6 +18,7 @@ export default function WorkerHomePage() {
   const [loading, setLoading] = useState(false)
   const [currentOffer, setCurrentOffer] = useState<JobOfferEvent | null>(null)
   const [error, setError] = useState("")
+  const [myLocation, setMyLocation] = useState<{ lat: number; lng: number } | null>(null)
   const socket = useSocket()
 
   useEffect(() => {
@@ -49,6 +52,7 @@ export default function WorkerHomePage() {
           navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 })
         )
         const { latitude: lat, longitude: lng } = pos.coords
+        setMyLocation({ lat, lng })
 
         await api.put("/workers/availability", { isAvailable: true, lat, lng })
         setIsAvailable(true)
@@ -85,7 +89,10 @@ export default function WorkerHomePage() {
           <div className="text-sm text-gray-500">안녕하세요,</div>
           <div className="font-bold text-lg">{user.name}님 👋</div>
         </div>
-        <button onClick={() => { logout(); router.push("/") }} className="text-gray-400 text-sm">로그아웃</button>
+        <div className="flex items-center gap-3">
+          <NotificationBell />
+          <button onClick={() => { logout(); router.push("/") }} className="text-gray-400 text-sm">로그아웃</button>
+        </div>
       </div>
 
       <div className="px-4 py-6 space-y-4">
@@ -116,6 +123,22 @@ export default function WorkerHomePage() {
             {loading ? "처리중..." : isAvailable ? "OFF" : "ON"}
           </button>
         </div>
+
+        {/* Mini Map — show when available + location known */}
+        {isAvailable && myLocation && (
+          <div className="card p-0 overflow-hidden">
+            <div className="px-4 pt-3 pb-2 flex items-center justify-between">
+              <span className="text-sm font-medium text-gray-700">📍 내 위치 (반경 5km 탐색 중)</span>
+              <span className="text-xs text-green-500 font-medium">● 활성</span>
+            </div>
+            <KakaoMap
+              lat={myLocation.lat}
+              lng={myLocation.lng}
+              zoom={13}
+              className="w-full h-48"
+            />
+          </div>
+        )}
 
         {/* Quick stats / Recent jobs */}
         <div className="card">
