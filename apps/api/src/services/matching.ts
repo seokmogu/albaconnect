@@ -3,6 +3,7 @@ import { sql, eq, and, ne } from "drizzle-orm"
 import { db, jobPostings, jobApplications, workerProfiles, users } from "../db"
 import { MATCH_RADIUS_KM, OFFER_TIMEOUT_SECONDS, LATE_CANCEL_PENALTY_RATE } from "@albaconnect/shared"
 import { createNotification } from "../routes/notifications"
+import { rankWorkers } from "./scoring"
 
 // Map of userId -> socketId for active workers
 export const workerSockets = new Map<string, string>()
@@ -65,6 +66,9 @@ export async function findNearbyWorkers(jobId: string): Promise<WorkerCandidate[
     user_id: string
     distance: number
     rating_avg: string
+    rating_count: number
+    categories: string[]
+    last_seen_at: Date | null
   }>(sql`
     SELECT 
       wp.user_id,
@@ -72,7 +76,10 @@ export async function findNearbyWorkers(jobId: string): Promise<WorkerCandidate[
         wp.location::geography,
         ST_SetSRID(ST_MakePoint(${loc.lng}, ${loc.lat}), 4326)::geography
       ) AS distance,
-      wp.rating_avg
+      wp.rating_avg,
+      wp.rating_count,
+      wp.categories,
+      wp.last_seen_at
     FROM worker_profiles wp
     WHERE 
       wp.is_available = TRUE
@@ -83,14 +90,28 @@ export async function findNearbyWorkers(jobId: string): Promise<WorkerCandidate[
         ${radiusMeters}
       )
       ${excludedWorkerIds.length > 0 ? sql`AND wp.user_id NOT IN (${sql.join(excludedWorkerIds.map(id => sql`${id}::uuid`), sql`, `)})` : sql``}
-    ORDER BY distance ASC, wp.rating_avg DESC
-    LIMIT 20
+    LIMIT 50
   `)
 
-  return workers.rows.map((row) => ({
-    userId: row.user_id,
+  // Apply composite scoring (distance + rating + category + activity)
+  const ranked = rankWorkers(
+    workers.rows.map(row => ({
+      userId: row.user_id,
+      distance: row.distance,
+      ratingAvg: parseFloat(row.rating_avg),
+      ratingCount: row.rating_count,
+      categories: row.categories ?? [],
+      lastSeenAt: row.last_seen_at,
+    })),
+    job.category,
+    radiusMeters
+  )
+
+  return ranked.map(row => ({
+    userId: row.userId,
     distance: row.distance,
-    ratingAvg: parseFloat(row.rating_avg),
+    ratingAvg: row.ratingAvg,
+    score: row.score,
   }))
 }
 
