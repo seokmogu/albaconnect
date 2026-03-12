@@ -6,6 +6,8 @@ import api from "@/lib/api"
 import { JOB_CATEGORIES } from "@albaconnect/shared"
 import { format } from "date-fns"
 import { ko } from "date-fns/locale"
+import { JobCardSkeleton } from "@/components/Skeleton"
+import KakaoMap from "@/components/KakaoMap"
 
 interface Job {
   id: string
@@ -140,9 +142,29 @@ export default function JobSearchPage() {
         </div>
       </div>
 
+      {/* Map view when location is available */}
+      {userLocation && jobs.length > 0 && !loading && (
+        <div className="px-4 mb-3">
+          <KakaoMap
+            lat={userLocation.lat}
+            lng={userLocation.lng}
+            zoom={13}
+            markers={jobs.filter(j => j.lat && j.lng).map(j => ({
+              lat: j.lat,
+              lng: j.lng,
+              title: j.title,
+              category: j.category,
+              hourlyRate: j.hourly_rate,
+            }))}
+            className="w-full h-52 rounded-2xl"
+          />
+          <div className="text-xs text-gray-400 text-center mt-1">지도에서 공고 위치를 확인하세요</div>
+        </div>
+      )}
+
       <div className="px-4 py-3">
         {loading ? (
-          <div className="text-center py-12 text-gray-400">검색 중...</div>
+          <div className="space-y-3">{[1,2,3].map(i => <JobCardSkeleton key={i} />)}</div>
         ) : jobs.length === 0 ? (
           <div className="text-center py-12">
             <div className="text-4xl mb-3">🔍</div>
