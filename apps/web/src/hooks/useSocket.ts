@@ -19,12 +19,25 @@ export function useSocket() {
     if (!globalSocket || !globalSocket.connected) {
       globalSocket = io(API_URL, {
         auth: { token: accessToken },
-        transports: ["websocket"],
+        transports: ["websocket", "polling"], // fallback to polling if websocket fails
+        reconnection: true,
+        reconnectionAttempts: 10,
+        reconnectionDelay: 1000,
+        reconnectionDelayMax: 30000,
+        timeout: 20000,
       })
 
-      globalSocket.on("connect", () => console.log("[Socket] Connected"))
-      globalSocket.on("disconnect", () => console.log("[Socket] Disconnected"))
-      globalSocket.on("connect_error", (err) => console.error("[Socket] Error:", err.message))
+      globalSocket.on("connect", () => console.log("[Socket] Connected:", globalSocket?.id))
+      globalSocket.on("disconnect", (reason) => {
+        console.log("[Socket] Disconnected:", reason)
+        if (reason === "io server disconnect") {
+          // Server kicked us — re-auth needed
+          globalSocket?.connect()
+        }
+      })
+      globalSocket.on("reconnect", (attempt) => console.log("[Socket] Reconnected after", attempt, "attempts"))
+      globalSocket.on("reconnect_error", (err) => console.warn("[Socket] Reconnect error:", err.message))
+      globalSocket.on("connect_error", (err) => console.error("[Socket] Connection error:", err.message))
     }
 
     socketRef.current = globalSocket

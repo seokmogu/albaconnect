@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next"
 import "./globals.css"
+import OfflineBanner from "@/components/OfflineBanner"
 
 export const metadata: Metadata = {
   title: "AlbaConnect - 위치 기반 알바 매칭",
@@ -18,7 +19,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ko">
-      <body className="bg-gray-50 text-gray-900 max-w-md mx-auto min-h-screen">{children}</body>
+      <body className="bg-gray-50 text-gray-900 max-w-md mx-auto min-h-screen">
+        <OfflineBanner />
+        {children}
+      </body>
     </html>
   )
 }
