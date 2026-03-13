@@ -168,7 +168,7 @@ export async function runMigrations() {
   `)
 
   await runNotificationsMigration()
-  console.log('Migrations completed successfully")
+  console.log('Migrations completed successfully')
 }
 
 export async function runNotificationsMigration() {
