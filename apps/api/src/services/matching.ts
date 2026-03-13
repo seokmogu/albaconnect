@@ -4,6 +4,7 @@ import { db, jobPostings, jobApplications, workerProfiles, users } from "../db"
 import { MATCH_RADIUS_KM, OFFER_TIMEOUT_SECONDS, LATE_CANCEL_PENALTY_RATE } from "@albaconnect/shared"
 import { createNotification } from "../routes/notifications"
 import { rankWorkers } from "./scoring"
+import { nearbyWorkersCache, CACHE_TTL, cacheGetL2, cacheSetL2, cacheDelL2 } from "./cache"
 
 // Map of userId -> socketId for active workers
 export const workerSockets = new Map<string, string>()
@@ -35,7 +36,25 @@ interface WorkerCandidate {
   ratingAvg: number
 }
 
+export async function invalidateNearbyWorkersCache(jobId: string): Promise<void> {
+  await cacheDelL2(nearbyWorkersCache as TTLCache<unknown>, `nearby_workers:${jobId}`)
+}
+
+// Temporary type alias — TTLCache imported indirectly through cache.ts
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type TTLCache<T> = import("./cache").TTLCache<T>
+
 export async function findNearbyWorkers(jobId: string): Promise<WorkerCandidate[]> {
+  const cacheKey = `nearby_workers:${jobId}`
+
+  // Check L1 + L2 cache before hitting PostGIS
+  const cached = await cacheGetL2<WorkerCandidate[]>(
+    nearbyWorkersCache as TTLCache<WorkerCandidate[]>,
+    cacheKey,
+    CACHE_TTL.NEARBY_WORKERS
+  )
+  if (cached) return cached
+
   const [job] = await db
     .select()
     .from(jobPostings)
@@ -126,12 +145,24 @@ export async function findNearbyWorkers(jobId: string): Promise<WorkerCandidate[
     radiusMeters
   )
 
-  return ranked.map(row => ({
+  const result = ranked.map(row => ({
     userId: row.userId,
     distance: row.distance,
     ratingAvg: row.ratingAvg,
     score: row.score,
   }))
+
+  // Write to L1 + L2 cache (only cache non-empty results to avoid stale misses)
+  if (result.length > 0) {
+    await cacheSetL2(
+      nearbyWorkersCache as TTLCache<WorkerCandidate[]>,
+      cacheKey,
+      result,
+      CACHE_TTL.NEARBY_WORKERS
+    )
+  }
+
+  return result
 }
 
 export async function dispatchJob(jobId: string): Promise<void> {

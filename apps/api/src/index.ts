@@ -21,6 +21,7 @@ import { paymentRoutes } from "./routes/payments"
 import { setupSocketIO } from "./plugins/socket"
 import { setupRateLimit } from "./plugins/rateLimit"
 import loggerPlugin from "./plugins/logger"
+import { checkRedisHealth } from "./lib/redis"
 
 export async function buildApp() {
   const logLevel =
@@ -81,7 +82,7 @@ export async function buildApp() {
   await app.register(notificationRoutes)
   await app.register(paymentRoutes)
 
-  // Enhanced health check: DB connectivity + uptime + version
+  // Enhanced health check: DB connectivity + Redis + uptime + version
   app.get("/health", async (_req, reply) => {
     let dbStatus: "ok" | "error" = "ok"
     try {
@@ -95,12 +96,15 @@ export async function buildApp() {
       dbStatus = "error"
     }
 
+    const redisStatus = await checkRedisHealth()
+
     return reply.send({
       status: "ok",
       service: "albaconnect-api",
       version: process.env.npm_package_version ?? "0.1.0",
       uptime: Math.round(process.uptime()),
       db: dbStatus,
+      redis: redisStatus,
       env: process.env.NODE_ENV ?? "development",
     })
   })
