@@ -168,6 +168,13 @@ export async function runMigrations() {
   `)
 
   await runNotificationsMigration()
+
+  // Add push_subscription column for Web Push API (nullable jsonb)
+  await db.execute(sql`
+    ALTER TABLE worker_profiles
+    ADD COLUMN IF NOT EXISTS push_subscription jsonb
+  `)
+
   console.log('Migrations completed successfully')
 }
 

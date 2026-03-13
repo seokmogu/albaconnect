@@ -5,6 +5,7 @@ import { MATCH_RADIUS_KM, OFFER_TIMEOUT_SECONDS, LATE_CANCEL_PENALTY_RATE } from
 import { createNotification } from "../routes/notifications"
 import { rankWorkers } from "./scoring"
 import { nearbyWorkersCache, CACHE_TTL, cacheGetL2, cacheSetL2, cacheDelL2 } from "./cache"
+import { sendJobOfferPush } from "./webPush"
 
 // Map of userId -> socketId for active workers
 export const workerSockets = new Map<string, string>()
@@ -193,6 +194,13 @@ async function offerJobToWorker(jobId: string, workerId: string, distanceKm: num
   // Check if job still needs workers
   if (job.matchedCount >= job.headcount) return false
 
+  // Fetch worker push subscription alongside job query to avoid extra round-trip
+  const [workerRow] = await db
+    .select({ pushSubscription: workerProfiles.pushSubscription })
+    .from(workerProfiles)
+    .where(eq(workerProfiles.userId, workerId))
+    .limit(1)
+
   const expiresAt = new Date(Date.now() + OFFER_TIMEOUT_SECONDS * 1000)
 
   // Create application record
@@ -229,6 +237,24 @@ async function offerJobToWorker(jobId: string, workerId: string, distanceKm: num
   })
 
   console.log(`[Matching] Offered job ${jobId} to worker ${workerId}, expires at ${expiresAt.toISOString()}`)
+
+  // Fire-and-forget Web Push alongside Socket.IO — wrapped in try/catch IIFE to catch
+  // synchronous throws from VAPID init (cannot be caught by .catch() alone)
+  if (workerRow?.pushSubscription) {
+    void (async () => {
+      try {
+        await sendJobOfferPush(workerId, workerRow.pushSubscription, {
+          jobId,
+          title: job.title,
+          hourlyRate: job.hourlyRate,
+          distanceKm: Math.round(distanceKm * 10) / 10,
+          expiresAt: expiresAt.toISOString(),
+        })
+      } catch (err: unknown) {
+        console.warn("[WebPush] Unexpected error in fire-and-forget:", (err as Error).message)
+      }
+    })()
+  }
 
   // Set timeout - if worker doesn't respond, move to next
   setTimeout(async () => {

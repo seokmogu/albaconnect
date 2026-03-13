@@ -121,6 +121,10 @@ export async function buildApp() {
 }
 
 export async function start() {
+  // Initialize Web Push VAPID keys before accepting connections
+  const { initWebPush } = await import("./services/webPush.js")
+  initWebPush()
+
   try {
     await runMigrations()
     await runNotificationsMigration()
