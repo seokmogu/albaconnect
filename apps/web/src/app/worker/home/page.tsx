@@ -36,6 +36,8 @@ export default function WorkerHomePage() {
   const [error, setError] = useState("")
   const [myLocation, setMyLocation] = useState<{ lat: number; lng: number } | null>(null)
   const [recommendedJobs, setRecommendedJobs] = useState<RecommendedJob[]>([])
+  const [pushPermission, setPushPermission] = useState<NotificationPermission | "unsupported">("default")
+  const [pushLoading, setPushLoading] = useState(false)
   const socket = useSocket()
 
   useEffect(() => {
@@ -52,6 +54,42 @@ export default function WorkerHomePage() {
       setRecommendedJobs(data.jobs ?? [])
     }).catch(() => {})
   }, [user, router])
+
+  // Service worker registration + push permission state
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+      setPushPermission("unsupported")
+      return
+    }
+    // Check current permission state
+    setPushPermission(Notification.permission)
+    // Register service worker (idempotent)
+    navigator.serviceWorker.register("/sw.js").catch((err) => {
+      console.warn("[SW] Registration failed:", err)
+    })
+  }, [])
+
+  const handleEnablePush = useCallback(async () => {
+    if (!("serviceWorker" in navigator) || !("PushManager" in window)) return
+    setPushLoading(true)
+    try {
+      const permission = await Notification.requestPermission()
+      setPushPermission(permission)
+      if (permission !== "granted") return
+
+      const registration = await navigator.serviceWorker.ready
+      const subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? "",
+      })
+      await api.post("/workers/push-subscription", subscription.toJSON())
+    } catch (err) {
+      console.warn("[Push] Subscription failed:", err)
+    } finally {
+      setPushLoading(false)
+    }
+  }, [])
 
   const handleOfferReceived = useCallback((offer: JobOfferEvent) => {
     setCurrentOffer(offer)
@@ -120,6 +158,28 @@ export default function WorkerHomePage() {
       <div className="px-4 py-6 space-y-4">
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-600 rounded-xl px-4 py-3 text-sm">{error}</div>
+        )}
+
+        {/* Push Notification Permission Banner */}
+        {pushPermission === "default" && (
+          <div className="card bg-amber-50 border border-amber-200 p-4 flex items-center justify-between gap-3">
+            <div>
+              <div className="font-semibold text-amber-800 text-sm">🔔 알림 설정</div>
+              <div className="text-xs text-amber-700 mt-0.5">앱 종료 상태에서도 새 알바 제안 알림을 받으세요.</div>
+            </div>
+            <button
+              onClick={handleEnablePush}
+              disabled={pushLoading}
+              className="btn-primary text-sm px-4 py-2 whitespace-nowrap bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-semibold disabled:opacity-50"
+            >
+              {pushLoading ? "처리 중..." : "알림 허용"}
+            </button>
+          </div>
+        )}
+        {pushPermission === "denied" && (
+          <div className="card bg-gray-50 border border-gray-200 p-3 text-xs text-gray-500 text-center">
+            🔕 푸시 알림이 차단되어 있습니다. 브라우저 설정에서 허용해주세요.
+          </div>
         )}
 
         {/* Availability Toggle */}

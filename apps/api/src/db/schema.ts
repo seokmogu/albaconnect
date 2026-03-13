@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, text, timestamp, boolean, integer, decimal, pgEnum, customType } from "drizzle-orm/pg-core"
+import { pgTable, uuid, varchar, text, timestamp, boolean, integer, decimal, pgEnum, customType, jsonb } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
 
 // Custom PostGIS point type
@@ -56,6 +56,8 @@ export const workerProfiles = pgTable("worker_profiles", {
   location: point("location"),
   lastSeenAt: timestamp("last_seen_at"),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  // Web Push subscription (nullable — set when worker grants notification permission)
+  pushSubscription: jsonb("push_subscription"),
 })
 
 export const jobPostings = pgTable("job_postings", {

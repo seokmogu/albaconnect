@@ -337,4 +337,39 @@ export async function workerRoutes(app: FastifyInstance) {
 
     return reply.send(result)
   })
+
+  // POST /workers/push-subscription — save Web Push subscription for background notifications
+  app.post("/workers/push-subscription", { preHandler: [requireWorker] }, async (request, reply) => {
+    const bodySchema = z.object({
+      endpoint: z.string().url(),
+      keys: z.object({
+        p256dh: z.string().min(1),
+        auth: z.string().min(1),
+      }),
+      expirationTime: z.number().nullable().optional(),
+    })
+
+    const parsed = bodySchema.safeParse(request.body)
+    if (!parsed.success) {
+      return reply.status(400).send({ error: "Invalid subscription object", details: parsed.error.flatten() })
+    }
+
+    const userId = (request.user as { id: string }).id
+    await db
+      .update(workerProfiles)
+      .set({ pushSubscription: parsed.data })
+      .where(eq(workerProfiles.userId, userId))
+
+    return reply.status(200).send({ ok: true })
+  })
+
+  // DELETE /workers/push-subscription — remove Web Push subscription (opt-out)
+  app.delete("/workers/push-subscription", { preHandler: [requireWorker] }, async (request, reply) => {
+    const userId = (request.user as { id: string }).id
+    await db
+      .update(workerProfiles)
+      .set({ pushSubscription: null })
+      .where(eq(workerProfiles.userId, userId))
+    return reply.status(200).send({ ok: true })
+  })
 }
