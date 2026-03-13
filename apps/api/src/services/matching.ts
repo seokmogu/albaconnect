@@ -69,6 +69,9 @@ export async function findNearbyWorkers(jobId: string): Promise<WorkerCandidate[
     rating_count: number
     categories: string[]
     last_seen_at: Date | null
+    completed_in_category: number
+    total_completed: number
+    no_show_count: number
   }>(sql`
     SELECT 
       wp.user_id,
@@ -79,8 +82,21 @@ export async function findNearbyWorkers(jobId: string): Promise<WorkerCandidate[
       wp.rating_avg,
       wp.rating_count,
       wp.categories,
-      wp.last_seen_at
+      wp.last_seen_at,
+      COALESCE(stats.completed_in_category, 0) AS completed_in_category,
+      COALESCE(stats.total_completed, 0) AS total_completed,
+      COALESCE(stats.no_show_count, 0) AS no_show_count
     FROM worker_profiles wp
+    LEFT JOIN (
+      SELECT
+        ja.worker_id,
+        COUNT(*) FILTER (WHERE ja.status = 'completed' AND jp.category = ${job.category}) AS completed_in_category,
+        COUNT(*) FILTER (WHERE ja.status = 'completed') AS total_completed,
+        COUNT(*) FILTER (WHERE ja.status = 'noshow') AS no_show_count
+      FROM job_applications ja
+      JOIN job_postings jp ON jp.id = ja.job_id
+      GROUP BY ja.worker_id
+    ) stats ON stats.worker_id = wp.user_id
     WHERE 
       wp.is_available = TRUE
       AND wp.location IS NOT NULL
@@ -93,7 +109,7 @@ export async function findNearbyWorkers(jobId: string): Promise<WorkerCandidate[
     LIMIT 50
   `)
 
-  // Apply composite scoring (distance + rating + category + activity)
+  // Apply composite scoring (distance + rating + skill/category + reliability + activity)
   const ranked = rankWorkers(
     workers.rows.map(row => ({
       userId: row.user_id,
@@ -102,6 +118,9 @@ export async function findNearbyWorkers(jobId: string): Promise<WorkerCandidate[
       ratingCount: row.rating_count,
       categories: row.categories ?? [],
       lastSeenAt: row.last_seen_at,
+      completedJobsInCategory: Number(row.completed_in_category),
+      totalCompletedJobs: Number(row.total_completed),
+      noShowCount: Number(row.no_show_count),
     })),
     job.category,
     radiusMeters

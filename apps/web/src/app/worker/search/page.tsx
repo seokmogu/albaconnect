@@ -52,18 +52,11 @@ export default function JobSearchPage() {
         params.radius_km = filters.maxDistance
       }
       if (filters.category) params.category = filters.category
+      if (filters.minPay) params.min_hourly_rate = filters.minPay
+      if (filters.date) params.start_date = filters.date
 
       const { data } = await api.get("/jobs", { params })
-      let result: Job[] = data.jobs ?? []
-
-      // Client-side filter by min pay
-      if (filters.minPay) {
-        result = result.filter(j => j.hourly_rate >= Number(filters.minPay))
-      }
-      // Filter by date
-      if (filters.date) {
-        result = result.filter(j => j.start_at.startsWith(filters.date))
-      }
+      const result: Job[] = data.jobs ?? []
 
       setJobs(result)
     } catch {

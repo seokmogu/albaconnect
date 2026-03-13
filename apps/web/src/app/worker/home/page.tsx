@@ -10,6 +10,22 @@ import JobOfferModal from "@/components/JobOfferModal"
 import NotificationBell from "@/components/NotificationBell"
 import KakaoMap from "@/components/KakaoMap"
 import type { JobOfferEvent } from "@albaconnect/shared"
+import { format } from "date-fns"
+import { ko } from "date-fns/locale"
+
+interface RecommendedJob {
+  id: string
+  title: string
+  category: string
+  start_at: string
+  end_at: string
+  hourly_rate: number
+  address: string
+  employer_name: string
+  company_name: string
+  distance: number | null
+  score: number
+}
 
 export default function WorkerHomePage() {
   const router = useRouter()
@@ -19,6 +35,7 @@ export default function WorkerHomePage() {
   const [currentOffer, setCurrentOffer] = useState<JobOfferEvent | null>(null)
   const [error, setError] = useState("")
   const [myLocation, setMyLocation] = useState<{ lat: number; lng: number } | null>(null)
+  const [recommendedJobs, setRecommendedJobs] = useState<RecommendedJob[]>([])
   const socket = useSocket()
 
   useEffect(() => {
@@ -28,6 +45,11 @@ export default function WorkerHomePage() {
     // Fetch current availability status
     api.get("/workers/profile").then(({ data }) => {
       setIsAvailable(data.isAvailable)
+    }).catch(() => {})
+
+    // Fetch recommended jobs
+    api.get("/workers/recommended-jobs", { params: { limit: 5 } }).then(({ data }) => {
+      setRecommendedJobs(data.jobs ?? [])
     }).catch(() => {})
   }, [user, router])
 
@@ -143,11 +165,16 @@ export default function WorkerHomePage() {
         {/* Quick stats / Recent jobs */}
         <div className="card">
           <h3 className="font-bold text-gray-700 mb-3">빠른 이동</h3>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-3 gap-3">
             <Link href="/worker/jobs"
               className="bg-gray-50 rounded-xl p-4 text-center hover:bg-gray-100 transition-colors">
               <div className="text-2xl mb-1">📋</div>
-              <div className="text-sm font-medium">내 알바 목록</div>
+              <div className="text-sm font-medium">내 알바</div>
+            </Link>
+            <Link href="/worker/search"
+              className="bg-blue-50 rounded-xl p-4 text-center hover:bg-blue-100 transition-colors">
+              <div className="text-2xl mb-1">🔍</div>
+              <div className="text-sm font-medium text-blue-700">알바 찾기</div>
             </Link>
             <Link href="/worker/profile"
               className="bg-gray-50 rounded-xl p-4 text-center hover:bg-gray-100 transition-colors">
@@ -156,6 +183,50 @@ export default function WorkerHomePage() {
             </Link>
           </div>
         </div>
+
+        {/* Recommended jobs */}
+        {recommendedJobs.length > 0 && (
+          <div className="card">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-bold text-gray-700">✨ 추천 공고</h3>
+              <Link href="/worker/search" className="text-xs text-blue-500 font-medium">전체 보기</Link>
+            </div>
+            <div className="space-y-3">
+              {recommendedJobs.map(job => {
+                const durationMs = new Date(job.end_at).getTime() - new Date(job.start_at).getTime()
+                const durationHours = durationMs / (1000 * 60 * 60)
+                return (
+                  <Link key={job.id} href={`/worker/search`} className="block bg-gray-50 rounded-xl p-3 hover:bg-gray-100 transition-colors">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded-full font-medium">
+                            {job.category}
+                          </span>
+                          {job.distance !== null && (
+                            <span className="text-xs text-gray-400">
+                              📍 {job.distance < 1000
+                                ? `${Math.round(job.distance)}m`
+                                : `${(job.distance / 1000).toFixed(1)}km`}
+                            </span>
+                          )}
+                        </div>
+                        <div className="font-semibold text-sm text-gray-900 truncate">{job.title}</div>
+                        <div className="text-xs text-gray-500">
+                          {format(new Date(job.start_at), "M/d(EEE) HH:mm", { locale: ko })} · {durationHours}h
+                        </div>
+                      </div>
+                      <div className="ml-3 text-right flex-shrink-0">
+                        <div className="font-bold text-blue-600 text-sm">{job.hourly_rate.toLocaleString()}원</div>
+                        <div className="text-xs text-gray-400">시급</div>
+                      </div>
+                    </div>
+                  </Link>
+                )
+              })}
+            </div>
+          </div>
+        )}
 
         {/* How it works */}
         {!isAvailable && (
