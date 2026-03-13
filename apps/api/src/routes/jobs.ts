@@ -269,4 +269,21 @@ export async function jobRoutes(app: FastifyInstance) {
       totalPenalty: penaltyRecords.reduce((s, p) => s + p.amount, 0),
     })
   })
+
+  // POST /jobs/:id/dispatch — manually trigger dispatch for an open job
+  app.post("/jobs/:id/dispatch", { preHandler: [requireEmployer] }, async (request, reply) => {
+    const { id } = request.params as { id: string }
+
+    const [job] = await db.select().from(jobPostings).where(eq(jobPostings.id, id)).limit(1)
+    if (!job) return reply.status(404).send({ error: { code: "NOT_FOUND", message: "Job not found" } })
+    if (job.employerId !== request.user.id) {
+      return reply.status(403).send({ error: { code: "FORBIDDEN", message: "Not your job" } })
+    }
+    if (job.status !== "open") {
+      return reply.status(409).send({ error: { code: "CONFLICT", message: "Job is not open" } })
+    }
+
+    setImmediate(() => dispatchJob(id))
+    return reply.status(202).send({ message: "Dispatch triggered" })
+  })
 }
