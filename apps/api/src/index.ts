@@ -21,6 +21,8 @@ import { paymentRoutes } from "./routes/payments"
 import { setupSocketIO } from "./plugins/socket"
 import { setupRateLimit } from "./plugins/rateLimit"
 import loggerPlugin from "./plugins/logger"
+import { processExpiredJobs, type EmitFn } from "./services/jobExpiry"
+import { workerSockets } from "./services/matching"
 import { checkRedisHealth } from "./lib/redis"
 
 export async function buildApp() {
@@ -110,7 +112,10 @@ export async function buildApp() {
   })
 
   const httpServer = createServer(app.server)
-  await setupSocketIO(app, httpServer as any)
+  const io = await setupSocketIO(app, httpServer as any)
+
+  // Expose io for job expiry emitter
+  ;(app as any)._io = io
 
   return app
 }
@@ -128,6 +133,42 @@ export async function start() {
   const port = Number(process.env.PORT ?? 3001)
   await app.listen({ port, host: "0.0.0.0" })
   console.log(`🚀 AlbaConnect API running on port ${port}`)
+
+  // ── Job expiry background worker ──────────────────────────────────────────
+  const ioRef = (app as any)._io
+  const emitFn: EmitFn = (event, userIds, payload) => {
+    if (!ioRef) return
+    for (const uid of userIds) {
+      const socketId = workerSockets.get(uid)
+      if (socketId) ioRef.to(socketId).emit(event, payload)
+    }
+  }
+
+  const expiryTimer: { ref: ReturnType<typeof setInterval> | null } = { ref: null }
+
+  const runExpiry = async () => {
+    try {
+      const result = await processExpiredJobs(emitFn)
+      if (result.expiredCount > 0) {
+        console.log(`[Expiry] ${result.expiredCount} job(s) expired, ${result.noshowCount} no-show(s)`)
+      }
+    } catch (err) {
+      console.error("[Expiry] Background runner error:", err)
+    }
+  }
+
+  // Initial fire with random jitter (0–30s) to avoid thundering herd on multi-instance deploy
+  const jitterMs = Math.floor(Math.random() * 30_000)
+  const startupTimer = setTimeout(() => {
+    void runExpiry()
+    expiryTimer.ref = setInterval(() => void runExpiry(), 300_000) // every 5 minutes
+  }, jitterMs)
+
+  // Cleanup on server close
+  app.addHook("onClose", async () => {
+    clearTimeout(startupTimer)
+    if (expiryTimer.ref) clearInterval(expiryTimer.ref)
+  })
 }
 
 if (!process.env.VITEST) {
