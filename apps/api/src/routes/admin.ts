@@ -6,6 +6,8 @@
 import { FastifyInstance } from "fastify"
 import { sql } from "drizzle-orm"
 import { db } from "../db"
+import { processExpiredJobs } from "../services/jobExpiry"
+import { getRedisClient } from "../lib/redis"
 
 function requireAdmin(adminToken: string) {
   return async (request: any, reply: any) => {
@@ -146,5 +148,26 @@ export async function adminRoutes(app: FastifyInstance) {
     } catch {
       return reply.status(503).send({ status: "error", db: "disconnected" })
     }
+  })
+
+  // POST /admin/expire-stale — manual trigger for job expiry
+  app.post("/admin/expire-stale", { preHandler }, async (_request, reply) => {
+    // Prevent concurrent manual triggers via Redis advisory lock
+    const redis = getRedisClient()
+    if (redis) {
+      const acquired = await redis.set("admin:expire-stale:lock", "1", "EX", 10, "NX")
+      if (!acquired) {
+        return reply.status(429).send({
+          error: { code: "LOCKED", message: "Expiry already running — retry in 10s" },
+        })
+      }
+    }
+
+    const result = await processExpiredJobs() // no emitFn — admin manual trigger
+    return reply.send({
+      expired: result.expiredCount,
+      noshows: result.noshowCount,
+      triggeredAt: new Date().toISOString(),
+    })
   })
 }
