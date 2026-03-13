@@ -75,7 +75,7 @@ export const workerAvailability = pgTable("worker_availability", {
 export const workerBlackout = pgTable("worker_blackout", {
   id: uuid("id").primaryKey().defaultRandom(),
   workerId: uuid("worker_id").references(() => users.id).notNull(),
-  blackoutDate: timestamp("blackout_date").notNull(),
+  blackoutDate: date("blackout_date").notNull(),
   reason: text("reason"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 })
