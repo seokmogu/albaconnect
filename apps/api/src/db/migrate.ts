@@ -90,6 +90,33 @@ export async function runMigrations() {
   await db.execute(sql`CREATE INDEX IF NOT EXISTS idx_worker_available ON worker_profiles(is_available) WHERE is_available = TRUE`)
 
   await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS worker_availability (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      worker_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      day_of_week INTEGER NOT NULL CHECK (day_of_week BETWEEN 0 AND 6),
+      start_time VARCHAR(5) NOT NULL,
+      end_time VARCHAR(5) NOT NULL,
+      timezone VARCHAR(50) NOT NULL DEFAULT 'Asia/Seoul',
+      valid_from TIMESTAMPTZ NOT NULL,
+      valid_until TIMESTAMPTZ,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `)
+  await db.execute(sql`CREATE INDEX IF NOT EXISTS idx_worker_availability_worker_id ON worker_availability(worker_id)`)
+
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS worker_blackout (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      worker_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      blackout_date DATE NOT NULL,
+      reason TEXT,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `)
+  await db.execute(sql`CREATE INDEX IF NOT EXISTS idx_worker_blackout_worker_id ON worker_blackout(worker_id)`)
+  await db.execute(sql`CREATE UNIQUE INDEX IF NOT EXISTS idx_worker_blackout_unique ON worker_blackout(worker_id, blackout_date)`)
+
+  await db.execute(sql`
     CREATE TABLE IF NOT EXISTS job_postings (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       employer_id UUID REFERENCES users(id) NOT NULL,

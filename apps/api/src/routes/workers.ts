@@ -1,7 +1,7 @@
 import { FastifyInstance } from "fastify"
 import { z } from "zod"
 import { eq } from "drizzle-orm"
-import { db, workerProfiles, users } from "../db"
+import { db, workerProfiles, users, workerAvailability, workerBlackout } from "../db"
 import { authenticate, requireWorker } from "../middleware/auth"
 import { dispatchJob } from "../services/matching"
 import { sql } from "drizzle-orm"
@@ -18,6 +18,20 @@ const availabilitySchema = z.object({
 const profileSchema = z.object({
   categories: z.array(z.string()).optional(),
   bio: z.string().max(1000).optional(),
+})
+
+const availabilityScheduleSchema = z.object({
+  dayOfWeek: z.number().int().min(0).max(6),
+  startTime: z.string().regex(/^\d{2}:\d{2}$/),
+  endTime: z.string().regex(/^\d{2}:\d{2}$/),
+  timezone: z.string().optional(),
+  validFrom: z.string().datetime(),
+  validUntil: z.string().datetime().optional(),
+})
+
+const blackoutSchema = z.object({
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  reason: z.string().optional(),
 })
 
 export async function workerRoutes(app: FastifyInstance) {
@@ -77,6 +91,108 @@ export async function workerRoutes(app: FastifyInstance) {
     }
 
     return reply.send({ isAvailable, message: "Availability updated" })
+  })
+
+  app.post("/workers/availability-schedule", { preHandler: [requireWorker] }, async (request, reply) => {
+    const body = availabilityScheduleSchema.safeParse(request.body)
+    if (!body.success) {
+      return reply.status(400).send({ error: "Validation failed", details: body.error.flatten() })
+    }
+
+    const workerId = request.user.id
+    const [slot] = await db
+      .insert(workerAvailability)
+      .values({
+        workerId,
+        dayOfWeek: body.data.dayOfWeek,
+        startTime: body.data.startTime,
+        endTime: body.data.endTime,
+        timezone: body.data.timezone ?? 'Asia/Seoul',
+        validFrom: new Date(body.data.validFrom),
+        validUntil: body.data.validUntil ? new Date(body.data.validUntil) : null,
+      })
+      .returning()
+
+    return reply.status(201).send(slot)
+  })
+
+  app.get("/workers/availability-schedule", { preHandler: [requireWorker] }, async (request, reply) => {
+    const workerId = request.user.id
+    const slots = await db.select().from(workerAvailability).where(eq(workerAvailability.workerId, workerId))
+    return reply.send({ slots })
+  })
+
+  app.delete("/workers/availability-schedule/:id", { preHandler: [requireWorker] }, async (request, reply) => {
+    const { id } = request.params as { id: string }
+    const workerId = request.user.id
+    const [slot] = await db.select().from(workerAvailability).where(eq(workerAvailability.id, id)).limit(1)
+    if (!slot) return reply.status(404).send({ error: "Availability slot not found" })
+    if (slot.workerId !== workerId) return reply.status(403).send({ error: "Forbidden" })
+    await db.delete(workerAvailability).where(eq(workerAvailability.id, id))
+    return reply.send({ ok: true })
+  })
+
+  app.post("/workers/blackout", { preHandler: [requireWorker] }, async (request, reply) => {
+    const body = blackoutSchema.safeParse(request.body)
+    if (!body.success) {
+      return reply.status(400).send({ error: "Validation failed", details: body.error.flatten() })
+    }
+
+    const workerId = request.user.id
+    await db.execute(sql`
+      INSERT INTO worker_blackout (worker_id, blackout_date, reason)
+      VALUES (${workerId}, ${body.data.date}::date, ${body.data.reason ?? null})
+      ON CONFLICT (worker_id, blackout_date)
+      DO UPDATE SET reason = EXCLUDED.reason
+    `)
+    return reply.status(201).send({ ok: true })
+  })
+
+  app.delete("/workers/blackout/:date", { preHandler: [requireWorker] }, async (request, reply) => {
+    const { date } = request.params as { date: string }
+    const workerId = request.user.id
+    await db.execute(sql`DELETE FROM worker_blackout WHERE worker_id = ${workerId} AND blackout_date = ${date}::date`)
+    return reply.send({ ok: true })
+  })
+
+  app.get("/workers/available", async (request, reply) => {
+    const { date, duration_hours = 1, lat, lng, radius_km = 10 } = request.query as {
+      date?: string
+      duration_hours?: number
+      lat?: string
+      lng?: string
+      radius_km?: string
+    }
+
+    if (!date) return reply.status(400).send({ error: "date is required" })
+
+    const rows = await db.execute(sql`
+      SELECT u.id, u.name, wp.categories, wp.rating_avg, wp.rating_count,
+        ST_Y(wp.location::geometry) AS lat,
+        ST_X(wp.location::geometry) AS lng
+      FROM users u
+      JOIN worker_profiles wp ON wp.user_id = u.id
+      WHERE u.role = 'worker'
+        AND EXISTS (
+          SELECT 1 FROM worker_availability wa
+          WHERE wa.worker_id = u.id
+            AND wa.day_of_week = EXTRACT(DOW FROM ${date}::date)
+            AND wa.valid_from <= ${date}::timestamptz
+            AND (wa.valid_until IS NULL OR wa.valid_until >= ${date}::timestamptz)
+        )
+        AND NOT EXISTS (
+          SELECT 1 FROM worker_blackout wb
+          WHERE wb.worker_id = u.id
+            AND wb.blackout_date = ${date}::date
+        )
+        ${lat && lng ? sql`AND wp.location IS NOT NULL AND ST_DWithin(
+          wp.location::geography,
+          ST_SetSRID(ST_MakePoint(${Number(lng)}, ${Number(lat)}), 4326)::geography,
+          ${Number(radius_km) * 1000}
+        )` : sql``}
+    `)
+
+    return reply.send({ workers: rows.rows, durationHours: Number(duration_hours) })
   })
 
   // GET /workers/profile
