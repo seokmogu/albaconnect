@@ -162,6 +162,7 @@ export async function findNearbyWorkers(jobId: string): Promise<WorkerCandidate[
     distance: row.distance,
     ratingAvg: row.ratingAvg,
     score: row.score,
+    hasScheduleDeclared: row.hasScheduleDeclared,
   }))
 
   // Write to L1 + L2 cache (only cache non-empty results to avoid stale misses)
