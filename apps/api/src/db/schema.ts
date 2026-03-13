@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, text, timestamp, boolean, integer, decimal, pgEnum, customType, jsonb } from "drizzle-orm/pg-core"
+import { pgTable, uuid, varchar, text, timestamp, boolean, integer, decimal, pgEnum, customType, jsonb, date, time } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
 
 // Custom PostGIS point type
@@ -58,6 +58,26 @@ export const workerProfiles = pgTable("worker_profiles", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
   // Web Push subscription (nullable — set when worker grants notification permission)
   pushSubscription: jsonb("push_subscription"),
+})
+
+export const workerAvailability = pgTable("worker_availability", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  workerId: uuid("worker_id").references(() => users.id).notNull(),
+  dayOfWeek: integer("day_of_week").notNull(),
+  startTime: varchar("start_time", { length: 5 }).notNull(),
+  endTime: varchar("end_time", { length: 5 }).notNull(),
+  timezone: varchar("timezone", { length: 50 }).default("Asia/Seoul").notNull(),
+  validFrom: timestamp("valid_from").notNull(),
+  validUntil: timestamp("valid_until"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+})
+
+export const workerBlackout = pgTable("worker_blackout", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  workerId: uuid("worker_id").references(() => users.id).notNull(),
+  blackoutDate: timestamp("blackout_date").notNull(),
+  reason: text("reason"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 })
 
 export const jobPostings = pgTable("job_postings", {

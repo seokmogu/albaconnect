@@ -35,6 +35,14 @@ interface WorkerCandidate {
   userId: string
   distance: number
   ratingAvg: number
+  ratingCount?: number
+  categories?: string[]
+  lastSeenAt?: Date | null
+  completedJobsInCategory?: number
+  totalCompletedJobs?: number
+  noShowCount?: number
+  score?: number
+  hasScheduleDeclared: boolean
 }
 
 export async function invalidateNearbyWorkersCache(jobId: string): Promise<void> {
@@ -92,6 +100,7 @@ export async function findNearbyWorkers(jobId: string): Promise<WorkerCandidate[
     completed_in_category: number
     total_completed: number
     no_show_count: number
+    has_schedule_declared: boolean
   }>(sql`
     SELECT 
       wp.user_id,
@@ -105,7 +114,8 @@ export async function findNearbyWorkers(jobId: string): Promise<WorkerCandidate[
       wp.last_seen_at,
       COALESCE(stats.completed_in_category, 0) AS completed_in_category,
       COALESCE(stats.total_completed, 0) AS total_completed,
-      COALESCE(stats.no_show_count, 0) AS no_show_count
+      COALESCE(stats.no_show_count, 0) AS no_show_count,
+      EXISTS(SELECT 1 FROM worker_availability wa WHERE wa.worker_id = wp.user_id) AS has_schedule_declared
     FROM worker_profiles wp
     LEFT JOIN (
       SELECT
@@ -141,6 +151,7 @@ export async function findNearbyWorkers(jobId: string): Promise<WorkerCandidate[
       completedJobsInCategory: Number(row.completed_in_category),
       totalCompletedJobs: Number(row.total_completed),
       noShowCount: Number(row.no_show_count),
+      hasScheduleDeclared: Boolean(row.has_schedule_declared),
     })),
     job.category,
     radiusMeters
