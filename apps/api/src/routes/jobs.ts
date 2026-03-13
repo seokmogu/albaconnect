@@ -22,7 +22,7 @@ const createJobSchema = z.object({
 export async function jobRoutes(app: FastifyInstance) {
   // GET /jobs - list with optional location filter
   app.get("/jobs", { preHandler: [authenticate] }, async (request, reply) => {
-    const { lat, lng, radius_km = 10, category, status = "open", page = 1, limit = 20 } = request.query as {
+    const { lat, lng, radius_km = 10, category, status = "open", page = 1, limit = 20, min_hourly_rate, start_date } = request.query as {
       lat?: string
       lng?: string
       radius_km?: string
@@ -30,6 +30,8 @@ export async function jobRoutes(app: FastifyInstance) {
       status?: string
       page?: number
       limit?: number
+      min_hourly_rate?: string
+      start_date?: string
     }
 
     const offset = (Number(page) - 1) * Number(limit)
@@ -76,6 +78,8 @@ export async function jobRoutes(app: FastifyInstance) {
         LEFT JOIN employer_profiles ep ON ep.user_id = jp.employer_id
         WHERE jp.status = ${status}
         ${category ? sql`AND jp.category = ${category}` : sql``}
+        ${min_hourly_rate ? sql`AND jp.hourly_rate >= ${Number(min_hourly_rate)}` : sql``}
+        ${start_date ? sql`AND jp.start_at::date = ${start_date}::date` : sql``}
         AND ST_DWithin(
           jp.location::geography,
           ST_SetSRID(ST_MakePoint(${Number(lng)}, ${Number(lat)}), 4326)::geography,
@@ -98,6 +102,8 @@ export async function jobRoutes(app: FastifyInstance) {
         LEFT JOIN employer_profiles ep ON ep.user_id = jp.employer_id
         WHERE jp.status = ${status}
         ${category ? sql`AND jp.category = ${category}` : sql``}
+        ${min_hourly_rate ? sql`AND jp.hourly_rate >= ${Number(min_hourly_rate)}` : sql``}
+        ${start_date ? sql`AND jp.start_at::date = ${start_date}::date` : sql``}
         ORDER BY jp.created_at DESC
         LIMIT ${Number(limit)} OFFSET ${offset}
       `)

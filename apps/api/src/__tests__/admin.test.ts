@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
 import { mockQuery } from "./setup"
+import { computeMatchScore } from "../services/scoring"
 
 describe("Admin routes", () => {
   beforeEach(() => {
@@ -7,9 +8,6 @@ describe("Admin routes", () => {
   })
 
   it("score calculation is deterministic", () => {
-    // Pure function test - no DB needed
-    const { computeMatchScore } = require("../services/scoring")
-
     const input = {
       distanceMeters: 1000,
       ratingAvg: 4.0,
@@ -18,6 +16,9 @@ describe("Admin routes", () => {
       jobCategory: "요식업",
       lastSeenAt: new Date(Date.now() - 1000),
       matchRadius: 5000,
+      completedJobsInCategory: 3,
+      totalCompletedJobs: 8,
+      noShowCount: 0,
     }
 
     const score1 = computeMatchScore(input)
@@ -27,9 +28,6 @@ describe("Admin routes", () => {
   })
 
   it("no-show worker gets lower priority in re-dispatch (regression guard)", () => {
-    // Worker with noshow history has lower rating → lower score
-    const { computeMatchScore } = require("../services/scoring")
-
     const goodWorker = {
       distanceMeters: 500,
       ratingAvg: 4.8,
@@ -38,12 +36,18 @@ describe("Admin routes", () => {
       jobCategory: "카페/음료",
       lastSeenAt: new Date(),
       matchRadius: 5000,
+      completedJobsInCategory: 5,
+      totalCompletedJobs: 20,
+      noShowCount: 0,
     }
 
     const badWorker = {
       ...goodWorker,
       ratingAvg: 1.5,
       ratingCount: 3,
+      completedJobsInCategory: 0,
+      totalCompletedJobs: 3,
+      noShowCount: 4,
     }
 
     expect(computeMatchScore(goodWorker)).toBeGreaterThan(computeMatchScore(badWorker))
