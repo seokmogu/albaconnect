@@ -22,7 +22,7 @@ export async function adminRoutes(app: FastifyInstance) {
 
   // GET /admin/stats — platform overview
   app.get("/admin/stats", { preHandler }, async (_request, reply) => {
-    const [users] = await db.execute<any>(sql`
+    const users = await db.execute<any>(sql`
       SELECT
         COUNT(*) as total,
         COUNT(CASE WHEN role = 'employer' THEN 1 END) as employers,
@@ -30,7 +30,7 @@ export async function adminRoutes(app: FastifyInstance) {
       FROM users
     `)
 
-    const [jobs] = await db.execute<any>(sql`
+    const jobs = await db.execute<any>(sql`
       SELECT
         COUNT(*) as total,
         COUNT(CASE WHEN status = 'open' THEN 1 END) as open,
@@ -41,7 +41,7 @@ export async function adminRoutes(app: FastifyInstance) {
       FROM job_postings
     `)
 
-    const [applications] = await db.execute<any>(sql`
+    const applications = await db.execute<any>(sql`
       SELECT
         COUNT(*) as total,
         COUNT(CASE WHEN status = 'accepted' THEN 1 END) as accepted,
@@ -51,7 +51,7 @@ export async function adminRoutes(app: FastifyInstance) {
       FROM job_applications
     `)
 
-    const [payments] = await db.execute<any>(sql`
+    const payments = await db.execute<any>(sql`
       SELECT
         COUNT(*) as total,
         COALESCE(SUM(amount), 0) as total_volume,
@@ -60,7 +60,7 @@ export async function adminRoutes(app: FastifyInstance) {
       WHERE status = 'completed'
     `)
 
-    const [penalties] = await db.execute<any>(sql`
+    const penalties = await db.execute<any>(sql`
       SELECT
         COUNT(*) as total,
         COUNT(CASE WHEN type = 'worker_noshow' THEN 1 END) as worker_noshows,
@@ -69,7 +69,7 @@ export async function adminRoutes(app: FastifyInstance) {
       FROM penalties
     `)
 
-    const [available] = await db.execute<any>(sql`
+    const available = await db.execute<any>(sql`
       SELECT COUNT(*) as count FROM worker_profiles WHERE is_available = TRUE
     `)
 

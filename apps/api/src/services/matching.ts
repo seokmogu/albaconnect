@@ -144,12 +144,12 @@ export async function dispatchJob(jobId: string): Promise<void> {
 
   // Offer to workers one by one
   for (const worker of workers) {
-    const dispatched = await offerJobToWorker(jobId, worker.userId)
+    const dispatched = await offerJobToWorker(jobId, worker.userId, worker.distance / 1000)
     if (dispatched) break // Offered successfully, wait for response
   }
 }
 
-async function offerJobToWorker(jobId: string, workerId: string): Promise<boolean> {
+async function offerJobToWorker(jobId: string, workerId: string, distanceKm: number): Promise<boolean> {
   const socketId = workerSockets.get(workerId)
   if (!socketId) {
     console.log(`[Matching] Worker ${workerId} not connected via socket, skipping`)
@@ -181,6 +181,7 @@ async function offerJobToWorker(jobId: string, workerId: string): Promise<boolea
 
   // Emit offer to worker
   io.to(socketId).emit("job_offer", {
+    type: "job_offer",
     jobId,
     applicationId: application.id,
     title: job.title,
@@ -189,6 +190,8 @@ async function offerJobToWorker(jobId: string, workerId: string): Promise<boolea
     lat: loc.lat,
     lng: loc.lng,
     hourlyRate: job.hourlyRate,
+    payRate: job.hourlyRate,
+    distanceKm: Math.round(distanceKm * 10) / 10,
     startAt: job.startAt.toISOString(),
     durationHours,
     expiresAt: expiresAt.toISOString(),

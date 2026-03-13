@@ -68,7 +68,24 @@ export async function setupSocketIO(app: FastifyInstance, httpServer: ReturnType
       socket.emit("offer_response", { success: true, message: "Offer rejected" })
     })
 
+    // Ping/pong keepalive — detect stale connections
+    let isAlive = true
+    socket.on("pong", () => { isAlive = true })
+    const keepAlive = setInterval(() => {
+      if (!isAlive) {
+        console.log(`[Socket] Stale connection detected for ${userId}, disconnecting`)
+        workerSockets.delete(userId)
+        clearInterval(keepAlive)
+        socket.disconnect(true)
+        return
+      }
+      isAlive = false
+      socket.emit("ping")
+    }, 30_000)
+
+    // Consolidated disconnect handler — clears interval and map entry
     socket.on("disconnect", () => {
+      clearInterval(keepAlive)
       workerSockets.delete(userId)
       console.log(`[Socket] Disconnected: ${userId}`)
     })
