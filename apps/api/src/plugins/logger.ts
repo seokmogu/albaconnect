@@ -1,5 +1,6 @@
 import fp from "fastify-plugin"
 import type { FastifyPluginAsync } from "fastify"
+import { Sentry } from "./sentry"
 
 // Augment FastifyRequest with startTime for duration tracking
 declare module "fastify" {
@@ -48,6 +49,19 @@ const loggerPlugin: FastifyPluginAsync = async (fastify) => {
       },
       "request error"
     )
+
+    // Forward 5xx errors to Sentry (skip expected 4xx client errors)
+    const statusCode = (error as any).statusCode ?? 500
+    if (statusCode >= 500 && Sentry) {
+      Sentry.captureException(error, {
+        extra: {
+          reqId: req.id,
+          method: req.method,
+          url: req.url,
+          userId: (req as any).user?.id ?? null,
+        },
+      })
+    }
   })
 }
 

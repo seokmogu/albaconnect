@@ -20,6 +20,7 @@ import { notificationRoutes } from './routes/notifications'
 import { paymentRoutes } from "./routes/payments"
 import { setupSocketIO } from "./plugins/socket"
 import { setupRateLimit } from "./plugins/rateLimit"
+import sentryPlugin from "./plugins/sentry"
 import loggerPlugin from "./plugins/logger"
 import { processExpiredJobs, type EmitFn } from "./services/jobExpiry"
 import { workerSockets } from "./services/matching"
@@ -61,6 +62,7 @@ export async function buildApp() {
   await setupRateLimit(app)
 
   // Structured logging + correlation IDs (fp-wrapped: applies globally to all routes)
+  await app.register(sentryPlugin)
   await app.register(loggerPlugin)
 
   await app.register(cors, {
