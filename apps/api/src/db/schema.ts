@@ -21,6 +21,7 @@ const point = customType<{ data: { lat: number; lng: number }; driverData: strin
 
 export const userRoleEnum = pgEnum("user_role", ["employer", "worker"])
 export const jobStatusEnum = pgEnum("job_status", ["draft", "open", "matched", "in_progress", "completed", "cancelled"])
+export const paymentStatusEnum2 = pgEnum("payment_status_job", ["pending", "triggered", "completed", "failed"])
 export const escrowStatusEnum = pgEnum("escrow_status", ["pending", "escrowed", "released", "refunded"])
 export const applicationStatusEnum = pgEnum("application_status", ["offered", "accepted", "rejected", "timeout", "completed", "noshow"])
 export const penaltyTypeEnum = pgEnum("penalty_type", ["worker_noshow", "employer_noshow", "employer_cancel_late"])
@@ -73,6 +74,9 @@ export const jobPostings = pgTable("job_postings", {
   description: text("description").notNull(),
   status: jobStatusEnum("status").default("open").notNull(),
   escrowStatus: escrowStatusEnum("escrow_status").default("pending").notNull(),
+  paymentStatus: paymentStatusEnum2("payment_status_job").default("pending").notNull(),
+  statusUpdatedAt: timestamp("status_updated_at"),
+  completedAt: timestamp("completed_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 })

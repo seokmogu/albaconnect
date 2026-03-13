@@ -5,6 +5,9 @@ import { db, jobPostings, jobApplications, users, penalties, workerProfiles } fr
 import { authenticate, requireEmployer } from "../middleware/auth"
 import { dispatchJob } from "../services/matching"
 import { LATE_CANCEL_PENALTY_RATE, PLATFORM_FEE_RATE } from "@albaconnect/shared"
+import { validateTransition, getValidTransitions } from "../services/jobLifecycle"
+import type { JobStatus, ActorRole } from "../services/jobLifecycle"
+import { workerSockets } from "../services/matching"
 
 const createJobSchema = z.object({
   title: z.string().min(1).max(200),
@@ -285,5 +288,102 @@ export async function jobRoutes(app: FastifyInstance) {
 
     setImmediate(() => dispatchJob(id))
     return reply.status(202).send({ message: "Dispatch triggered" })
+  })
+
+  // PATCH /jobs/:id/status — advance job status with role-based guards
+  app.patch("/jobs/:id/status", { preHandler: [authenticate] }, async (request, reply) => {
+    const { id } = request.params as { id: string }
+    const body = z.object({
+      status: z.enum(["open", "matched", "in_progress", "completed", "cancelled"]),
+    }).safeParse(request.body)
+
+    if (!body.success) {
+      return reply.status(400).send({ error: { code: "VALIDATION_ERROR", message: "Invalid status value" } })
+    }
+
+    const [job] = await db.select().from(jobPostings).where(eq(jobPostings.id, id)).limit(1)
+    if (!job) return reply.status(404).send({ error: { code: "NOT_FOUND", message: "Job not found" } })
+
+    // Determine actor role
+    const userId = request.user.id
+    const userRole = request.user.role as "employer" | "worker"
+    const isOwner = job.employerId === userId
+
+    // Workers can only act on jobs they're accepted for
+    let actorRole: ActorRole = userRole === "employer" ? "employer" : "worker"
+    if (userRole === "employer" && !isOwner) {
+      return reply.status(403).send({ error: { code: "FORBIDDEN", message: "Not your job" } })
+    }
+    if (userRole === "worker") {
+      // Verify worker has an accepted application for this job
+      const [accepted] = await db
+        .select()
+        .from(jobApplications)
+        .where(and(eq(jobApplications.jobId, id), eq(jobApplications.workerId, userId), eq(jobApplications.status, "accepted")))
+        .limit(1)
+      if (!accepted) {
+        return reply.status(403).send({ error: { code: "FORBIDDEN", message: "You are not assigned to this job" } })
+      }
+    }
+
+    const targetStatus = body.data.status as JobStatus
+    const currentStatus = job.status as JobStatus
+    const result = validateTransition(currentStatus, targetStatus, actorRole)
+
+    if (!result.ok) {
+      return reply.status(409).send({ error: { code: "INVALID_TRANSITION", message: result.error } })
+    }
+
+    const now = new Date()
+    const updateData: Record<string, unknown> = {
+      status: targetStatus,
+      statusUpdatedAt: now,
+      updatedAt: now,
+    }
+    if (targetStatus === "completed") {
+      updateData.completedAt = now
+      updateData.paymentStatus = "triggered"
+    }
+
+    await db.update(jobPostings).set(updateData).where(eq(jobPostings.id, id))
+
+    // Emit WebSocket event on completion
+    if (targetStatus === "completed") {
+      // Notify all accepted workers
+      const acceptedApps = await db
+        .select({ workerId: jobApplications.workerId })
+        .from(jobApplications)
+        .where(and(eq(jobApplications.jobId, id), eq(jobApplications.status, "accepted")))
+
+      const payload = { type: "job_completed", jobId: id, completedAt: now.toISOString() }
+
+      for (const app of acceptedApps) {
+        const socketId = workerSockets.get(app.workerId)
+        if (socketId) {
+          // Emit via the global io if available — graceful no-op if socket server not set
+          try {
+            const { io: socketIo } = await import("../plugins/socket.js" as string)
+            if (socketIo) socketIo.to(socketId).emit("job_completed", payload)
+          } catch { /* socket not initialized in test env */ }
+        }
+      }
+      // Also notify employer
+      const employerSocketId = workerSockets.get(job.employerId)
+      if (employerSocketId) {
+        try {
+          const { io: socketIo } = await import("../plugins/socket.js" as string)
+          if (socketIo) socketIo.to(employerSocketId).emit("job_completed", payload)
+        } catch { /* no-op */ }
+      }
+    }
+
+    return reply.send({
+      jobId: id,
+      previousStatus: currentStatus,
+      status: targetStatus,
+      updatedAt: now.toISOString(),
+      paymentStatus: targetStatus === "completed" ? "triggered" : job.paymentStatus ?? "pending",
+      validNextStatuses: getValidTransitions(targetStatus, actorRole),
+    })
   })
 }
