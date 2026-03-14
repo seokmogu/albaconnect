@@ -137,6 +137,9 @@ export const payments = pgTable("payments", {
   platformFee: integer("platform_fee").notNull(),
   status: paymentStatusEnum("status").default("pending").notNull(),
   tossPaymentKey: varchar("toss_payment_key", { length: 200 }),
+  tossOrderId: varchar("toss_order_id", { length: 100 }).unique(),
+  tossStatus: varchar("toss_status", { length: 50 }),
+  payoutAt: timestamp("payout_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 })
 

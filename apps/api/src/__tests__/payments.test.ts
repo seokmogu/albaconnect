@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { buildApp } from '../index'
 
 const mocks = vi.hoisted(() => {
@@ -21,13 +21,17 @@ vi.mock('../db', () => ({
     insert: mocks.insertIntoMock,
     update: mocks.updateMock,
   },
-  payments: { payerId: 'payerId' },
+  payments: { payerId: 'payerId', tossPaymentKey: 'tossPaymentKey', jobId: 'jobId' },
   jobPostings: { id: 'id', employerId: 'employerId' },
 }))
 
 describe('payment routes', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
   })
 
   it('POST /payments/escrow returns 201 for employer', async () => {
@@ -74,6 +78,138 @@ describe('payment routes', () => {
     })
 
     expect(response.statusCode).toBe(401)
+    await app.close()
+  })
+
+  it('POST /payments/escrow with TOSS_SECRET_KEY verifies payment and returns 201', async () => {
+    process.env.TOSS_SECRET_KEY = 'test_sk_abc'
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
+      json: async () => ({ status: 'DONE', orderId: 'order-123' }),
+    } as Response)
+
+    mocks.selectLimitMock.mockResolvedValueOnce([{ id: 'job-1', totalAmount: 50000, escrowStatus: 'pending' }])
+    mocks.insertReturningMock.mockResolvedValueOnce([{ id: 'payment-2', amount: 55000, tossOrderId: 'order-123', tossStatus: 'DONE' }])
+    mocks.updateWhereMock.mockResolvedValueOnce(undefined)
+
+    const app = await buildApp()
+    const token = app.jwt.sign({ id: 'employer-1', email: 'boss@test.com', role: 'employer' })
+    const response = await app.inject({
+      method: 'POST',
+      url: '/payments/escrow',
+      headers: { authorization: `Bearer ${token}` },
+      payload: { jobId: '11111111-1111-1111-1111-111111111111', tossPaymentKey: 'pay_key_abc' },
+    })
+
+    expect(response.statusCode).toBe(201)
+    expect(fetchMock).toHaveBeenCalledWith(
+      'https://api.tosspayments.com/v1/payments/pay_key_abc',
+      expect.objectContaining({ headers: expect.objectContaining({ Authorization: expect.stringContaining('Basic ') }) })
+    )
+    delete process.env.TOSS_SECRET_KEY
+    await app.close()
+  })
+
+  it('POST /payments/escrow without TOSS_SECRET_KEY runs in dev mode and returns 201', async () => {
+    delete process.env.TOSS_SECRET_KEY
+    const fetchSpy = vi.spyOn(globalThis, 'fetch')
+
+    mocks.selectLimitMock.mockResolvedValueOnce([{ id: 'job-1', totalAmount: 50000, escrowStatus: 'pending' }])
+    mocks.insertReturningMock.mockResolvedValueOnce([{ id: 'payment-3', amount: 55000 }])
+    mocks.updateWhereMock.mockResolvedValueOnce(undefined)
+
+    const app = await buildApp()
+    const token = app.jwt.sign({ id: 'employer-1', email: 'boss@test.com', role: 'employer' })
+    const response = await app.inject({
+      method: 'POST',
+      url: '/payments/escrow',
+      headers: { authorization: `Bearer ${token}` },
+      payload: { jobId: '11111111-1111-1111-1111-111111111111', tossPaymentKey: 'pay_key_xyz' },
+    })
+
+    expect(response.statusCode).toBe(201)
+    expect(fetchSpy).not.toHaveBeenCalled()
+    await app.close()
+  })
+
+  it('POST /payments/payout returns 202', async () => {
+    mocks.selectLimitMock.mockResolvedValueOnce([{ id: 'job-1', totalAmount: 50000, escrowStatus: 'escrowed', status: 'completed' }])
+
+    const app = await buildApp()
+    const token = app.jwt.sign({ id: 'employer-1', email: 'boss@test.com', role: 'employer' })
+    const response = await app.inject({
+      method: 'POST',
+      url: '/payments/payout',
+      headers: { authorization: `Bearer ${token}` },
+      payload: { jobId: '11111111-1111-1111-1111-111111111111' },
+    })
+
+    expect(response.statusCode).toBe(202)
+    expect(response.json().message).toContain('Payout queued')
+    await app.close()
+  })
+
+  it('POST /payments/webhook with valid auth returns 200', async () => {
+    process.env.TOSS_WEBHOOK_SECRET = 'webhook-secret'
+    const expectedAuth = 'Basic ' + Buffer.from('webhook-secret:').toString('base64')
+
+    mocks.updateWhereMock.mockResolvedValue(undefined)
+    mocks.selectLimitMock.mockResolvedValueOnce([{ id: 'payment-1', jobId: 'job-1' }])
+
+    const app = await buildApp()
+    const response = await app.inject({
+      method: 'POST',
+      url: '/payments/webhook',
+      headers: { authorization: expectedAuth },
+      payload: {
+        eventType: 'PAYMENT_STATUS_CHANGED',
+        data: { paymentKey: 'pay_key_abc', orderId: 'order-123', status: 'DONE' },
+      },
+    })
+
+    expect(response.statusCode).toBe(200)
+    expect(response.json().received).toBe(true)
+    delete process.env.TOSS_WEBHOOK_SECRET
+    await app.close()
+  })
+
+  it('POST /payments/webhook with invalid auth returns 401', async () => {
+    process.env.TOSS_WEBHOOK_SECRET = 'webhook-secret'
+
+    const app = await buildApp()
+    const response = await app.inject({
+      method: 'POST',
+      url: '/payments/webhook',
+      headers: { authorization: 'Basic wrong-token' },
+      payload: {
+        eventType: 'PAYMENT_STATUS_CHANGED',
+        data: { paymentKey: 'pay_key_abc', status: 'DONE' },
+      },
+    })
+
+    expect(response.statusCode).toBe(401)
+    delete process.env.TOSS_WEBHOOK_SECRET
+    await app.close()
+  })
+
+  it('POST /payments/webhook duplicate (idempotency) returns 200', async () => {
+    delete process.env.TOSS_WEBHOOK_SECRET
+
+    // Simulate unique constraint violation (idempotency)
+    const pgError = Object.assign(new Error('duplicate key'), { code: '23505' })
+    mocks.updateWhereMock.mockRejectedValueOnce(pgError)
+
+    const app = await buildApp()
+    const response = await app.inject({
+      method: 'POST',
+      url: '/payments/webhook',
+      payload: {
+        eventType: 'PAYMENT_STATUS_CHANGED',
+        data: { paymentKey: 'pay_key_dup', status: 'DONE' },
+      },
+    })
+
+    expect(response.statusCode).toBe(200)
+    expect(response.json().received).toBe(true)
     await app.close()
   })
 })
