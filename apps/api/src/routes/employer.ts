@@ -227,4 +227,157 @@ export async function employerRoutes(app: FastifyInstance) {
       avg_minutes_to_first_accept: Number(row.avg_minutes_to_first_accept ?? 0),
     })
   })
+
+  // ── New KPI endpoints ─────────────────────────────────────────────────────
+
+  // GET /api/employer/dashboard/kpi — aggregate KPI for the employer
+  app.get("/api/employer/dashboard/kpi", { preHandler: [requireEmployer] }, async (request, reply) => {
+    const userId = request.user.id
+    const cacheKey = `employer:kpi:${userId}`
+    const redis = getRedisClient()
+
+    if (redis) {
+      const cached = await redis.get(cacheKey)
+      if (cached) return reply.send(JSON.parse(cached))
+    }
+
+    // 1. Job aggregates
+    const aggResult = await db.execute<{
+      total_jobs: string
+      filled_jobs: string
+      accepted_apps: string
+      noshow_apps: string
+      total_budget_spent: string
+    }>(sql`
+      SELECT
+        COUNT(DISTINCT jp.id) AS total_jobs,
+        COUNT(DISTINCT CASE WHEN jp.status IN ('matched','in_progress','completed') THEN jp.id END) AS filled_jobs,
+        COUNT(CASE WHEN ja.status = 'accepted' THEN 1 END) AS accepted_apps,
+        COUNT(CASE WHEN ja.status = 'noshow'   THEN 1 END) AS noshow_apps,
+        COALESCE(SUM(CASE WHEN jp.payment_status_job = 'completed' THEN jp.total_amount ELSE 0 END), 0) AS total_budget_spent
+      FROM job_postings jp
+      LEFT JOIN job_applications ja ON ja.job_id = jp.id
+      WHERE jp.employer_id = ${userId}
+    `)
+    const agg = aggResult.rows[0] ?? {
+      total_jobs: "0", filled_jobs: "0", accepted_apps: "0",
+      noshow_apps: "0", total_budget_spent: "0",
+    }
+
+    const totalJobs = Number(agg.total_jobs)
+    const filledJobs = Number(agg.filled_jobs)
+    const acceptedApps = Number(agg.accepted_apps)
+    const noshowApps = Number(agg.noshow_apps)
+    const fillRatePct = totalJobs > 0 ? Math.round((filledJobs / totalJobs) * 1000) / 10 : 0
+    const noshowRatePct = acceptedApps > 0 ? Math.round((noshowApps / acceptedApps) * 1000) / 10 : 0
+
+    // 2. Avg time-to-match (hours)
+    const ttmResult = await db.execute<{ avg_hours: string }>(sql`
+      SELECT
+        AVG(EXTRACT(EPOCH FROM (ja.created_at - jp.created_at)) / 3600)::numeric(10,2) AS avg_hours
+      FROM job_postings jp
+      JOIN job_applications ja ON ja.job_id = jp.id AND ja.status = 'accepted'
+      WHERE jp.employer_id = ${userId}
+        AND ja.created_at = (
+          SELECT MIN(ja2.created_at) FROM job_applications ja2
+          WHERE ja2.job_id = jp.id AND ja2.status = 'accepted'
+        )
+    `)
+    const avgTimeToMatchHours = Number(ttmResult.rows[0]?.avg_hours ?? 0)
+
+    // 3. Average worker rating (employer's ratings of workers)
+    const ratingResult = await db.execute<{ avg_rating: string }>(sql`
+      SELECT AVG(r.rating)::numeric(3,2) AS avg_rating
+      FROM reviews r
+      JOIN job_postings jp ON jp.id = r.job_id
+      WHERE jp.employer_id = ${userId}
+        AND r.reviewer_id = ${userId}
+    `)
+    const avgWorkerRating = Number(ratingResult.rows[0]?.avg_rating ?? 0)
+
+    // 4. Open dispute count
+    const disputeResult = await db.execute<{ open_count: string }>(sql`
+      SELECT COUNT(*) AS open_count
+      FROM job_disputes jd
+      JOIN job_postings jp ON jp.id = jd.job_id
+      WHERE jp.employer_id = ${userId}
+        AND jd.status = 'open'
+    `)
+    const openDisputeCount = Number(disputeResult.rows[0]?.open_count ?? 0)
+
+    const kpi = {
+      total_jobs: totalJobs,
+      total_budget_spent: Number(agg.total_budget_spent),
+      fill_rate_pct: fillRatePct,
+      avg_time_to_match_hours: avgTimeToMatchHours,
+      avg_worker_rating: avgWorkerRating,
+      noshow_rate_pct: noshowRatePct,
+      open_dispute_count: openDisputeCount,
+    }
+
+    if (redis) await redis.set(cacheKey, JSON.stringify(kpi), "EX", 300)
+    return reply.send(kpi)
+  })
+
+  // GET /api/employer/jobs/:id/analytics — per-job KPI detail
+  app.get("/api/employer/jobs/:id/analytics", { preHandler: [requireEmployer] }, async (request, reply) => {
+    const userId = request.user.id
+    const { id: jobId } = request.params as { id: string }
+
+    // Verify ownership + fetch job detail
+    const jobResult = await db.execute<{
+      id: string; status: string; escrow_status: string; payment_status_job: string
+    }>(sql`
+      SELECT id, status, escrow_status, payment_status_job
+      FROM job_postings
+      WHERE id = ${jobId} AND employer_id = ${userId}
+      LIMIT 1
+    `)
+    if (!jobResult.rows.length) {
+      return reply.status(404).send({ error: "Job not found or access denied" })
+    }
+    const jobRow = jobResult.rows[0]
+
+    // Application stats
+    const appResult = await db.execute<{
+      application_count: string; accepted_count: string; noshow_count: string
+      avg_ttm_hours: string
+    }>(sql`
+      SELECT
+        COUNT(*) AS application_count,
+        COUNT(CASE WHEN ja.status = 'accepted' THEN 1 END) AS accepted_count,
+        COUNT(CASE WHEN ja.status = 'noshow'   THEN 1 END) AS noshow_count,
+        AVG(CASE WHEN ja.status = 'accepted'
+          THEN EXTRACT(EPOCH FROM (ja.created_at - jp.created_at)) / 3600
+        END)::numeric(10,2) AS avg_ttm_hours
+      FROM job_applications ja
+      JOIN job_postings jp ON jp.id = ja.job_id
+      WHERE ja.job_id = ${jobId}
+    `)
+    const appRow = appResult.rows[0] ?? {}
+
+    // Dispute count
+    const disputeResult = await db.execute<{ dispute_count: string }>(sql`
+      SELECT COUNT(*) AS dispute_count FROM job_disputes WHERE job_id = ${jobId}
+    `)
+
+    // Worker ratings avg (employer's ratings of workers on this job)
+    const ratingResult = await db.execute<{ worker_ratings_avg: string }>(sql`
+      SELECT AVG(rating)::numeric(3,2) AS worker_ratings_avg
+      FROM reviews WHERE job_id = ${jobId} AND reviewer_id = ${userId}
+    `)
+
+    return reply.send({
+      jobId,
+      status: jobRow.status,
+      escrow_status: jobRow.escrow_status,
+      payout_status: jobRow.payment_status_job,
+      application_count: Number(appRow.application_count ?? 0),
+      accepted_count: Number(appRow.accepted_count ?? 0),
+      noshow_count: Number(appRow.noshow_count ?? 0),
+      time_to_match_hours: Number(appRow.avg_ttm_hours ?? 0),
+      dispute_count: Number(disputeResult.rows[0]?.dispute_count ?? 0),
+      worker_ratings_avg: Number(ratingResult.rows[0]?.worker_ratings_avg ?? 0),
+    })
+  })
 }
