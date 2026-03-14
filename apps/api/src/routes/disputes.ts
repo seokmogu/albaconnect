@@ -12,8 +12,9 @@
 import { FastifyInstance } from "fastify"
 import { eq, and, or } from "drizzle-orm"
 import { z } from "zod"
-import { db, jobDisputes, jobPostings, jobApplications } from "../db"
+import { db, jobDisputes, jobPostings, jobApplications, users } from "../db"
 import { authenticate } from "../middleware/auth"
+import { sendAlimTalk, normalizePhone } from "../services/kakaoAlimTalk.js"
 
 const createDisputeSchema = z.object({
   type: z.enum(["NOSHOW_DISPUTE", "PAYMENT_DISPUTE", "QUALITY_DISPUTE"]),
@@ -92,6 +93,25 @@ export async function disputeRoutes(app: FastifyInstance) {
             .set({ disputeHold: true, updatedAt: new Date() })
             .where(eq(jobPostings.id, jobId))
         }
+
+        // KakaoTalk AlimTalk: notify employer when any dispute is created
+        void (async () => {
+          try {
+            const [employer] = await db
+              .select({ phone: users.phone })
+              .from(users)
+              .where(eq(users.id, job.employerId))
+              .limit(1)
+            if (employer?.phone) {
+              const phone = normalizePhone(employer.phone) ?? employer.phone
+              await sendAlimTalk(phone, "DISPUTE_CREATED", {
+                job_title: job.title,
+              })
+            }
+          } catch {
+            // non-fatal
+          }
+        })()
 
         return reply.status(201).send({ dispute })
       } catch (err: unknown) {
@@ -206,6 +226,41 @@ export async function disputeRoutes(app: FastifyInstance) {
           .set({ disputeHold: false, updatedAt: new Date() })
           .where(eq(jobPostings.id, jobId))
       }
+
+      // KakaoTalk AlimTalk: notify both employer and worker raiser on resolution
+      void (async () => {
+        try {
+          const [job] = await db
+            .select({ employerId: jobPostings.employerId, title: jobPostings.title })
+            .from(jobPostings)
+            .where(eq(jobPostings.id, jobId))
+            .limit(1)
+          if (!job) return
+
+          const partyIds = [...new Set([job.employerId, dispute.raisedById])]
+          const parties = await db
+            .select({ id: users.id, phone: users.phone })
+            .from(users)
+            .where(
+              partyIds.length === 1
+                ? eq(users.id, partyIds[0]!)
+                : or(eq(users.id, partyIds[0]!), eq(users.id, partyIds[1]!))
+            )
+
+          await Promise.all(
+            parties.map(async (p) => {
+              if (!p.phone) return
+              const phone = normalizePhone(p.phone) ?? p.phone
+              await sendAlimTalk(phone, "DISPUTE_RESOLVED", {
+                job_title: job.title,
+                resolution: body.data.status,
+              }).catch(() => {})
+            })
+          )
+        } catch {
+          // non-fatal
+        }
+      })()
 
       return reply.send({ dispute: resolved })
     },
