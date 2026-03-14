@@ -214,6 +214,8 @@ export async function runMigrations() {
     ADD COLUMN IF NOT EXISTS push_subscription jsonb
   `)
 
+  await runDisputeMigration()
+
   console.log('Migrations completed successfully')
 }
 
@@ -242,25 +244,21 @@ export async function runNotificationsMigration() {
 }
 
 export async function runDisputeMigration() {
-  // Add dispute_hold column to job_postings
-  await db.execute(sql`
-    ALTER TABLE job_postings
-    ADD COLUMN IF NOT EXISTS dispute_hold BOOLEAN NOT NULL DEFAULT false
-  `)
-
-  // Create dispute type and status enums (IF NOT EXISTS not supported for types — use DO block)
-  await db.execute(sql`
-    DO $$ BEGIN
+  // Create dispute enums (idempotent)
+  await db.execute(sql`DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'dispute_type') THEN
       CREATE TYPE dispute_type AS ENUM ('NOSHOW_DISPUTE', 'PAYMENT_DISPUTE', 'QUALITY_DISPUTE');
-    EXCEPTION WHEN duplicate_object THEN NULL;
-    END $$
-  `)
-  await db.execute(sql`
-    DO $$ BEGIN
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'dispute_status') THEN
       CREATE TYPE dispute_status AS ENUM ('open', 'resolved', 'dismissed');
-    EXCEPTION WHEN duplicate_object THEN NULL;
-    END $$
-  `)
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'dispute_raised_by_role') THEN
+      CREATE TYPE dispute_raised_by_role AS ENUM ('worker', 'employer');
+    END IF;
+  END $$`)
+
+  // Add dispute_hold column to job_postings
+  await db.execute(sql`ALTER TABLE job_postings ADD COLUMN IF NOT EXISTS dispute_hold BOOLEAN NOT NULL DEFAULT FALSE`)
 
   // Create job_disputes table
   await db.execute(sql`
@@ -268,7 +266,7 @@ export async function runDisputeMigration() {
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       job_id UUID REFERENCES job_postings(id) NOT NULL,
       raised_by_id UUID REFERENCES users(id) NOT NULL,
-      raised_by_role user_role NOT NULL,
+      raised_by_role dispute_raised_by_role NOT NULL,
       type dispute_type NOT NULL,
       description TEXT NOT NULL,
       status dispute_status NOT NULL DEFAULT 'open',
@@ -279,6 +277,6 @@ export async function runDisputeMigration() {
       UNIQUE(job_id, raised_by_id, type)
     )
   `)
-  await db.execute(sql`CREATE INDEX IF NOT EXISTS idx_disputes_job ON job_disputes(job_id)`)
-  await db.execute(sql`CREATE INDEX IF NOT EXISTS idx_disputes_status ON job_disputes(status)`)
+  await db.execute(sql`CREATE INDEX IF NOT EXISTS idx_disputes_job_id ON job_disputes(job_id)`)
+  await db.execute(sql`CREATE INDEX IF NOT EXISTS idx_disputes_raised_by ON job_disputes(raised_by_id)`)
 }

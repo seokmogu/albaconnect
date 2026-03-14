@@ -1,277 +1,247 @@
 /**
- * disputes.test.ts — Worker dispute resolution flow
+ * disputes.test.ts — dispute resolution route tests
  *
- * 1. POST /api/jobs/:jobId/disputes creates dispute and sets dispute_hold on NOSHOW_DISPUTE
- * 2. NOSHOW_DISPUTE blocks payout via POST /payments/payout (dispute_hold check)
- * 3. PATCH /api/jobs/:jobId/disputes/:id (admin) resolves dispute and clears dispute_hold
- * 4. Unauthorized user (not a party) gets 403 on POST
- * 5. Duplicate dispute returns 409
+ * Tests:
+ *  1. Worker raises NOSHOW_DISPUTE → 201, hold set on job
+ *  2. NOSHOW dispute hold blocks payout → 402 with DISPUTE_HOLD code
+ *  3. Admin resolves dispute → 200
+ *  4. Non-party worker cannot raise dispute → 403
+ *  5. Duplicate dispute same job+user+type → 409
  */
 
-import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { buildApp } from '../index'
-import type { FastifyInstance } from 'fastify'
 
-// ─── Stable DB mock (hoisted, chain returns mutable ref) ─────────────────────
-const mockDb = vi.hoisted(() => ({
-  selectResult: [] as unknown[],
-  selectCallCount: 0,
-  selectResults: [] as unknown[][],
-  updateResult: [] as unknown[],
-  insertResult: [] as unknown[],
-  updateCalled: 0,
-  insertCalled: 0,
-}))
-
-vi.mock('../db', () => {
-  const makeSelect = () => {
-    const db = {
-      execute: vi.fn(),
-      select: vi.fn(() => ({
-        from: vi.fn(() => ({
-          where: vi.fn(() => ({
-            limit: vi.fn(() => {
-              const idx = mockDb.selectCallCount++
-              return Promise.resolve(mockDb.selectResults[idx] ?? [])
-            }),
-          })),
-        })),
-      })),
-      update: vi.fn(() => ({
-        set: vi.fn(() => ({
-          where: vi.fn(() => ({
-            returning: vi.fn(() => Promise.resolve(mockDb.updateResult)),
-          })),
-        })),
-      })),
-      insert: vi.fn(() => ({
-        values: vi.fn(() => ({
-          returning: vi.fn(() => {
-            if (mockDb.insertResult instanceof Error) throw mockDb.insertResult
-            // Allow rejecting with DB error code
-            if (mockDb.insertResult && typeof (mockDb.insertResult as any).code === 'string') {
-              return Promise.reject(mockDb.insertResult)
-            }
-            return Promise.resolve(mockDb.insertResult)
-          }),
-        })),
-      })),
-    }
-    return db
+// ── DB mock ────────────────────────────────────────────────────────────────────
+// Use vi.hoisted so mocks are available before import hoisting
+const { dbMock } = vi.hoisted(() => {
+  const dbMock = {
+    select: vi.fn(),
+    insert: vi.fn(),
+    update: vi.fn(),
   }
-
-  return {
-    db: makeSelect(),
-    jobDisputes: { id: 'id', jobId: 'job_id', raisedById: 'raised_by_id', type: 'type', status: 'status' },
-    jobPostings: { id: 'id', employerId: 'employer_id', disputeHold: 'dispute_hold' },
-    jobApplications: { id: 'id', jobId: 'job_id', workerId: 'worker_id' },
-    users: {},
-    penalties: {},
-    workerProfiles: {},
-    payments: { id: 'id', payerId: 'payer_id', tossPaymentKey: 'toss_payment_key', jobId: 'job_id', payoutAt: 'payout_at', tossStatus: 'toss_status' },
-    reviews: {},
-  }
+  return { dbMock }
 })
 
-vi.mock('../services/matching', () => ({
-  dispatchJob: vi.fn(),
-  distanceKm: vi.fn(),
-  workerSockets: new Map(),
-  setSocketServer: vi.fn(),
-  handleAcceptOffer: vi.fn(),
+vi.mock('../db', () => ({
+  db: dbMock,
+  // Schema field references (drizzle uses these as identifiers in eq/and)
+  jobDisputes: {
+    id: 'id', jobId: 'jobId', raisedById: 'raisedById', raisedByRole: 'raisedByRole',
+    type: 'type', description: 'description', status: 'status',
+    resolutionNotes: 'resolutionNotes', resolvedBy: 'resolvedBy', resolvedAt: 'resolvedAt',
+  },
+  jobPostings: {
+    id: 'id', employerId: 'employerId', disputeHold: 'disputeHold',
+    updatedAt: 'updatedAt', status: 'status',
+  },
+  jobApplications: { id: 'id', jobId: 'jobId', workerId: 'workerId', status: 'status' },
+  users: { id: 'id' },
+  payments: { payerId: 'payerId', tossPaymentKey: 'tossPaymentKey', jobId: 'jobId' },
 }))
 
-vi.mock('../services/jobExpiry', () => ({
-  processExpiredJobs: vi.fn(),
-}))
-
-vi.mock('../db/migrate', () => ({
-  runMigrations: vi.fn(),
-  runNotificationsMigration: vi.fn(),
-  runCheckinMigration: vi.fn(),
-  runDisputeMigration: vi.fn(),
-}))
-
-vi.mock('../lib/redis', () => ({
-  getRedisClient: vi.fn(),
-  checkRedisHealth: vi.fn().mockResolvedValue('unavailable'),
-}))
-
-vi.mock('../plugins/socket', () => ({
-  setupSocketIO: vi.fn().mockResolvedValue({}),
-}))
-
-vi.mock('../plugins/rateLimit', () => ({
-  setupRateLimit: vi.fn(),
-}))
-
-vi.mock('../plugins/sentry', () => ({ default: vi.fn((app: any, _opts: any, done: any) => done()) }))
-vi.mock('../plugins/logger', () => ({ default: vi.fn((app: any, _opts: any, done: any) => done()) }))
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-function makeToken(app: FastifyInstance, payload: object): string {
-  return (app as any).jwt.sign(payload)
+// ── Helper: build a chained select mock that returns specific values per call ───
+// db.select().from().where().limit() chain
+function mockSelectSequence(responses: unknown[][]): void {
+  let idx = 0
+  dbMock.select.mockImplementation(() => ({
+    from: () => ({
+      where: () => ({
+        limit: () => Promise.resolve(responses[idx++] ?? []),
+        orderBy: () => ({ limit: () => Promise.resolve(responses[idx++] ?? []) }),
+      }),
+    }),
+  }))
 }
 
-// Reset per-test call state
-function resetMockDb() {
-  mockDb.selectCallCount = 0
-  mockDb.selectResults = []
-  mockDb.updateResult = []
-  mockDb.insertResult = []
-  mockDb.updateCalled = 0
-  mockDb.insertCalled = 0
-}
+// ── Setup ──────────────────────────────────────────────────────────────────────
+const JOB_ID = '11111111-1111-1111-1111-111111111111'
+const WORKER_ID = '22222222-2222-2222-2222-222222222222'
+const DISPUTE_ID = '33333333-3333-3333-3333-333333333333'
 
-// Valid UUIDs for tests
-const JOB_ID = '550e8400-e29b-41d4-a716-446655440001'
-const WORKER_ID = '550e8400-e29b-41d4-a716-446655440002'
-const EMPLOYER_ID = '550e8400-e29b-41d4-a716-446655440003'
-const DISPUTE_ID = '550e8400-e29b-41d4-a716-446655440004'
-
-// ─── Tests ────────────────────────────────────────────────────────────────────
-describe('Dispute Routes', () => {
-  let app: FastifyInstance
+describe('dispute routes', () => {
+  let app: Awaited<ReturnType<typeof buildApp>>
 
   beforeEach(async () => {
-    resetMockDb()
+    vi.clearAllMocks()
     app = await buildApp()
-    await app.ready()
   })
 
   afterEach(async () => {
-    vi.unstubAllEnvs()
     await app.close()
+    delete process.env['ADMIN_KEY']
   })
 
-  // ── Test 1: Create NOSHOW_DISPUTE + sets dispute_hold ────────────────────
-  it('1. POST /api/jobs/:jobId/disputes creates dispute and sets dispute_hold for NOSHOW_DISPUTE', async () => {
-    const token = makeToken(app, { id: WORKER_ID, role: 'worker' })
+  // ── Test 1: Worker raises NOSHOW_DISPUTE → 201, hold set ─────────────────────
+  it('POST /jobs/:jobId/disputes — worker raises NOSHOW_DISPUTE → 201', async () => {
+    const token = app.jwt.sign({ id: WORKER_ID, role: 'worker' })
 
-    const mockJob = { id: JOB_ID, employerId: EMPLOYER_ID, disputeHold: false }
-    const mockApp = { id: 'app-1', jobId: JOB_ID, workerId: WORKER_ID, status: 'completed' }
-    const mockDispute = { id: DISPUTE_ID, jobId: JOB_ID, raisedById: WORKER_ID, type: 'NOSHOW_DISPUTE', status: 'open' }
+    mockSelectSequence([
+      // 1st: job lookup
+      [{ id: JOB_ID, employerId: 'emp-1', status: 'completed' }],
+      // 2nd: application lookup (worker is party)
+      [{ id: 'app-1' }],
+    ])
 
-    // select calls: [0] job lookup, [1] application lookup
-    mockDb.selectResults = [[mockJob], [mockApp]]
-    mockDb.insertResult = [mockDispute] as unknown as unknown[]
-
-    const response = await app.inject({
-      method: 'POST',
-      url: `/api/jobs/${JOB_ID}/disputes`,
-      headers: { authorization: `Bearer ${token}` },
-      payload: { type: 'NOSHOW_DISPUTE', description: 'I was marked as noshow but I showed up on time.' },
+    dbMock.insert.mockReturnValue({
+      values: () => ({
+        returning: () => Promise.resolve([{
+          id: DISPUTE_ID,
+          jobId: JOB_ID,
+          raisedById: WORKER_ID,
+          raisedByRole: 'worker',
+          type: 'NOSHOW_DISPUTE',
+          description: 'I was marked no-show but I was present at the job site',
+          status: 'open',
+          createdAt: new Date().toISOString(),
+        }]),
+      }),
     })
 
-    expect(response.statusCode).toBe(201)
-    const body = response.json<{ dispute: typeof mockDispute }>()
+    dbMock.update.mockReturnValue({
+      set: () => ({ where: () => Promise.resolve() }),
+    })
+
+    const res = await app.inject({
+      method: 'POST',
+      url: `/jobs/${JOB_ID}/disputes`,
+      headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' },
+      payload: {
+        type: 'NOSHOW_DISPUTE',
+        description: 'I was marked no-show but I was present at the job site',
+      },
+    })
+
+    expect(res.statusCode).toBe(201)
+    const body = res.json()
     expect(body.dispute.type).toBe('NOSHOW_DISPUTE')
-    // Verify update was called (dispute_hold set)
-    expect(mockDb.selectCallCount).toBeGreaterThanOrEqual(2)
+    expect(body.dispute.status).toBe('open')
+    // disputeHold update was triggered (NOSHOW_DISPUTE path)
+    expect(dbMock.update).toHaveBeenCalled()
   })
 
-  // ── Test 2: Payout blocked by dispute_hold ────────────────────────────────
-  it('2. POST /payments/payout returns 409 when dispute_hold is active', async () => {
-    const token = makeToken(app, { id: EMPLOYER_ID, role: 'employer' })
+  // ── Test 2: Dispute hold blocks payout → 402 ────────────────────────────────
+  it('POST /payments/payout — 402 when disputeHold is true', async () => {
+    const token = app.jwt.sign({ id: 'emp-1', role: 'employer' })
 
-    const mockJobWithHold = {
-      id: JOB_ID,
-      employerId: EMPLOYER_ID,
-      disputeHold: true,
-      escrowStatus: 'escrowed',
-      paymentStatus: 'pending',
-    }
+    mockSelectSequence([
+      // job lookup with disputeHold=true
+      [{ id: JOB_ID, employerId: 'emp-1', status: 'completed', disputeHold: true }],
+    ])
 
-    // select calls: [0] job lookup by payout handler
-    mockDb.selectResults = [[mockJobWithHold]]
-
-    const response = await app.inject({
+    const res = await app.inject({
       method: 'POST',
       url: '/payments/payout',
-      headers: { authorization: `Bearer ${token}` },
+      headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' },
       payload: { jobId: JOB_ID },
     })
 
-    expect(response.statusCode).toBe(409)
-    const body = response.json<{ error: string; code: string }>()
-    expect(body.code).toBe('DISPUTE_HOLD_ACTIVE')
+    expect(res.statusCode).toBe(402)
+    expect(res.json().code).toBe('DISPUTE_HOLD')
   })
 
-  // ── Test 3: Admin resolves + clears dispute_hold ──────────────────────────
-  it('3. PATCH /api/jobs/:jobId/disputes/:id (admin) resolves dispute and clears dispute_hold', async () => {
-    vi.stubEnv('ADMIN_TOKEN', 'admin-secret')
-    const token = makeToken(app, { id: EMPLOYER_ID, role: 'employer' })
+  // ── Test 3: Admin resolves dispute → 200 ────────────────────────────────────
+  it('PATCH /jobs/:jobId/disputes/:disputeId — admin resolves → 200', async () => {
+    process.env['ADMIN_KEY'] = 'test-admin-key'
+    const token = app.jwt.sign({ id: 'admin-1', role: 'employer' })
 
-    const openDispute = {
-      id: DISPUTE_ID,
-      jobId: JOB_ID,
-      type: 'NOSHOW_DISPUTE',
-      status: 'open',
-      raisedById: WORKER_ID,
-    }
-    const resolvedDispute = { ...openDispute, status: 'resolved', resolutionNotes: 'Worker confirmed present.' }
+    mockSelectSequence([
+      // dispute lookup
+      [{ id: DISPUTE_ID, jobId: JOB_ID, type: 'NOSHOW_DISPUTE', status: 'open' }],
+      // remaining open NOSHOW disputes → empty (no others)
+      [],
+    ])
 
-    // select: [0] dispute lookup
-    mockDb.selectResults = [[openDispute]]
-    // update returns resolved dispute for first call (the dispute update)
-    mockDb.updateResult = [resolvedDispute] as unknown as unknown[]
+    dbMock.update.mockReturnValue({
+      set: () => ({
+        where: () => ({
+          returning: () => Promise.resolve([{
+            id: DISPUTE_ID,
+            jobId: JOB_ID,
+            type: 'NOSHOW_DISPUTE',
+            status: 'resolved',
+            resolutionNotes: 'GPS confirms worker was present',
+            resolvedBy: 'admin-1',
+            resolvedAt: new Date().toISOString(),
+          }]),
+        }),
+      }),
+    })
 
-    const response = await app.inject({
+    const res = await app.inject({
       method: 'PATCH',
-      url: `/api/jobs/${JOB_ID}/disputes/${DISPUTE_ID}`,
+      url: `/jobs/${JOB_ID}/disputes/${DISPUTE_ID}`,
       headers: {
         authorization: `Bearer ${token}`,
-        'x-admin-token': 'admin-secret',
+        'x-admin-key': 'test-admin-key',
+        'content-type': 'application/json',
       },
-      payload: { status: 'resolved', resolutionNotes: 'Worker confirmed present.' },
+      payload: {
+        status: 'resolved',
+        resolutionNotes: 'GPS confirms worker was present',
+      },
     })
 
-    expect(response.statusCode).toBe(200)
-    const body = response.json<{ dispute: typeof resolvedDispute }>()
+    expect(res.statusCode).toBe(200)
+    const body = res.json()
     expect(body.dispute.status).toBe('resolved')
+    expect(body.dispute.resolutionNotes).toBe('GPS confirms worker was present')
   })
 
-  // ── Test 4: Non-party worker gets 403 ────────────────────────────────────
-  it('4. POST /api/jobs/:jobId/disputes returns 403 for non-party worker', async () => {
-    const outsiderWorkerId = '550e8400-e29b-41d4-a716-446655440099'
-    const token = makeToken(app, { id: outsiderWorkerId, role: 'worker' })
+  // ── Test 4: Non-party worker gets 403 ───────────────────────────────────────
+  it('POST /jobs/:jobId/disputes — non-party worker gets 403', async () => {
+    const token = app.jwt.sign({ id: 'other-worker', role: 'worker' })
 
-    const mockJob = { id: JOB_ID, employerId: EMPLOYER_ID, disputeHold: false }
-    // Worker has NO application for this job
-    mockDb.selectResults = [[mockJob], []]  // job found, no application
+    mockSelectSequence([
+      // job exists
+      [{ id: JOB_ID, employerId: 'emp-1', status: 'completed' }],
+      // no application for this worker
+      [],
+    ])
 
-    const response = await app.inject({
+    const res = await app.inject({
       method: 'POST',
-      url: `/api/jobs/${JOB_ID}/disputes`,
-      headers: { authorization: `Bearer ${token}` },
-      payload: { type: 'QUALITY_DISPUTE', description: 'The employer was very rude during the shift.' },
+      url: `/jobs/${JOB_ID}/disputes`,
+      headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' },
+      payload: {
+        type: 'NOSHOW_DISPUTE',
+        description: 'I was marked no-show but I was present at the job site',
+      },
     })
 
-    expect(response.statusCode).toBe(403)
-    const body = response.json<{ error: string }>()
-    expect(body.error).toMatch(/Access denied/)
+    expect(res.statusCode).toBe(403)
+    expect(res.json().error).toMatch(/party/i)
   })
 
-  // ── Test 5: Duplicate dispute returns 409 ────────────────────────────────
-  it('5. POST /api/jobs/:jobId/disputes returns 409 on duplicate (same job + type)', async () => {
-    const token = makeToken(app, { id: WORKER_ID, role: 'worker' })
+  // ── Test 5: Duplicate dispute → 409 ─────────────────────────────────────────
+  it('POST /jobs/:jobId/disputes — duplicate type returns 409', async () => {
+    const token = app.jwt.sign({ id: WORKER_ID, role: 'worker' })
 
-    const mockJob = { id: JOB_ID, employerId: EMPLOYER_ID, disputeHold: false }
-    const mockApplication = { id: 'app-5', jobId: JOB_ID, workerId: WORKER_ID, status: 'noshow' }
+    mockSelectSequence([
+      // job exists
+      [{ id: JOB_ID, employerId: 'emp-1', status: 'completed' }],
+      // worker has application
+      [{ id: 'app-1' }],
+    ])
 
-    mockDb.selectResults = [[mockJob], [mockApplication]]
-    // Simulate unique constraint violation (DB unique index on job_id + raised_by_id + type)
-    mockDb.insertResult = { code: '23505' } as unknown as unknown[]
-
-    const response = await app.inject({
-      method: 'POST',
-      url: `/api/jobs/${JOB_ID}/disputes`,
-      headers: { authorization: `Bearer ${token}` },
-      payload: { type: 'NOSHOW_DISPUTE', description: 'I was marked as noshow but I was there the whole time.' },
+    // insert throws unique constraint violation
+    dbMock.insert.mockReturnValue({
+      values: () => ({
+        returning: () => Promise.reject({ code: '23505' }),
+      }),
     })
 
-    expect(response.statusCode).toBe(409)
-    const body = response.json<{ error: string }>()
-    expect(body.error).toMatch(/already raised/)
+    const res = await app.inject({
+      method: 'POST',
+      url: `/jobs/${JOB_ID}/disputes`,
+      headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' },
+      payload: {
+        type: 'NOSHOW_DISPUTE',
+        description: 'I was marked no-show but I was present at the job site',
+      },
+    })
+
+    expect(res.statusCode).toBe(409)
+    expect(res.json().error).toMatch(/already raised/i)
   })
 })

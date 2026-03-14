@@ -171,6 +171,29 @@ export const reviews = pgTable("reviews", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 })
 
+
+// ── Dispute resolution ─────────────────────────────────────────────────────────
+export const disputeTypeEnum = pgEnum("dispute_type", ["NOSHOW_DISPUTE", "PAYMENT_DISPUTE", "QUALITY_DISPUTE"])
+export const disputeStatusEnum = pgEnum("dispute_status", ["open", "resolved", "dismissed"])
+export const disputeRaisedByRoleEnum = pgEnum("dispute_raised_by_role", ["worker", "employer"])
+
+export const jobDisputes = pgTable("job_disputes", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  jobId: uuid("job_id").references(() => jobPostings.id).notNull(),
+  raisedById: uuid("raised_by_id").references(() => users.id).notNull(),
+  raisedByRole: disputeRaisedByRoleEnum("raised_by_role").notNull(),
+  type: disputeTypeEnum("type").notNull(),
+  description: text("description").notNull(),
+  status: disputeStatusEnum("status").default("open").notNull(),
+  resolutionNotes: text("resolution_notes"),
+  resolvedBy: uuid("resolved_by").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  resolvedAt: timestamp("resolved_at"),
+})
+
+export type JobDispute = typeof jobDisputes.$inferSelect
+export type NewJobDispute = typeof jobDisputes.$inferInsert
+
 export type User = typeof users.$inferSelect
 export type NewUser = typeof users.$inferInsert
 export type EmployerProfile = typeof employerProfiles.$inferSelect

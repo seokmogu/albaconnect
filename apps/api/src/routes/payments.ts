@@ -133,6 +133,14 @@ export async function paymentRoutes(app: FastifyInstance) {
       return reply.status(404).send({ error: "Job not found" })
     }
 
+    // Block payout if an open NOSHOW dispute has placed a hold
+    if (job.disputeHold) {
+      return reply.status(402).send({
+        error: "Payout blocked: an open dispute is under review",
+        code: "DISPUTE_HOLD",
+      })
+    }
+
     // TODO: Integrate Toss Payments payout API when bank account setup is available
     return reply.status(202).send({
       message: "Payout queued (bank account setup required)",
