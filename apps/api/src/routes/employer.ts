@@ -2,7 +2,7 @@ import { FastifyInstance } from "fastify"
 import { z } from "zod"
 import { eq, and } from "drizzle-orm"
 import { db, users, employerProfiles, jobPostings, jobApplications, payments } from "../db"
-import { authenticate, requireEmployer } from "../middleware/auth"
+import { authenticate, requireEmployer, requireAdmin } from "../middleware/auth"
 import { sql } from "drizzle-orm"
 import { getRedisClient } from "../lib/redis"
 
@@ -530,5 +530,58 @@ export async function employerRoutes(app: FastifyInstance) {
         message: "지급 완료 처리됐습니다.",
       })
     },
+  )
+
+  // GET /employers/plan — current plan tier, usage, limit
+  const PLAN_LIMITS_EMP: Record<string, number> = { free: 3, basic: 20, premium: Infinity }
+
+  app.get('/employers/plan', { preHandler: [requireEmployer] }, async (request, reply) => {
+    const employerId = request.user.id
+
+    const [profile] = await db
+      .select({ planTier: employerProfiles.planTier })
+      .from(employerProfiles)
+      .where(eq(employerProfiles.userId, employerId))
+      .limit(1)
+
+    const tier = profile?.planTier ?? 'free'
+    const jobLimit = PLAN_LIMITS_EMP[tier] ?? 3
+
+    const result = await db.execute(sql`
+      SELECT COUNT(*) AS active_jobs
+      FROM job_postings
+      WHERE employer_id = ${employerId}::uuid
+        AND status IN ('open', 'matched', 'in_progress')
+    `)
+    const activeJobs = Number((result.rows[0] as any).active_jobs ?? 0)
+
+    return reply.send({
+      tier,
+      active_jobs: activeJobs,
+      job_limit: jobLimit === Infinity ? null : jobLimit,
+      remaining: jobLimit === Infinity ? null : Math.max(0, jobLimit - activeJobs),
+      upgrade_available: tier !== 'premium',
+    })
+  })
+
+  // PATCH /admin/employers/:id/plan — admin updates employer plan tier
+  app.patch<{ Params: { id: string }; Body: { plan_tier: string } }>(
+    '/admin/employers/:id/plan',
+    { preHandler: [requireAdmin] },
+    async (request, reply) => {
+      const { id } = request.params
+      const { plan_tier } = request.body ?? {}
+
+      if (!['free', 'basic', 'premium'].includes(plan_tier)) {
+        return reply.status(400).send({ error: 'plan_tier must be free|basic|premium' })
+      }
+
+      await db
+        .update(employerProfiles)
+        .set({ planTier: plan_tier })
+        .where(eq(employerProfiles.userId, id))
+
+      return reply.send({ userId: id, plan_tier, updated: true })
+    }
   )
 }

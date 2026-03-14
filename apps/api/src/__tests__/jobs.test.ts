@@ -41,6 +41,9 @@ describe('job routes', () => {
   })
 
   it('POST /jobs with employer JWT returns 201', async () => {
+    // Plan tier check: 1) get employer plan, 2) count active jobs
+    mocks.executeMock.mockResolvedValueOnce({ rows: [{ plan_tier: 'free' }] })
+    mocks.executeMock.mockResolvedValueOnce({ rows: [{ active_count: '0' }] })
     mocks.insertReturningMock.mockResolvedValueOnce([{ id: 'job-1', title: 'Kitchen Help' }])
 
     const app = await buildApp()

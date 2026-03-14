@@ -215,6 +215,7 @@ export async function runMigrations() {
   `)
 
   await runDisputeMigration()
+  await runPlanTierMigration()
   await runCertificationMigration()
   await runReferralMigration()
 
@@ -340,4 +341,14 @@ export async function runDisputeMigration() {
   `)
   await db.execute(sql`CREATE INDEX IF NOT EXISTS idx_disputes_job_id ON job_disputes(job_id)`)
   await db.execute(sql`CREATE INDEX IF NOT EXISTS idx_disputes_raised_by ON job_disputes(raised_by_id)`)
+}
+
+export async function runPlanTierMigration() {
+  await db.execute(sql`
+    ALTER TABLE employer_profiles
+    ADD COLUMN IF NOT EXISTS plan_tier VARCHAR(20) NOT NULL DEFAULT 'free'
+  `)
+  await db.execute(sql`
+    UPDATE employer_profiles SET plan_tier = 'free' WHERE plan_tier IS NULL
+  `)
 }

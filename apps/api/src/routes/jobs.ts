@@ -1,7 +1,7 @@
 import { FastifyInstance } from "fastify"
 import { z } from "zod"
-import { eq, and, sql, desc } from "drizzle-orm"
-import { db, jobPostings, jobApplications, users, penalties, workerProfiles } from "../db"
+import { eq, and, count, sql, desc } from "drizzle-orm"
+import { db, jobPostings, jobApplications, users, penalties, workerProfiles, employerProfiles } from "../db"
 import { authenticate, requireEmployer } from "../middleware/auth"
 import { dispatchJob } from "../services/matching"
 import { LATE_CANCEL_PENALTY_RATE, PLATFORM_FEE_RATE } from "@albaconnect/shared"
@@ -265,6 +265,36 @@ export async function jobRoutes(app: FastifyInstance) {
 
     const { title, category, startAt, endAt, hourlyRate, headcount, lat, lng, address, description } = body.data
     const employerId = request.user.id
+
+    // ── Plan tier enforcement ─────────────────────────────────────────────────
+    const PLAN_LIMITS: Record<string, number> = { free: 3, basic: 20, premium: Infinity }
+
+    const planResult = await db.execute(
+      sql`SELECT plan_tier FROM employer_profiles WHERE user_id = ${employerId}::uuid LIMIT 1`
+    )
+    const tier = (planResult.rows[0] as any)?.plan_tier ?? 'free'
+    const jobLimit = PLAN_LIMITS[tier] ?? 3
+
+    if (jobLimit !== Infinity) {
+      const countResult = await db.execute(
+        sql`SELECT COUNT(*) AS active_count FROM job_postings WHERE employer_id = ${employerId}::uuid AND status IN ('open', 'matched', 'in_progress')`
+      )
+      const activeCount = Number((countResult.rows[0] as any)?.active_count ?? 0)
+
+      if (activeCount >= jobLimit) {
+        return reply.status(402).send({
+          error: {
+            code: 'PLAN_LIMIT_EXCEEDED',
+            message: `현재 플랜(${tier})의 활성 공고 한도(${jobLimit}개)를 초과했습니다`,
+            tier,
+            limit: jobLimit,
+            current: activeCount,
+            upgrade_url: '/employer/upgrade',
+          },
+        })
+      }
+    }
+    // ─────────────────────────────────────────────────────────────────────────
 
     const startDate = new Date(startAt)
     const endDate = new Date(endAt)
