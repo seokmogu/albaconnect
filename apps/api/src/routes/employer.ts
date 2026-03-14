@@ -1,7 +1,7 @@
 import { FastifyInstance } from "fastify"
 import { z } from "zod"
-import { eq } from "drizzle-orm"
-import { db, users, employerProfiles, jobPostings, jobApplications } from "../db"
+import { eq, and } from "drizzle-orm"
+import { db, users, employerProfiles, jobPostings, jobApplications, payments } from "../db"
 import { authenticate, requireEmployer } from "../middleware/auth"
 import { sql } from "drizzle-orm"
 import { getRedisClient } from "../lib/redis"
@@ -380,4 +380,155 @@ export async function employerRoutes(app: FastifyInstance) {
       worker_ratings_avg: Number(ratingResult.rows[0]?.worker_ratings_avg ?? 0),
     })
   })
+
+  // ── GET /api/employer/escrow ─ list escrow holds ──────────────────────────
+  app.get("/api/employer/escrow", { preHandler: [requireEmployer] }, async (request, reply) => {
+    const employerId = request.user.id
+
+    const rows = await db.execute<{
+      job_id: string
+      title: string
+      total_amount: number
+      escrow_status: string
+      dispute_hold: boolean
+      worker_name: string | null
+      start_at: string
+      toss_order_id: string | null
+    }>(sql`
+      SELECT
+        jp.id AS job_id,
+        jp.title,
+        jp.total_amount,
+        jp.escrow_status,
+        jp.dispute_hold,
+        u.name AS worker_name,
+        jp.start_at,
+        jp.toss_order_id
+      FROM job_postings jp
+      LEFT JOIN job_applications ja
+        ON ja.job_id = jp.id AND ja.status = 'accepted'
+      LEFT JOIN users u ON u.id = ja.worker_id
+      WHERE jp.employer_id = ${employerId}
+        AND jp.escrow_status IN ('escrowed', 'released', 'refunded')
+      ORDER BY jp.created_at DESC
+    `)
+
+    return reply.send({
+      escrows: rows.rows.map(r => ({
+        jobId: r.job_id,
+        title: r.title,
+        amount: Number(r.total_amount),
+        escrow_status: r.escrow_status,
+        dispute_hold: r.dispute_hold,
+        worker_name: r.worker_name ?? null,
+        job_date: r.start_at,
+        toss_order_id: r.toss_order_id ?? null,
+      })),
+    })
+  })
+
+  // ── GET /api/employer/escrow/summary ─ totals (Redis 2-min cache) ─────────
+  const SUMMARY_CACHE_TTL = 120
+  const getSummaryCacheKey = (id: string) => `employer:escrow:summary:${id}`
+
+  app.get("/api/employer/escrow/summary", { preHandler: [requireEmployer] }, async (request, reply) => {
+    const employerId = request.user.id
+    const redis = getRedisClient()
+    const cacheKey = getSummaryCacheKey(employerId)
+
+    if (redis) {
+      const cached = await redis.get(cacheKey).catch(() => null)
+      if (cached) return reply.send(JSON.parse(cached))
+    }
+
+    const result = await db.execute<{
+      held_amount: string
+      released_amount: string
+      disputed_amount: string
+      pending_refund_amount: string
+    }>(sql`
+      SELECT
+        COALESCE(SUM(CASE WHEN escrow_status = 'escrowed' AND dispute_hold = false THEN total_amount END), 0) AS held_amount,
+        COALESCE(SUM(CASE WHEN escrow_status = 'released' THEN total_amount END), 0) AS released_amount,
+        COALESCE(SUM(CASE WHEN dispute_hold = true THEN total_amount END), 0) AS disputed_amount,
+        COALESCE(SUM(CASE WHEN escrow_status = 'refunded' THEN total_amount END), 0) AS pending_refund_amount
+      FROM job_postings
+      WHERE employer_id = ${employerId}
+    `)
+
+    const row = result.rows[0]
+    const summary = {
+      held_amount: Number(row?.held_amount ?? 0),
+      released_amount: Number(row?.released_amount ?? 0),
+      disputed_amount: Number(row?.disputed_amount ?? 0),
+      pending_refund_amount: Number(row?.pending_refund_amount ?? 0),
+    }
+
+    if (redis) await redis.set(cacheKey, JSON.stringify(summary), "EX", SUMMARY_CACHE_TTL).catch(() => {})
+    return reply.send(summary)
+  })
+
+  // ── POST /api/employer/escrow/:jobId/release ─ manual payout trigger ──────
+  app.post(
+    "/api/employer/escrow/:jobId/release",
+    { preHandler: [requireEmployer] },
+    async (request, reply) => {
+      const { jobId } = request.params as { jobId: string }
+      const employerId = request.user.id
+
+      const [job] = await db
+        .select()
+        .from(jobPostings)
+        .where(and(eq(jobPostings.id, jobId), eq(jobPostings.employerId, employerId)))
+        .limit(1)
+
+      if (!job) return reply.status(404).send({ error: "Job not found" })
+
+      // Must be escrowed funds available
+      if (job.escrowStatus !== "escrowed") {
+        return reply.status(409).send({
+          reason: `Cannot release: escrow_status is '${job.escrowStatus}' (expected 'escrowed')`,
+          code: "ESCROW_NOT_HELD",
+        })
+      }
+
+      // Block if dispute hold is active
+      if (job.disputeHold) {
+        return reply.status(409).send({
+          reason: "분쟁이 진행 중입니다. 분쟁 해결 후 지급 요청하세요.",
+          code: "DISPUTE_HOLD_ACTIVE",
+        })
+      }
+
+      // Require job to be in_progress or completed
+      if (!["in_progress", "completed"].includes(job.status)) {
+        return reply.status(409).send({
+          reason: `Cannot release: job status is '${job.status}' (must be in_progress or completed)`,
+          code: "JOB_STATUS_INVALID",
+        })
+      }
+
+      // Mark escrow as released + update payment
+      await db
+        .update(jobPostings)
+        .set({ escrowStatus: "released", updatedAt: new Date() })
+        .where(eq(jobPostings.id, jobId))
+
+      await db
+        .update(payments)
+        .set({ payoutAt: new Date(), tossStatus: "PAYOUT_DONE" })
+        .where(eq(payments.jobId, jobId))
+        .catch(() => {}) // non-fatal if no payment row
+
+      // Bust Redis summary cache
+      const redis = getRedisClient()
+      if (redis) await redis.del(getSummaryCacheKey(employerId)).catch(() => {})
+
+      return reply.send({
+        jobId,
+        escrow_status: "released",
+        message: "지급 완료 처리됐습니다.",
+      })
+    },
+  )
 }
