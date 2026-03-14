@@ -193,4 +193,143 @@ export async function jobTemplateRoutes(app: FastifyInstance) {
 
     return reply.status(201).send({ job })
   })
+
+  // POST /employer/job-templates/:id/clone — clone a template
+  app.post<{ Params: { id: string } }>(
+    "/employer/job-templates/:id/clone",
+    { preHandler: [requireEmployer] },
+    async (request, reply) => {
+      const { id } = request.params
+      const employerId = request.user.id
+
+      const overrideSchema = z.object({
+        title_override: z.string().min(1).max(200).optional(),
+        overrides: z.object({
+          hourlyRate: z.number().int().positive().optional(),
+          headcount: z.number().int().min(1).max(100).optional(),
+          description: z.string().min(1).optional(),
+        }).optional(),
+      })
+
+      const body = overrideSchema.safeParse(request.body ?? {})
+      if (!body.success) {
+        return reply.status(400).send({ error: "Validation failed", details: body.error.flatten() })
+      }
+
+      // Verify ownership
+      const [template] = await db
+        .select()
+        .from(jobTemplates)
+        .where(and(eq(jobTemplates.id, id), eq(jobTemplates.employerId, employerId)))
+        .limit(1)
+
+      if (!template) {
+        return reply.status(403).send({ error: "Template not found or access denied" })
+      }
+
+      // Check template limit before cloning
+      const countResult = await db.execute<{ count: string }>(
+        sql`SELECT COUNT(*) as count FROM job_templates WHERE employer_id = ${employerId}`
+      )
+      const templateCount = Number(countResult.rows[0]?.count ?? 0)
+      if (templateCount >= MAX_TEMPLATES_PER_EMPLOYER) {
+        return reply.status(400).send({ error: `Maximum ${MAX_TEMPLATES_PER_EMPLOYER} templates allowed per employer` })
+      }
+
+      const cloneTitle = body.data.title_override ?? `(복사) ${template.name}`
+      const overrides = body.data.overrides ?? {}
+
+      const [cloned] = await db
+        .insert(jobTemplates)
+        .values({
+          employerId,
+          name: cloneTitle,
+          description: overrides.description ?? template.description,
+          category: template.category,
+          hourlyRate: overrides.hourlyRate ?? template.hourlyRate,
+          requiredSkills: template.requiredSkills,
+          durationHours: template.durationHours,
+          headcount: overrides.headcount ?? template.headcount,
+        })
+        .returning()
+
+      return reply.status(201).send({
+        id: cloned.id,
+        title: cloned.name,
+        createdAt: cloned.createdAt,
+        clonedFrom: id,
+      })
+    }
+  )
+
+  // PATCH /employer/job-templates/:id — partial update
+  app.patch<{ Params: { id: string } }>(
+    "/employer/job-templates/:id",
+    { preHandler: [requireEmployer] },
+    async (request, reply) => {
+      const { id } = request.params
+      const employerId = request.user.id
+
+      const body = updateTemplateSchema.safeParse(request.body)
+      if (!body.success) {
+        return reply.status(400).send({ error: "Validation failed", details: body.error.flatten() })
+      }
+
+      const [template] = await db
+        .select({ id: jobTemplates.id })
+        .from(jobTemplates)
+        .where(and(eq(jobTemplates.id, id), eq(jobTemplates.employerId, employerId)))
+        .limit(1)
+
+      if (!template) {
+        return reply.status(403).send({ error: "Template not found or access denied" })
+      }
+
+      const [updated] = await db
+        .update(jobTemplates)
+        .set({ ...body.data, updatedAt: new Date() })
+        .where(eq(jobTemplates.id, id))
+        .returning()
+
+      return reply.send({ template: updated })
+    }
+  )
+
+  // GET /employer/job-templates/:id/preview — render preview posting (non-persisted)
+  app.get<{ Params: { id: string } }>(
+    "/employer/job-templates/:id/preview",
+    { preHandler: [requireEmployer] },
+    async (request, reply) => {
+      const { id } = request.params
+      const employerId = request.user.id
+
+      const [template] = await db
+        .select()
+        .from(jobTemplates)
+        .where(and(eq(jobTemplates.id, id), eq(jobTemplates.employerId, employerId)))
+        .limit(1)
+
+      if (!template) {
+        return reply.status(403).send({ error: "Template not found or access denied" })
+      }
+
+      const estimatedEndTime = template.durationHours
+      const estimatedTotalPay = template.hourlyRate * template.durationHours * template.headcount
+
+      return reply.send({
+        preview: {
+          title: template.name,
+          description: template.description,
+          category: template.category,
+          hourlyRate: template.hourlyRate,
+          estimatedDurationHours: estimatedEndTime,
+          estimatedTotalPay,
+          headcount: template.headcount,
+          requiredSkills: template.requiredSkills,
+        },
+        templateId: id,
+        note: "이 미리보기는 저장되지 않습니다. 실제 공고를 생성하려면 POST /employer/job-templates/:id/jobs를 사용하세요.",
+      })
+    }
+  )
 }
