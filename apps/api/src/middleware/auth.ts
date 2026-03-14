@@ -36,3 +36,16 @@ export async function requireWorker(request: FastifyRequest, reply: FastifyReply
     reply.status(403).send({ error: "Worker access required" })
   }
 }
+
+export async function requireAdmin(request: FastifyRequest, reply: FastifyReply) {
+  try {
+    await request.jwtVerify()
+  } catch {
+    return reply.status(401).send({ error: "Unauthorized" })
+  }
+  // Admin access: either ADMIN_KEY env bypass or role=admin (not in normal user enum — dashboard use only)
+  const adminKey = process.env["ADMIN_KEY"]
+  const providedKey = request.headers["x-admin-key"]
+  if (adminKey && providedKey === adminKey) return
+  return reply.status(403).send({ error: "Admin access required" })
+}
