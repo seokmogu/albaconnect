@@ -6,6 +6,7 @@ import { createNotification } from "../routes/notifications"
 import { rankWorkers } from "./scoring"
 import { nearbyWorkersCache, CACHE_TTL, cacheGetL2, cacheSetL2, cacheDelL2 } from "./cache"
 import { sendJobOfferPush } from "./webPush"
+import { jobAvailableAlimTalk, jobConfirmedAlimTalk } from "./kakaoAlimTalk"
 
 // Map of userId -> socketId for active workers
 export const workerSockets = new Map<string, string>()
@@ -206,10 +207,11 @@ async function offerJobToWorker(jobId: string, workerId: string, distanceKm: num
   // Check if job still needs workers
   if (job.matchedCount >= job.headcount) return false
 
-  // Fetch worker push subscription alongside job query to avoid extra round-trip
+  // Fetch worker push subscription and phone alongside job query
   const [workerRow] = await db
-    .select({ pushSubscription: workerProfiles.pushSubscription })
+    .select({ pushSubscription: workerProfiles.pushSubscription, phone: users.phone })
     .from(workerProfiles)
+    .leftJoin(users, eq(users.id, workerProfiles.userId))
     .where(eq(workerProfiles.userId, workerId))
     .limit(1)
 
@@ -264,6 +266,23 @@ async function offerJobToWorker(jobId: string, workerId: string, distanceKm: num
         })
       } catch (err: unknown) {
         console.warn("[WebPush] Unexpected error in fire-and-forget:", (err as Error).message)
+      }
+    })()
+  }
+
+  // Fire-and-forget KakaoTalk Alim Talk — additive alongside Socket.IO and WebPush
+  if (workerRow?.phone) {
+    void (async () => {
+      try {
+        await jobAvailableAlimTalk({
+          phone: workerRow.phone!,
+          jobTitle: job.title,
+          hourlyRate: job.hourlyRate,
+          address: job.address,
+          expiresAt: expiresAt.toISOString(),
+        })
+      } catch (err: unknown) {
+        console.warn("[KakaoAlimTalk] Dispatch notification failed:", (err as Error).message)
       }
     })()
   }
@@ -367,6 +386,22 @@ export async function handleAcceptOffer(applicationId: string, workerId: string)
       `"${job.title}" 공고가 확정되었습니다. 근무 시작 시간을 확인하세요.`,
       { jobId: job.id }
     )
+  }
+
+  // Fire-and-forget KakaoTalk Alim Talk for job confirmation
+  if (worker?.phone) {
+    void (async () => {
+      try {
+        await jobConfirmedAlimTalk({
+          phone: worker.phone!,
+          jobTitle: job.title,
+          startAt: job.startAt.toISOString(),
+          address: job.address,
+        })
+      } catch (err: unknown) {
+        console.warn("[KakaoAlimTalk] Job confirmed notification failed:", (err as Error).message)
+      }
+    })()
   }
 
   console.log(`[Matching] Worker ${workerId} accepted job ${job.id}`)

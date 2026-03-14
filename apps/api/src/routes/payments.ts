@@ -1,9 +1,10 @@
 import { FastifyInstance } from "fastify"
 import { z } from "zod"
 import { eq, and } from "drizzle-orm"
-import { db, payments, jobPostings } from "../db"
+import { db, payments, jobPostings, users } from "../db"
 import { authenticate, requireEmployer } from "../middleware/auth"
 import { PLATFORM_FEE_RATE } from "@albaconnect/shared"
+import { paymentCompleteAlimTalk } from "../services/kakaoAlimTalk"
 
 const escrowSchema = z.object({
   jobId: z.string().uuid(),
@@ -179,10 +180,38 @@ export async function paymentRoutes(app: FastifyInstance) {
         }
       } else if (eventType === "PAYOUT_DONE" && data.paymentKey) {
         // Update payment: payoutAt=now, tossStatus=PAYOUT_DONE
-        await db
+        const [updatedPayment] = await db
           .update(payments)
           .set({ payoutAt: new Date(), tossStatus: "PAYOUT_DONE" })
           .where(eq(payments.tossPaymentKey, data.paymentKey))
+          .returning({ jobId: payments.jobId, payerId: payments.payerId, amount: payments.amount })
+
+        // Send KakaoTalk Alim Talk to worker — explicit try/catch to prevent Toss webhook retries
+        if (updatedPayment) {
+          try {
+            const [jobRow] = await db
+              .select({ title: jobPostings.title, payerId: jobPostings.employerId })
+              .from(jobPostings)
+              .where(eq(jobPostings.id, updatedPayment.jobId))
+              .limit(1)
+            const [workerUser] = await db
+              .select({ phone: users.phone })
+              .from(users)
+              .where(eq(users.id, updatedPayment.payerId))
+              .limit(1)
+
+            if (workerUser?.phone && jobRow) {
+              await paymentCompleteAlimTalk({
+                phone: workerUser.phone,
+                jobTitle: jobRow.title,
+                amount: updatedPayment.amount,
+              })
+            }
+          } catch (alimErr: unknown) {
+            // Log but do NOT rethrow — Toss must receive 200 to avoid duplicate payout retries
+            console.error("[KakaoAlimTalk] Payment complete notification failed:", (alimErr as Error).message)
+          }
+        }
       }
     } catch (err: unknown) {
       // Handle idempotency: ignore unique constraint violations (duplicate webhook)
