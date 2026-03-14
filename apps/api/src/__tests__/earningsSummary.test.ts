@@ -3,7 +3,7 @@ import { buildApp } from '../index'
 
 const mocks = vi.hoisted(() => ({
   execute: vi.fn(),
-  cacheGetL2: vi.fn().mockResolvedValue(null),
+  cacheGetL2: vi.fn().mockResolvedValue(undefined),
   cacheSetL2: vi.fn().mockResolvedValue(undefined),
 }))
 
