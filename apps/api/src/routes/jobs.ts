@@ -23,6 +23,139 @@ const createJobSchema = z.object({
 })
 
 export async function jobRoutes(app: FastifyInstance) {
+  // ─── PUBLIC UNAUTHENTICATED ENDPOINTS ──────────────────────────────────────
+
+  // GET /api/v2/jobs/public — public job listing (no auth, rate-limited)
+  // Returns only safe columns; never exposes PII, employerId, or businessNumber
+  app.get(
+    "/api/v2/jobs/public",
+    { config: { rateLimit: { max: 60, timeWindow: "1 minute" } } },
+    async (request, reply) => {
+      const {
+        category,
+        min_pay,
+        max_pay,
+        page = 1,
+        limit = 20,
+      } = request.query as {
+        category?: string
+        min_pay?: string
+        max_pay?: string
+        page?: number
+        limit?: number
+      }
+
+      const pageNum = Math.max(1, Number(page))
+      const limitNum = Math.min(100, Math.max(1, Number(limit)))
+      const offset = (pageNum - 1) * limitNum
+
+      const rows = await db.execute<{
+        id: string
+        title: string
+        category: string
+        hourly_rate: number
+        total_amount: number
+        address: string
+        start_at: Date
+        end_at: Date
+        headcount: number
+        company_name: string
+      }>(sql`
+        SELECT
+          jp.id,
+          jp.title,
+          jp.category,
+          jp.hourly_rate,
+          jp.total_amount,
+          jp.address,
+          jp.start_at,
+          jp.end_at,
+          jp.headcount,
+          COALESCE(ep.company_name, '알바커넥트 파트너') AS company_name
+        FROM job_postings jp
+        LEFT JOIN employer_profiles ep ON ep.user_id = jp.employer_id
+        WHERE jp.status = 'open'
+          AND jp.start_at > now()
+          ${category ? sql`AND jp.category = ${category}` : sql``}
+          ${min_pay ? sql`AND jp.hourly_rate >= ${Number(min_pay)}` : sql``}
+          ${max_pay ? sql`AND jp.hourly_rate <= ${Number(max_pay)}` : sql``}
+        ORDER BY jp.start_at ASC
+        LIMIT ${limitNum} OFFSET ${offset}
+      `)
+
+      const countRows = await db.execute<{ total: string }>(sql`
+        SELECT COUNT(*) AS total
+        FROM job_postings jp
+        WHERE jp.status = 'open'
+          AND jp.start_at > now()
+          ${category ? sql`AND jp.category = ${category}` : sql``}
+          ${min_pay ? sql`AND jp.hourly_rate >= ${Number(min_pay)}` : sql``}
+          ${max_pay ? sql`AND jp.hourly_rate <= ${Number(max_pay)}` : sql``}
+      `)
+
+      return reply.send({
+        jobs: rows.rows,
+        total: Number(countRows.rows[0]?.total ?? 0),
+        page: pageNum,
+        limit: limitNum,
+      })
+    }
+  )
+
+  // GET /api/v2/jobs/public/:id — public job detail (no auth)
+  app.get(
+    "/api/v2/jobs/public/:id",
+    { config: { rateLimit: { max: 60, timeWindow: "1 minute" } } },
+    async (request, reply) => {
+      const { id } = request.params as { id: string }
+
+      // Basic UUID validation
+      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(id)) {
+        return reply.status(400).send({ error: "Invalid job ID" })
+      }
+
+      const rows = await db.execute<{
+        id: string
+        title: string
+        category: string
+        hourly_rate: number
+        total_amount: number
+        address: string
+        start_at: Date
+        end_at: Date
+        headcount: number
+        description: string
+        company_name: string
+        status: string
+      }>(sql`
+        SELECT
+          jp.id,
+          jp.title,
+          jp.category,
+          jp.hourly_rate,
+          jp.total_amount,
+          jp.address,
+          jp.start_at,
+          jp.end_at,
+          jp.headcount,
+          jp.description,
+          COALESCE(ep.company_name, '알바커넥트 파트너') AS company_name
+        FROM job_postings jp
+        LEFT JOIN employer_profiles ep ON ep.user_id = jp.employer_id
+        WHERE jp.id = ${id}
+          AND jp.status = 'open'
+      `)
+
+      if (rows.rows.length === 0) {
+        return reply.status(404).send({ error: "Job not found" })
+      }
+
+      return reply.send({ job: rows.rows[0] })
+    }
+  )
+
+  // ───────────────────────────────────────────────────────────────────────────
+
   // GET /jobs - list with optional location filter
   app.get("/jobs", { preHandler: [authenticate] }, async (request, reply) => {
     const { lat, lng, radius_km = 10, category, status = "open", page = 1, limit = 20, min_hourly_rate, start_date } = request.query as {

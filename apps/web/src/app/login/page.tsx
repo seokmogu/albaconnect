@@ -1,18 +1,24 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { useAuthStore } from "@/store/auth"
 import api from "@/lib/api"
 
 export default function LoginPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { setAuth } = useAuthStore()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
+
+  // Validate redirect to prevent open redirect attacks (must start with /)
+  const rawRedirect = searchParams.get("redirect") ?? ""
+  const safeRedirect =
+    rawRedirect.startsWith("/") && !rawRedirect.startsWith("//") ? rawRedirect : ""
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -21,7 +27,11 @@ export default function LoginPage() {
     try {
       const { data } = await api.post("/auth/login", { email, password })
       setAuth(data.user, data.accessToken, data.refreshToken)
-      router.push(data.user.role === "employer" ? "/employer/dashboard" : "/worker/home")
+      // Use safe redirect if present, otherwise default by role
+      const destination =
+        safeRedirect ||
+        (data.user.role === "employer" ? "/employer/dashboard" : "/worker/home")
+      router.push(destination)
     } catch (err: any) {
       setError(err.response?.data?.error ?? "로그인에 실패했습니다")
     } finally {

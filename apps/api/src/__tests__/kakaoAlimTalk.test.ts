@@ -16,7 +16,7 @@ describe('kakaoAlimTalk', () => {
     vi.unstubAllGlobals()
   })
 
-  it('configured -> fetch called with correct URL and apiKey header', async () => {
+  it('configured -> fetch called with correct URL and Authorization header', async () => {
     vi.stubEnv('KAKAO_BIZ_API_KEY', 'biz-key')
     vi.stubEnv('KAKAO_SENDER_KEY', 'sender-key')
     vi.stubEnv('VITEST', '')
@@ -24,15 +24,13 @@ describe('kakaoAlimTalk', () => {
     vi.stubGlobal('fetch', fetchMock)
     initKakaoAlimTalk()
 
-    await sendAlimTalk({
-      phone: '01012345678',
-      templateCode: 'JOB_AVAILABLE',
-      variables: { jobTitle: '카페', hourlyRate: '10000' },
-    })
+    await sendAlimTalk('01012345678', 'JOB_AVAILABLE', { jobTitle: '카페', hourlyRate: '10000' })
 
     expect(fetchMock).toHaveBeenCalledWith(
-      'https://api.bizmessage.kakao.com/talk/bizmessage/v1/send',
-      expect.objectContaining({ headers: expect.objectContaining({ apiKey: 'biz-key' }) }),
+      'https://alimtalk-api.kakao.com/v2/sender/send',
+      expect.objectContaining({
+        headers: expect.objectContaining({ Authorization: 'KakaoAK biz-key' }),
+      }),
     )
   })
 
@@ -47,7 +45,7 @@ describe('kakaoAlimTalk', () => {
     const mod = await import('../services/kakaoAlimTalk.js')
     mod.initKakaoAlimTalk()
 
-    await mod.sendAlimTalk({ phone: '01012345678', templateCode: 'JOB_AVAILABLE', variables: {} })
+    await mod.sendAlimTalk('01012345678', 'JOB_AVAILABLE', {})
 
     expect(fetchMock).not.toHaveBeenCalled()
     expect(logSpy).toHaveBeenCalled()
@@ -65,7 +63,7 @@ describe('kakaoAlimTalk', () => {
     }))
     initKakaoAlimTalk()
 
-    await expect(sendAlimTalk({ phone: '01012345678', templateCode: 'JOB_AVAILABLE', variables: {} })).rejects.toThrow('E400')
+    await expect(sendAlimTalk('01012345678', 'JOB_AVAILABLE', {})).rejects.toThrow('E400')
   })
 
   it('jobAvailableAlimTalk uses JOB_AVAILABLE template', async () => {
