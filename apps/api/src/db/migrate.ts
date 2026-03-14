@@ -205,6 +205,14 @@ export async function runMigrations() {
   console.log('Migrations completed successfully')
 }
 
+export async function runCheckinMigration() {
+  await db.execute(sql`ALTER TABLE job_applications ADD COLUMN IF NOT EXISTS checkin_at TIMESTAMPTZ`)
+  await db.execute(sql`ALTER TABLE job_applications ADD COLUMN IF NOT EXISTS checkout_at TIMESTAMPTZ`)
+  await db.execute(sql`ALTER TABLE job_applications ADD COLUMN IF NOT EXISTS actual_hours NUMERIC(5,2)`)
+  await db.execute(sql`ALTER TABLE job_applications ADD COLUMN IF NOT EXISTS checkin_latitude NUMERIC(9,6)`)
+  await db.execute(sql`ALTER TABLE job_applications ADD COLUMN IF NOT EXISTS checkin_longitude NUMERIC(9,6)`)
+}
+
 export async function runNotificationsMigration() {
   await db.execute(sql`
     CREATE TABLE IF NOT EXISTS notifications (
