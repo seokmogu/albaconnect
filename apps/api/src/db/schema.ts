@@ -173,8 +173,7 @@ export const reviews = pgTable("reviews", {
 
 
 // ── Dispute resolution ─────────────────────────────────────────────────────────
-export const disputeTypeEnum = pgEnum("dispute_type", ["NOSHOW_DISPUTE", "PAYMENT_DISPUTE", "QUALITY_DISPUTE"])
-export const disputeStatusEnum = pgEnum("dispute_status", ["open", "resolved", "dismissed"])
+// disputeTypeEnum and disputeStatusEnum defined at top of file
 export const disputeRaisedByRoleEnum = pgEnum("dispute_raised_by_role", ["worker", "employer"])
 
 export const jobDisputes = pgTable("job_disputes", {
@@ -207,20 +206,4 @@ export type Payment = typeof payments.$inferSelect
 export type Penalty = typeof penalties.$inferSelect
 export type Review = typeof reviews.$inferSelect
 
-// ── Dispute Resolution ──────────────────────────────────────────────────────
-export const jobDisputes = pgTable("job_disputes", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  jobId: uuid("job_id").references(() => jobPostings.id).notNull(),
-  raisedById: uuid("raised_by_id").references(() => users.id).notNull(),
-  raisedByRole: userRoleEnum("raised_by_role").notNull(),
-  type: disputeTypeEnum("type").notNull(),
-  description: text("description").notNull(),
-  status: disputeStatusEnum("status").default("open").notNull(),
-  resolutionNotes: text("resolution_notes"),
-  resolvedBy: uuid("resolved_by").references(() => users.id),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  resolvedAt: timestamp("resolved_at"),
-})
 
-export type JobDispute = typeof jobDisputes.$inferSelect
-export type NewJobDispute = typeof jobDisputes.$inferInsert

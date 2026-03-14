@@ -52,3 +52,52 @@ export async function sendOtpAlimTalk(phone: string, otp: string): Promise<void>
   const target = normalized ?? phone
   await sendAlimTalk(target, 'OTP_VERIFY', { otp })
 }
+
+export async function jobAvailableAlimTalk(params: {
+  phone: string
+  jobTitle: string
+  employerName?: string
+  startAt?: string
+  address: string
+  hourlyRate?: number
+  expiresAt?: string
+}): Promise<void> {
+  const normalized = normalizePhone(params.phone)
+  const target = normalized ?? params.phone
+  await sendAlimTalk(target, 'JOB_AVAILABLE', {
+    job_title: params.jobTitle,
+    employer_name: params.employerName ?? '',
+    start_at: params.startAt ?? '',
+    address: params.address,
+    hourly_rate: String(params.hourlyRate ?? ''),
+    expires_at: params.expiresAt ?? '',
+  })
+}
+
+export async function jobConfirmedAlimTalk(params: {
+  phone: string
+  jobTitle: string
+  startAt: string
+  address: string
+}): Promise<void> {
+  const normalized = normalizePhone(params.phone)
+  const target = normalized ?? params.phone
+  await sendAlimTalk(target, 'JOB_CONFIRMED', {
+    job_title: params.jobTitle,
+    start_at: params.startAt,
+    address: params.address,
+  })
+}
+
+export async function paymentCompleteAlimTalk(params: {
+  phone: string
+  jobTitle: string
+  amount: number
+}): Promise<void> {
+  const normalized = normalizePhone(params.phone)
+  const target = normalized ?? params.phone
+  await sendAlimTalk(target, 'PAYMENT_COMPLETE', {
+    job_title: params.jobTitle,
+    amount: String(params.amount),
+  })
+}

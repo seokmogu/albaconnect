@@ -35,6 +35,7 @@ export async function buildApp() {
     (process.env.NODE_ENV === "production" ? "info" : "debug")
 
   const app = Fastify({
+    trustProxy: true,
     logger: {
       level: logLevel,
       serializers: {
