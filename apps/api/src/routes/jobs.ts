@@ -2,7 +2,7 @@ import { FastifyInstance } from "fastify"
 import { z } from "zod"
 import { eq, and, count, sql, desc } from "drizzle-orm"
 import { db, jobPostings, jobApplications, users, penalties, workerProfiles, employerProfiles } from "../db"
-import { authenticate, requireEmployer } from "../middleware/auth"
+import { authenticate, requireEmployer, requireWorker } from "../middleware/auth"
 import { dispatchJob } from "../services/matching"
 import { LATE_CANCEL_PENALTY_RATE, PLATFORM_FEE_RATE } from "@albaconnect/shared"
 import { validateTransition, getValidTransitions } from "../services/jobLifecycle"
@@ -633,6 +633,155 @@ export async function jobRoutes(app: FastifyInstance) {
       completedAt: now.toISOString(),
       escrowReleaseAfter: new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString(),
       message: "24시간 분쟁 신청 기간 후 자동 정산됩니다",
+    })
+  })
+
+  // ─── NEARBY JOBS ────────────────────────────────────────────────────────────
+
+  /** Format distance_m into a human-readable label */
+  function formatDistanceLabel(distanceM: number): string {
+    if (distanceM < 1000) {
+      return `${Math.round(distanceM)}m`
+    }
+    return `${(distanceM / 1000).toFixed(1)}km`
+  }
+
+  const MAX_NEARBY_RADIUS_KM = 50
+  const DEFAULT_NEARBY_RADIUS_KM = 5
+  const MAX_NEARBY_LIMIT = 50
+  const DEFAULT_NEARBY_LIMIT = 20
+
+  const nearbyQuerySchema = z.object({
+    lat: z.coerce.number().min(-90).max(90),
+    lng: z.coerce.number().min(-180).max(180),
+    radius_km: z.coerce.number().min(0.1).max(MAX_NEARBY_RADIUS_KM).default(DEFAULT_NEARBY_RADIUS_KM),
+    limit: z.coerce.number().int().min(1).max(MAX_NEARBY_LIMIT).default(DEFAULT_NEARBY_LIMIT),
+    cursor: z.string().optional(),
+  })
+
+  // GET /jobs/nearby — list open jobs within radius sorted by distance
+  app.get("/jobs/nearby", { preHandler: [requireWorker] }, async (request, reply) => {
+    const parsed = nearbyQuerySchema.safeParse(request.query)
+    if (!parsed.success) {
+      return reply.status(400).send({ error: "Invalid query parameters", details: parsed.error.flatten() })
+    }
+    const { lat, lng, radius_km, limit, cursor } = parsed.data
+    const radiusMeters = radius_km * 1000
+
+    // Cursor-based pagination: cursor encodes the last distance_m seen
+    const cursorDistanceM = cursor ? parseFloat(Buffer.from(cursor, "base64").toString("utf8")) : null
+
+    const rows = await db.execute<{
+      id: string
+      title: string
+      category: string
+      start_at: Date
+      end_at: Date
+      hourly_rate: number
+      total_amount: number
+      headcount: number
+      matched_count: number
+      address: string
+      description: string
+      status: string
+      lat: number
+      lng: number
+      distance_m: number
+      company_name: string
+    }>(sql`
+      SELECT
+        jp.id,
+        jp.title,
+        jp.category,
+        jp.start_at,
+        jp.end_at,
+        jp.hourly_rate,
+        jp.total_amount,
+        jp.headcount,
+        jp.matched_count,
+        jp.address,
+        jp.description,
+        jp.status,
+        ST_Y(jp.location::geometry) AS lat,
+        ST_X(jp.location::geometry) AS lng,
+        ST_Distance(
+          jp.location::geography,
+          ST_SetSRID(ST_MakePoint(${lng}, ${lat}), 4326)::geography
+        ) AS distance_m,
+        COALESCE(ep.company_name, '') AS company_name
+      FROM job_postings jp
+      LEFT JOIN employer_profiles ep ON ep.user_id = jp.employer_id
+      WHERE jp.status = 'open'
+        AND ST_DWithin(
+          jp.location::geography,
+          ST_SetSRID(ST_MakePoint(${lng}, ${lat}), 4326)::geography,
+          ${radiusMeters}
+        )
+        ${cursorDistanceM !== null ? sql`AND ST_Distance(
+          jp.location::geography,
+          ST_SetSRID(ST_MakePoint(${lng}, ${lat}), 4326)::geography
+        ) > ${cursorDistanceM}` : sql``}
+      ORDER BY distance_m ASC
+      LIMIT ${limit + 1}
+    `)
+
+    const allRows = rows.rows
+    const hasMore = allRows.length > limit
+    const results = hasMore ? allRows.slice(0, limit) : allRows
+
+    const nextCursor = hasMore
+      ? Buffer.from(String(results[results.length - 1].distance_m)).toString("base64")
+      : null
+
+    return reply.send({
+      jobs: results.map((r) => ({
+        ...r,
+        distance_m: Math.round(Number(r.distance_m)),
+        distance_label: formatDistanceLabel(Number(r.distance_m)),
+      })),
+      count: results.length,
+      hasMore,
+      nextCursor,
+      radiusKm: radius_km,
+    })
+  })
+
+  // GET /jobs/nearby/count — quick count of open jobs within radius
+  app.get("/jobs/nearby/count", { preHandler: [requireWorker] }, async (request, reply) => {
+    const latRaw = (request.query as Record<string, string>).lat
+    const lngRaw = (request.query as Record<string, string>).lng
+    const radiusRaw = (request.query as Record<string, string>).radius_km
+
+    if (!latRaw || !lngRaw) {
+      return reply.status(400).send({ error: "lat and lng are required" })
+    }
+
+    const lat = parseFloat(latRaw)
+    const lng = parseFloat(lngRaw)
+    const radius_km = radiusRaw ? Math.min(parseFloat(radiusRaw), MAX_NEARBY_RADIUS_KM) : DEFAULT_NEARBY_RADIUS_KM
+
+    if (isNaN(lat) || isNaN(lng)) {
+      return reply.status(400).send({ error: "lat and lng must be valid numbers" })
+    }
+
+    const radiusMeters = radius_km * 1000
+
+    const result = await db.execute<{ total: string }>(sql`
+      SELECT COUNT(*) AS total
+      FROM job_postings jp
+      WHERE jp.status = 'open'
+        AND ST_DWithin(
+          jp.location::geography,
+          ST_SetSRID(ST_MakePoint(${lng}, ${lat}), 4326)::geography,
+          ${radiusMeters}
+        )
+    `)
+
+    return reply.send({
+      count: Number(result.rows[0]?.total ?? 0),
+      radiusKm: radius_km,
+      lat,
+      lng,
     })
   })
 }
