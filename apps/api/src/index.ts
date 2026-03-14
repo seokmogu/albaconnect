@@ -21,6 +21,7 @@ import { notificationRoutes } from './routes/notifications'
 import { paymentRoutes } from "./routes/payments"
 import { disputeRoutes } from "./routes/disputes"
 import { referralRoutes } from "./routes/referrals"
+import { penaltyAppealRoutes } from "./routes/penaltyAppeals"
 import { startEscrowAutoReleaseWorker, stopEscrowAutoReleaseWorker } from "./services/escrowAutoRelease"
 import { startWorkerAlertWorker, stopWorkerAlertWorker } from "./services/workerAlertWorker"
 import { setupSocketIO } from "./plugins/socket"
@@ -95,6 +96,7 @@ export async function buildApp() {
   await app.register(paymentRoutes)
   await app.register(disputeRoutes)
   await app.register(referralRoutes)
+  await app.register(penaltyAppealRoutes)
 
   // Enhanced health check: DB connectivity + Redis + uptime + version
   app.get("/health", async (_req, reply) => {
