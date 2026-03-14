@@ -21,15 +21,6 @@ const profileSchema = z.object({
   bio: z.string().max(1000).optional(),
 })
 
-const availabilityScheduleSchema = z.object({
-  dayOfWeek: z.number().int().min(0).max(6),
-  startTime: z.string().regex(/^\d{2}:\d{2}$/),
-  endTime: z.string().regex(/^\d{2}:\d{2}$/),
-  timezone: z.string().optional(),
-  validFrom: z.string().datetime(),
-  validUntil: z.string().datetime().optional(),
-})
-
 const blackoutSchema = z.object({
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   reason: z.string().optional(),
@@ -92,45 +83,6 @@ export async function workerRoutes(app: FastifyInstance) {
     }
 
     return reply.send({ isAvailable, message: "Availability updated" })
-  })
-
-  app.post("/workers/availability-schedule", { preHandler: [requireWorker] }, async (request, reply) => {
-    const body = availabilityScheduleSchema.safeParse(request.body)
-    if (!body.success) {
-      return reply.status(400).send({ error: "Validation failed", details: body.error.flatten() })
-    }
-
-    const workerId = request.user.id
-    const [slot] = await db
-      .insert(workerAvailability)
-      .values({
-        workerId,
-        dayOfWeek: body.data.dayOfWeek,
-        startTime: body.data.startTime,
-        endTime: body.data.endTime,
-        timezone: body.data.timezone ?? 'Asia/Seoul',
-        validFrom: new Date(body.data.validFrom),
-        validUntil: body.data.validUntil ? new Date(body.data.validUntil) : null,
-      })
-      .returning()
-
-    return reply.status(201).send(slot)
-  })
-
-  app.get("/workers/availability-schedule", { preHandler: [requireWorker] }, async (request, reply) => {
-    const workerId = request.user.id
-    const slots = await db.select().from(workerAvailability).where(eq(workerAvailability.workerId, workerId))
-    return reply.send({ slots })
-  })
-
-  app.delete("/workers/availability-schedule/:id", { preHandler: [requireWorker] }, async (request, reply) => {
-    const { id } = request.params as { id: string }
-    const workerId = request.user.id
-    const [slot] = await db.select().from(workerAvailability).where(eq(workerAvailability.id, id)).limit(1)
-    if (!slot) return reply.status(404).send({ error: "Availability slot not found" })
-    if (slot.workerId !== workerId) return reply.status(403).send({ error: "Forbidden" })
-    await db.delete(workerAvailability).where(eq(workerAvailability.id, id))
-    return reply.send({ ok: true })
   })
 
   const scheduleUpsertSchema = z.object({
