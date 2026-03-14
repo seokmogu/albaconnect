@@ -47,6 +47,14 @@ export async function applicationRoutes(app: FastifyInstance) {
       return reply.status(403).send({ error: "Worker access required" })
     }
 
+    const [wp] = await db.select({ isPhoneVerified: workerProfiles.isPhoneVerified })
+      .from(workerProfiles)
+      .where(eq(workerProfiles.userId, workerId))
+      .limit(1)
+    if (!wp?.isPhoneVerified) {
+      return reply.status(403).send({ error: 'Phone verification required', code: 'PHONE_VERIFICATION_REQUIRED' })
+    }
+
     const result = await handleAcceptOffer(id, workerId)
 
     if (!result.success) {
