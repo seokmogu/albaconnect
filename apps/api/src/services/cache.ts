@@ -75,6 +75,7 @@ export const CACHE_TTL = {
   NEARBY_WORKERS: 30_000,      // 30 s — geospatial results
   NEARBY_JOBS: 30_000,         // 30 s
   EARNINGS_STATS: 300_000,     // 5 min
+  EARNINGS_SUMMARY: 300_000,
 }
 
 // ─── Two-layer helpers ───────────────────────────────────────────────────────
