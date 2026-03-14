@@ -69,7 +69,7 @@ export interface AlimTalkPayload {
 /**
  * Send an Alim Talk message via Kakao Biz Message API.
  *
- * Authentication: Authorization: KakaoAK {KAKAO_BIZ_API_KEY}
+ * Authentication: apiKey: {KAKAO_BIZ_API_KEY}
  * KAKAO_SENDER_KEY (plusfriend sender key) is sent in the request body.
  *
  * In dev mode (key not set): logs the intent without calling the API.
@@ -101,7 +101,7 @@ export async function sendAlimTalk(payload: AlimTalkPayload): Promise<void> {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `KakaoAK ${apiKey}`,
+        apiKey: apiKey,
       },
       body: JSON.stringify({
         senderKey,

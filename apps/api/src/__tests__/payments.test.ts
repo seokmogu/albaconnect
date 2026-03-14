@@ -1,6 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { buildApp } from '../index'
 
+const kakaoMocks = vi.hoisted(() => ({
+  paymentCompleteAlimTalk: vi.fn().mockResolvedValue(undefined),
+}))
+
+vi.mock('../services/kakaoAlimTalk.js', () => kakaoMocks)
+
 const mocks = vi.hoisted(() => {
   const selectLimitMock = vi.fn()
   const selectWhereMock = vi.fn(() => ({ limit: selectLimitMock }))
@@ -21,8 +27,10 @@ vi.mock('../db', () => ({
     insert: mocks.insertIntoMock,
     update: mocks.updateMock,
   },
-  payments: { payerId: 'payerId', tossPaymentKey: 'tossPaymentKey', jobId: 'jobId' },
-  jobPostings: { id: 'id', employerId: 'employerId' },
+  payments: { payerId: 'payerId', tossPaymentKey: 'tossPaymentKey', jobId: 'jobId', amount: 'amount' },
+  jobPostings: { id: 'id', employerId: 'employerId', title: 'title' },
+  users: { phone: 'phone', id: 'id' },
+  jobApplications: { jobId: 'jobId', workerId: 'workerId', status: 'status' },
 }))
 
 describe('payment routes', () => {
@@ -210,6 +218,33 @@ describe('payment routes', () => {
 
     expect(response.statusCode).toBe(200)
     expect(response.json().received).toBe(true)
+    await app.close()
+  })
+
+  it('PAYOUT_DONE webhook returns 200', async () => {
+    delete process.env.TOSS_WEBHOOK_SECRET
+    const returningMock = vi.fn().mockResolvedValue([{ jobId: 'job-1', amount: 55000 }])
+    const setMock = vi.fn(() => ({
+      where: vi.fn(() => ({ returning: returningMock })),
+    }))
+    mocks.updateMock.mockReturnValueOnce({ set: setMock })
+    mocks.selectLimitMock
+      .mockResolvedValueOnce([{ workerId: 'worker-1' }])
+      .mockResolvedValueOnce([{ title: 'Kitchen Help' }])
+      .mockResolvedValueOnce([{ phone: '01012345678' }])
+
+    const app = await buildApp()
+    const response = await app.inject({
+      method: 'POST',
+      url: '/payments/webhook',
+      payload: {
+        eventType: 'PAYOUT_DONE',
+        data: { paymentKey: 'pay_key_done', status: 'DONE' },
+      },
+    })
+
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(response.statusCode).toBe(200)
     await app.close()
   })
 })
