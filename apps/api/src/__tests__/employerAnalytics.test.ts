@@ -61,10 +61,11 @@ function makeReq(query: Record<string, string> = {}, params: Record<string, stri
 }
 
 function makeReply() {
-  const r = { _code: 200, _body: undefined as any }
+  const r = { _code: 200, _body: undefined as any, _headers: {} as Record<string, string> }
   const rr = r as any
-  rr.status = (c: number) => { r._code = c; return rr }
-  rr.send   = (b: any)    => { r._body = b; return rr }
+  rr.status  = (c: number)            => { r._code = c; return rr }
+  rr.send    = (b: any)               => { r._body = typeof b === 'string' ? b : b; return rr }
+  rr.header  = (k: string, v: string) => { r._headers[k] = v; return rr }
   return rr
 }
 
@@ -188,5 +189,93 @@ describe("GET /employers/analytics/jobs/:jobId", () => {
     expect(reply._body.accepted_count).toBe(3)
     expect(reply._body.noshow_count).toBe(1)
     expect(reply._body.avg_minutes_to_first_accept).toBe(20)
+  })
+})
+
+// ── Analytics Export ───────────────────────────────────────────────────────────
+
+const EXPORT_ROW = {
+  job_id: "job-uuid-1",
+  job_title: "카페 알바",
+  start_at: "2026-03-01T09:00:00Z",
+  end_at: "2026-03-01T18:00:00Z",
+  headcount: 2,
+  avg_hourly_rate: 12000,
+  applications_count: "5",
+  accepted_count: "3",
+  noshow_count: "1",
+  completed_count: "2",
+  total_payout: "45000",
+}
+
+describe("GET /employers/analytics/export/status", () => {
+  it("returns available status and maxDays", async () => {
+    const reply = makeReply()
+    await routes["GET:/employers/analytics/export/status"](makeReq(), reply)
+    expect(reply._code).toBe(200)
+    expect(reply._body.available).toBe(true)
+    expect(reply._body.maxDays).toBe(90)
+    expect(reply._body.formats).toContain("csv")
+    expect(reply._body.formats).toContain("json")
+  })
+})
+
+describe("GET /employers/analytics/export", () => {
+  beforeEach(() => vi.clearAllMocks())
+
+  it("returns JSON export with meta and rows", async () => {
+    mockExecute.mockResolvedValueOnce({ rows: [EXPORT_ROW] })
+    const reply = makeReply()
+    await routes["GET:/employers/analytics/export"](
+      makeReq({ format: "json", from: "2026-01-01T00:00:00Z", to: "2026-03-01T00:00:00Z" }),
+      reply
+    )
+    expect(reply._code).toBe(200)
+    const body = typeof reply._body === "string" ? JSON.parse(reply._body) : reply._body
+    expect(body.meta.jobCount).toBe(1)
+    expect(body.meta.from).toBe("2026-01-01T00:00:00Z")
+    expect(body.rows).toHaveLength(1)
+    expect(body.rows[0].job_id).toBe("job-uuid-1")
+    expect(body.rows[0].total_payout).toBe("45000")
+    expect(reply._headers["Content-Type"]).toContain("application/json")
+  })
+
+  it("returns CSV with UTF-8 BOM and correct header row", async () => {
+    mockExecute.mockResolvedValueOnce({ rows: [EXPORT_ROW] })
+    const reply = makeReply()
+    await routes["GET:/employers/analytics/export"](
+      makeReq({ format: "csv", from: "2026-01-01T00:00:00Z", to: "2026-03-01T00:00:00Z" }),
+      reply
+    )
+    expect(reply._code).toBe(200)
+    expect(reply._headers["Content-Type"]).toContain("text/csv")
+    const csv = reply._body as string
+    expect(csv.startsWith("\uFEFF")).toBe(true)
+    const lines = csv.split("\n")
+    // lines[0] starts with BOM (\uFEFF), strip it before comparing
+    expect(lines[0].replace(/^\uFEFF/, "")).toBe("job_id,job_title,start_at,end_at,headcount,avg_hourly_rate,applications_count,accepted_count,noshow_count,completed_count,total_payout")
+    expect(lines.length).toBeGreaterThanOrEqual(2)
+  })
+
+  it("returns 400 when date range exceeds 90 days", async () => {
+    const reply = makeReply()
+    await routes["GET:/employers/analytics/export"](
+      makeReq({ format: "json", from: "2025-01-01T00:00:00Z", to: "2026-03-14T00:00:00Z" }),
+      reply
+    )
+    expect(reply._code).toBe(400)
+    const body = typeof reply._body === "string" ? JSON.parse(reply._body) : reply._body
+    expect(body.error).toMatch(/90 days/i)
+  })
+
+  it("returns 400 when from is after to", async () => {
+    const reply = makeReply()
+    await routes["GET:/employers/analytics/export"](
+      makeReq({ format: "json", from: "2026-03-14T00:00:00Z", to: "2026-01-01T00:00:00Z" }),
+      reply
+    )
+    expect(reply._code).toBe(400)
+    const body = typeof reply._body === "string" ? JSON.parse(reply._body) : reply._body
+    expect(body.error).toMatch(/before/i)
   })
 })
