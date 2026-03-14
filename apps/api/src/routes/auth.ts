@@ -1,8 +1,9 @@
 import { FastifyInstance } from "fastify"
 import bcrypt from "bcrypt"
 import { z } from "zod"
-import { eq } from "drizzle-orm"
-import { db, users, employerProfiles, workerProfiles } from "../db"
+import { eq, and } from "drizzle-orm"
+import { db, users, employerProfiles, workerProfiles, referrals } from "../db"
+import { generateInviteCode } from "../utils/inviteCode"
 
 const signupSchema = z.object({
   email: z.string().email(),
@@ -12,6 +13,7 @@ const signupSchema = z.object({
   phone: z.string().min(10).max(20),
   companyName: z.string().optional(), // required for employer
   categories: z.array(z.string()).optional(), // for worker
+  ref: z.string().max(12).optional(), // referral invite code (body, NOT query param)
 })
 
 const loginSchema = z.object({
@@ -26,7 +28,7 @@ export async function authRoutes(app: FastifyInstance) {
       return reply.status(400).send({ error: "Validation failed", details: body.error.flatten() })
     }
 
-    const { email, password, role, name, phone, companyName, categories } = body.data
+    const { email, password, role, name, phone, companyName, categories, ref } = body.data
 
     if (role === "employer" && !companyName) {
       return reply.status(400).send({ error: "companyName is required for employers" })
@@ -37,8 +39,20 @@ export async function authRoutes(app: FastifyInstance) {
       return reply.status(409).send({ error: "Email already registered" })
     }
 
-    const passwordHash = await bcrypt.hash(password, 12)
+    // Resolve referrer before inserting new user
+    let referrerId: string | null = null
+    if (ref && role === "worker") {
+      const [refProfile] = await db
+        .select({ userId: workerProfiles.userId })
+        .from(workerProfiles)
+        .where(eq(workerProfiles.inviteCode, ref))
+        .limit(1)
+      if (refProfile) {
+        referrerId = refProfile.userId
+      }
+    }
 
+    const passwordHash = await bcrypt.hash(password, 12)
     const [user] = await db.insert(users).values({ email, passwordHash, role, name, phone }).returning()
 
     if (role === "employer") {
@@ -47,10 +61,32 @@ export async function authRoutes(app: FastifyInstance) {
         companyName: companyName!,
       })
     } else {
+      const inviteCode = generateInviteCode()
       await db.insert(workerProfiles).values({
         userId: user.id,
         categories: categories ?? [],
+        inviteCode,
       })
+
+      // Create referral row if valid referrer found (self-referral guard)
+      if (referrerId && referrerId !== user.id) {
+        void (async () => {
+          try {
+            await db.insert(referrals).values({
+              referrerId,
+              refereeId: user.id,
+              status: "pending",
+            })
+          } catch (e: unknown) {
+            const pgErr = e as { code?: string }
+            if (pgErr?.code === "23505") {
+              console.warn("[Referral] Duplicate referee — already referred, skipping")
+            } else {
+              console.warn("[Referral] Failed to create referral row:", e)
+            }
+          }
+        })()
+      }
     }
 
     const accessToken = app.jwt.sign({ id: user.id, email: user.email, role: user.role }, { expiresIn: "1h" })

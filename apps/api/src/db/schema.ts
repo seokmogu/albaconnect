@@ -20,6 +20,7 @@ const point = customType<{ data: { lat: number; lng: number }; driverData: strin
 })
 
 export const userRoleEnum = pgEnum("user_role", ["employer", "worker"])
+export const referralStatusEnum = pgEnum("referral_status", ["pending", "qualified", "rewarded"])
 export const workerCertTypeEnum = pgEnum("worker_cert_type", ["ID_VERIFIED", "DRIVER_LICENSE", "FOOD_HANDLER", "FORKLIFT", "FIRST_AID"])
 export const certStatusEnum = pgEnum("cert_status", ["pending", "verified", "expired", "rejected"])
 export const disputeTypeEnum = pgEnum("dispute_type", ["NOSHOW_DISPUTE", "PAYMENT_DISPUTE", "QUALITY_DISPUTE"])
@@ -60,6 +61,7 @@ export const workerProfiles = pgTable("worker_profiles", {
   isAvailable: boolean("is_available").default(false).notNull(),
   isSuspended: boolean("is_suspended").notNull().default(false),
   isPhoneVerified: boolean("is_phone_verified").notNull().default(false),
+  inviteCode: varchar("invite_code", { length: 12 }),
   location: point("location"),
   lastSeenAt: timestamp("last_seen_at"),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -208,6 +210,21 @@ export type JobDispute = typeof jobDisputes.$inferSelect
 export type NewJobDispute = typeof jobDisputes.$inferInsert
 export type WorkerCertification = typeof workerCertifications.$inferSelect
 export type NewWorkerCertification = typeof workerCertifications.$inferInsert
+
+// ── Referral system ────────────────────────────────────────────────────────────
+export const referrals = pgTable("referrals", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  referrerId: uuid("referrer_id").references(() => users.id).notNull(),
+  refereeId: uuid("referee_id").references(() => users.id).notNull().unique(),
+  status: referralStatusEnum("status").default("pending").notNull(),
+  bonusAmount: integer("bonus_amount").default(5000).notNull(),
+  qualifiedAt: timestamp("qualified_at"),
+  rewardedAt: timestamp("rewarded_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+})
+
+export type Referral = typeof referrals.$inferSelect
+export type NewReferral = typeof referrals.$inferInsert
 
 export type User = typeof users.$inferSelect
 export type NewUser = typeof users.$inferInsert

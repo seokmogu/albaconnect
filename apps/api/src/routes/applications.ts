@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify"
 import { eq, and, or, sql, isNull, isNotNull } from "drizzle-orm"
-import { db, jobApplications, jobPostings, users, penalties, workerProfiles } from "../db"
+import { db, jobApplications, jobPostings, users, penalties, workerProfiles, referrals, payments } from "../db"
 import { authenticate, requireWorker, requireEmployer } from "../middleware/auth"
 import { handleAcceptOffer, handleRejectOffer } from "../services/matching"
 import { PLATFORM_FEE_RATE } from "@albaconnect/shared"
@@ -112,6 +112,44 @@ export async function applicationRoutes(app: FastifyInstance) {
         await db.update(jobPostings).set({ status: "completed", updatedAt: new Date() }).where(eq(jobPostings.id, job.id))
       }
     }
+
+    // Referral qualification: fire-and-forget with explicit error logging
+    void (async () => {
+      try {
+        const [ref] = await db
+          .select()
+          .from(referrals)
+          .where(and(eq(referrals.refereeId, userId), eq(referrals.status, "pending")))
+          .limit(1)
+        if (!ref) return
+
+        // Mark referral as qualified
+        await db
+          .update(referrals)
+          .set({ status: "qualified", qualifiedAt: new Date() })
+          .where(eq(referrals.id, ref.id))
+
+        // Insert referral bonus payment record (pending — rewarded by admin/cron)
+        await db.insert(payments).values({
+          jobId: application.jobId,
+          payerId: ref.referrerId,
+          amount: ref.bonusAmount,
+          platformFee: 0,
+          status: "pending",
+          tossPaymentKey: `referral_bonus_${ref.id}`,
+        })
+
+        // Mark referral as rewarded
+        await db
+          .update(referrals)
+          .set({ status: "rewarded", rewardedAt: new Date() })
+          .where(eq(referrals.id, ref.id))
+
+        console.info(`[Referral] Bonus ₩${ref.bonusAmount} queued for referrer ${ref.referrerId}`)
+      } catch (e) {
+        console.error("[Referral] Qualification failed — manual review required:", e)
+      }
+    })()
 
     return reply.send({ message: "Job marked as complete" })
   })
