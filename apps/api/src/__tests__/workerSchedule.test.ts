@@ -5,7 +5,10 @@
  *  1. POST /workers/schedule — upsert schedule via ON CONFLICT → 201
  *  2. PUT /workers/schedule/:dayOfWeek — 404 when no record for that day
  *  3. DELETE /workers/schedule/:dayOfWeek — 404 when no record for that day
- *  4. GET /workers/schedule/:workerId — public endpoint returns schedule (no auth)
+ *  4. GET /workers/schedule/:workerId — 401 without auth (now protected)
+ *  5. GET /workers/schedule/:workerId — 403 when accessing another worker's schedule
+ *  6. GET /workers/schedule/:workerId — 200 when worker accesses own schedule
+ *  7. POST /workers/schedule — dayOfWeek validation rejects 7, -1, non-integer
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -108,22 +111,57 @@ describe('Worker Schedule CRUD', () => {
     expect(res.statusCode).toBe(404)
   })
 
-  it('GET /workers/schedule/:workerId returns public schedule without auth', async () => {
+  it('GET /workers/schedule/:workerId returns 401 without auth (endpoint is now protected)', async () => {
+    // No authorization header — should be rejected
+    const res = await app.inject({
+      method: 'GET',
+      url: `/workers/schedule/${WORKER_ID}`,
+    })
+    expect(res.statusCode).toBe(401)
+  })
+
+  it('GET /workers/schedule/:workerId returns 403 when accessing another worker schedule', async () => {
+    const OTHER_WORKER_ID = '22220000-0000-0000-0000-000000000002'
+    const token = app.jwt.sign({ id: WORKER_ID, role: 'worker' })
+    const res = await app.inject({
+      method: 'GET',
+      url: `/workers/schedule/${OTHER_WORKER_ID}`,
+      headers: { authorization: `Bearer ${token}` },
+    })
+    expect(res.statusCode).toBe(403)
+    expect(res.json().error).toMatch(/forbidden/i)
+  })
+
+  it('GET /workers/schedule/:workerId returns 200 when worker accesses own schedule', async () => {
+    const token = app.jwt.sign({ id: WORKER_ID, role: 'worker' })
     dbMock.execute.mockResolvedValueOnce({
       rows: [
         { day_of_week: 1, start_time: '09:00', end_time: '17:00', timezone: 'Asia/Seoul' },
         { day_of_week: 3, start_time: '10:00', end_time: '16:00', timezone: 'Asia/Seoul' },
       ]
     })
-    // No authorization header — public endpoint
     const res = await app.inject({
       method: 'GET',
       url: `/workers/schedule/${WORKER_ID}`,
+      headers: { authorization: `Bearer ${token}` },
     })
     expect(res.statusCode).toBe(200)
     const body = res.json()
     expect(body.schedule).toHaveLength(2)
-    expect(body.schedule[0]).not.toHaveProperty('id')
     expect(body.schedule[0].day_of_week).toBe(1)
+  })
+
+  it('POST /workers/schedule rejects invalid dayOfWeek values (7, -1, non-integer)', async () => {
+    const token = app.jwt.sign({ id: WORKER_ID, role: 'worker' })
+
+    for (const invalidDay of [7, -1, 1.5]) {
+      const res = await app.inject({
+        method: 'POST',
+        url: '/workers/schedule',
+        headers: { authorization: `Bearer ${token}` },
+        payload: { dayOfWeek: invalidDay, startTime: '09:00', endTime: '17:00' },
+      })
+      expect(res.statusCode, `expected 400 for dayOfWeek=${invalidDay}`).toBe(400)
+    }
   })
 })

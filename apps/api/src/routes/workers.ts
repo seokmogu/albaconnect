@@ -195,8 +195,12 @@ export async function workerRoutes(app: FastifyInstance) {
     return reply.status(204).send()
   })
 
-  app.get("/workers/schedule/:workerId", async (request, reply) => {
+  app.get("/workers/schedule/:workerId", { preHandler: [authenticate] }, async (request, reply) => {
     const { workerId } = request.params as { workerId: string }
+    // Workers can only view their own schedule
+    if (request.user.id !== workerId) {
+      return reply.status(403).send({ error: "Forbidden" })
+    }
     const rows = await db.execute<{ day_of_week: number; start_time: string; end_time: string; timezone: string }>(sql`
       SELECT day_of_week, start_time, end_time, timezone
       FROM worker_availability

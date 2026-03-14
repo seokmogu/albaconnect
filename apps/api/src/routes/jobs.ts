@@ -175,6 +175,11 @@ export async function jobRoutes(app: FastifyInstance) {
 
     const offset = (Number(page) - 1) * Number(limit)
 
+    // Overnight window detection: avail_from > avail_to lexicographically (e.g. '22:00'–'06:00')
+    // Standard AND logic breaks for jobs starting after midnight within an overnight window.
+    // When overnight, use OR: (start >= from OR end <= to)
+    const isOvernight = !!(avail_from && avail_to && avail_from > avail_to)
+
     let query: string
     let params: unknown[]
 
@@ -220,8 +225,11 @@ export async function jobRoutes(app: FastifyInstance) {
         ${min_hourly_rate ? sql`AND jp.hourly_rate >= ${Number(min_hourly_rate)}` : sql``}
         ${start_date ? sql`AND jp.start_at::date = ${start_date}::date` : sql``}
         ${avail_day !== undefined ? sql`AND EXTRACT(DOW FROM jp.start_at AT TIME ZONE 'Asia/Seoul')::int = ${parseInt(avail_day, 10)}` : sql``}
-        ${avail_from ? sql`AND TO_CHAR(jp.start_at AT TIME ZONE 'Asia/Seoul', 'HH24:MI') >= ${avail_from}` : sql``}
-        ${avail_to ? sql`AND TO_CHAR(jp.end_at AT TIME ZONE 'Asia/Seoul', 'HH24:MI') <= ${avail_to}` : sql``}
+        ${isOvernight
+          ? sql`AND (TO_CHAR(jp.start_at AT TIME ZONE 'Asia/Seoul', 'HH24:MI') >= ${avail_from} OR TO_CHAR(jp.end_at AT TIME ZONE 'Asia/Seoul', 'HH24:MI') <= ${avail_to})`
+          : sql``}
+        ${!isOvernight && avail_from ? sql`AND TO_CHAR(jp.start_at AT TIME ZONE 'Asia/Seoul', 'HH24:MI') >= ${avail_from}` : sql``}
+        ${!isOvernight && avail_to ? sql`AND TO_CHAR(jp.end_at AT TIME ZONE 'Asia/Seoul', 'HH24:MI') <= ${avail_to}` : sql``}
         AND ST_DWithin(
           jp.location::geography,
           ST_SetSRID(ST_MakePoint(${Number(lng)}, ${Number(lat)}), 4326)::geography,
@@ -247,8 +255,11 @@ export async function jobRoutes(app: FastifyInstance) {
         ${min_hourly_rate ? sql`AND jp.hourly_rate >= ${Number(min_hourly_rate)}` : sql``}
         ${start_date ? sql`AND jp.start_at::date = ${start_date}::date` : sql``}
         ${avail_day !== undefined ? sql`AND EXTRACT(DOW FROM jp.start_at AT TIME ZONE 'Asia/Seoul')::int = ${parseInt(avail_day, 10)}` : sql``}
-        ${avail_from ? sql`AND TO_CHAR(jp.start_at AT TIME ZONE 'Asia/Seoul', 'HH24:MI') >= ${avail_from}` : sql``}
-        ${avail_to ? sql`AND TO_CHAR(jp.end_at AT TIME ZONE 'Asia/Seoul', 'HH24:MI') <= ${avail_to}` : sql``}
+        ${isOvernight
+          ? sql`AND (TO_CHAR(jp.start_at AT TIME ZONE 'Asia/Seoul', 'HH24:MI') >= ${avail_from} OR TO_CHAR(jp.end_at AT TIME ZONE 'Asia/Seoul', 'HH24:MI') <= ${avail_to})`
+          : sql``}
+        ${!isOvernight && avail_from ? sql`AND TO_CHAR(jp.start_at AT TIME ZONE 'Asia/Seoul', 'HH24:MI') >= ${avail_from}` : sql``}
+        ${!isOvernight && avail_to ? sql`AND TO_CHAR(jp.end_at AT TIME ZONE 'Asia/Seoul', 'HH24:MI') <= ${avail_to}` : sql``}
         ORDER BY jp.created_at DESC
         LIMIT ${Number(limit)} OFFSET ${offset}
       `)
