@@ -228,3 +228,45 @@ export async function runNotificationsMigration() {
   `)
   await db.execute(sql`CREATE INDEX IF NOT EXISTS idx_notif_user ON notifications(user_id, created_at DESC)`)
 }
+
+export async function runDisputeMigration() {
+  // Add dispute_hold column to job_postings
+  await db.execute(sql`
+    ALTER TABLE job_postings
+    ADD COLUMN IF NOT EXISTS dispute_hold BOOLEAN NOT NULL DEFAULT false
+  `)
+
+  // Create dispute type and status enums (IF NOT EXISTS not supported for types — use DO block)
+  await db.execute(sql`
+    DO $$ BEGIN
+      CREATE TYPE dispute_type AS ENUM ('NOSHOW_DISPUTE', 'PAYMENT_DISPUTE', 'QUALITY_DISPUTE');
+    EXCEPTION WHEN duplicate_object THEN NULL;
+    END $$
+  `)
+  await db.execute(sql`
+    DO $$ BEGIN
+      CREATE TYPE dispute_status AS ENUM ('open', 'resolved', 'dismissed');
+    EXCEPTION WHEN duplicate_object THEN NULL;
+    END $$
+  `)
+
+  // Create job_disputes table
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS job_disputes (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      job_id UUID REFERENCES job_postings(id) NOT NULL,
+      raised_by_id UUID REFERENCES users(id) NOT NULL,
+      raised_by_role user_role NOT NULL,
+      type dispute_type NOT NULL,
+      description TEXT NOT NULL,
+      status dispute_status NOT NULL DEFAULT 'open',
+      resolution_notes TEXT,
+      resolved_by UUID REFERENCES users(id),
+      created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+      resolved_at TIMESTAMP,
+      UNIQUE(job_id, raised_by_id, type)
+    )
+  `)
+  await db.execute(sql`CREATE INDEX IF NOT EXISTS idx_disputes_job ON job_disputes(job_id)`)
+  await db.execute(sql`CREATE INDEX IF NOT EXISTS idx_disputes_status ON job_disputes(status)`)
+}
