@@ -569,4 +569,65 @@ export async function jobRoutes(app: FastifyInstance) {
       validNextStatuses: getValidTransitions(targetStatus, actorRole),
     })
   })
+
+  // PATCH /jobs/:id/complete — employer explicitly marks a job as complete
+  // Triggers the 24-hour dispute window for escrow auto-release.
+  app.patch<{ Params: { id: string } }>("/jobs/:id/complete", { preHandler: [requireEmployer] }, async (request, reply) => {
+    const { id } = request.params
+    const employerId = request.user.id
+
+    const [job] = await db
+      .select({
+        id: jobPostings.id,
+        status: jobPostings.status,
+        employerId: jobPostings.employerId,
+        escrowStatus: jobPostings.escrowStatus,
+        completedAt: jobPostings.completedAt,
+      })
+      .from(jobPostings)
+      .where(and(eq(jobPostings.id, id), eq(jobPostings.employerId, employerId)))
+      .limit(1)
+
+    if (!job) return reply.status(404).send({ error: "Job not found" })
+    if (job.status === "completed") return reply.status(409).send({ error: "Job already completed", completedAt: job.completedAt })
+    if (!(["in_progress", "matched"] as string[]).includes(job.status)) {
+      return reply.status(422).send({ error: `Cannot complete job in status: ${job.status}` })
+    }
+
+    const now = new Date()
+    await db
+      .update(jobPostings)
+      .set({ status: "completed", completedAt: now, statusUpdatedAt: now, updatedAt: now })
+      .where(eq(jobPostings.id, id))
+
+    // Notify accepted workers of dispute window start
+    const acceptedApps = await db
+      .select({ workerId: jobApplications.workerId })
+      .from(jobApplications)
+      .where(and(eq(jobApplications.jobId, id), eq(jobApplications.status, "accepted")))
+
+    for (const { workerId } of acceptedApps) {
+      await db.execute(
+        sql`
+          INSERT INTO notifications (user_id, type, title, body, data, read)
+          VALUES (
+            ${workerId}::uuid,
+            'escrow_window_started',
+            '근무가 완료되었습니다',
+            '정산이 24시간 후 자동 처리됩니다. 문제가 있다면 지금 분쟁을 신청하세요.',
+            ${JSON.stringify({ jobId: id, releaseAfter: new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString() })}::text,
+            false
+          )
+        `,
+      )
+    }
+
+    return reply.send({
+      jobId: id,
+      status: "completed",
+      completedAt: now.toISOString(),
+      escrowReleaseAfter: new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString(),
+      message: "24시간 분쟁 신청 기간 후 자동 정산됩니다",
+    })
+  })
 }
