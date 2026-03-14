@@ -22,6 +22,7 @@ import { paymentRoutes } from "./routes/payments"
 import { disputeRoutes } from "./routes/disputes"
 import { referralRoutes } from "./routes/referrals"
 import { startEscrowAutoReleaseWorker, stopEscrowAutoReleaseWorker } from "./services/escrowAutoRelease"
+import { startWorkerAlertWorker, stopWorkerAlertWorker } from "./services/workerAlertWorker"
 import { setupSocketIO } from "./plugins/socket"
 import { setupRateLimit } from "./plugins/rateLimit"
 import sentryPlugin from "./plugins/sentry"
@@ -182,12 +183,14 @@ export async function start() {
 
   // Start escrow auto-release worker
   startEscrowAutoReleaseWorker(db as any)
+  startWorkerAlertWorker(db as any)
 
   // Cleanup on server close
   app.addHook("onClose", async () => {
     clearTimeout(startupTimer)
     if (expiryTimer.ref) clearInterval(expiryTimer.ref)
     stopEscrowAutoReleaseWorker()
+    stopWorkerAlertWorker()
   })
 }
 

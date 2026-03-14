@@ -101,3 +101,18 @@ export async function paymentCompleteAlimTalk(params: {
     amount: String(params.amount),
   })
 }
+
+export async function jobAlertAlimTalk(params: {
+  phone: string
+  jobCount: number
+  topJobTitle: string
+  hourlyRate: number
+}): Promise<void> {
+  const normalized = normalizePhone(params.phone)
+  const target = normalized ?? params.phone
+  await sendAlimTalk(target, 'JOB_ALERT', {
+    job_count: String(params.jobCount),
+    top_job_title: params.topJobTitle,
+    hourly_rate: String(params.hourlyRate),
+  })
+}
