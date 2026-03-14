@@ -16,6 +16,7 @@ import { applicationRoutes } from "./routes/applications"
 import { reviewRoutes } from "./routes/reviews"
 import { adminRoutes } from './routes/admin'
 import { employerRoutes } from './routes/employer'
+import { jobTemplateRoutes } from './routes/jobTemplates'
 import { notificationRoutes } from './routes/notifications'
 import { paymentRoutes } from "./routes/payments"
 import { setupSocketIO } from "./plugins/socket"
@@ -83,6 +84,7 @@ export async function buildApp() {
   await app.register(reviewRoutes)
   await app.register(adminRoutes)
   await app.register(employerRoutes)
+  await app.register(jobTemplateRoutes)
   await app.register(notificationRoutes)
   await app.register(paymentRoutes)
 

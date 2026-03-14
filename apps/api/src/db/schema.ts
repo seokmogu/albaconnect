@@ -80,9 +80,24 @@ export const workerBlackout = pgTable("worker_blackout", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 })
 
+export const jobTemplates = pgTable("job_templates", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  employerId: uuid("employer_id").references(() => users.id).notNull(),
+  name: varchar("name", { length: 200 }).notNull(),
+  description: text("description").notNull(),
+  category: varchar("category", { length: 100 }).notNull(),
+  hourlyRate: integer("hourly_rate").notNull(),
+  requiredSkills: text("required_skills").array().default(sql`ARRAY[]::text[]`).notNull(),
+  durationHours: integer("duration_hours").notNull(),
+  headcount: integer("headcount").default(1).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+})
+
 export const jobPostings = pgTable("job_postings", {
   id: uuid("id").primaryKey().defaultRandom(),
   employerId: uuid("employer_id").references(() => users.id).notNull(),
+  templateId: uuid("template_id").references(() => jobTemplates.id),
   title: varchar("title", { length: 200 }).notNull(),
   category: varchar("category", { length: 100 }).notNull(),
   startAt: timestamp("start_at").notNull(),
@@ -151,6 +166,8 @@ export type User = typeof users.$inferSelect
 export type NewUser = typeof users.$inferInsert
 export type EmployerProfile = typeof employerProfiles.$inferSelect
 export type WorkerProfile = typeof workerProfiles.$inferSelect
+export type JobTemplate = typeof jobTemplates.$inferSelect
+export type NewJobTemplate = typeof jobTemplates.$inferInsert
 export type JobPosting = typeof jobPostings.$inferSelect
 export type NewJobPosting = typeof jobPostings.$inferInsert
 export type JobApplication = typeof jobApplications.$inferSelect
