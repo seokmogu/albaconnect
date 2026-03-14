@@ -265,6 +265,25 @@ export async function workerRoutes(app: FastifyInstance) {
     `)
     const s = stats.rows[0]
 
+    // Compute nearest_open_jobs_count using stored worker location (5km default radius)
+    let nearestOpenJobsCount = 0
+    if (profile.location) {
+      const nearbyCount = await db.execute<{ total: string }>(sql`
+        SELECT COUNT(*) AS total
+        FROM job_postings
+        WHERE status = 'open'
+          AND ST_DWithin(
+            location::geography,
+            ST_SetSRID(ST_MakePoint(
+              ${(profile.location as { lng?: number; x?: number }).lng ?? (profile.location as any).x ?? 0},
+              ${(profile.location as { lat?: number; y?: number }).lat ?? (profile.location as any).y ?? 0}
+            ), 4326)::geography,
+            5000
+          )
+      `)
+      nearestOpenJobsCount = Number(nearbyCount.rows[0]?.total ?? 0)
+    }
+
     const result = {
       id: user.id,
       email: user.email,
@@ -277,6 +296,7 @@ export async function workerRoutes(app: FastifyInstance) {
       isAvailable: profile.isAvailable,
       verificationStatus: profile.isPhoneVerified ? 'verified' : 'unverified',
       lastSeenAt: profile.lastSeenAt,
+      nearestOpenJobsCount,
       stats: {
         totalCompleted: Number(s?.total_completed ?? 0),
         noShowCount: Number(s?.no_show_count ?? 0),
