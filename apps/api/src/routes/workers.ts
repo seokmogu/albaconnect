@@ -491,6 +491,39 @@ export async function workerRoutes(app: FastifyInstance) {
     return reply.status(200).send({ ok: true })
   })
 
+  // POST /workers/verify/phone/send
+  app.post('/workers/verify/phone/send', {
+    preHandler: [authenticate, requireWorker],
+  }, async (request, reply) => {
+    const workerId = (request.user as { userId: string; id?: string }).userId ?? request.user.id
+    const [user] = await db.select({ phone: users.phone }).from(users).where(eq(users.id, workerId)).limit(1)
+    if (!user?.phone) {
+      return reply.status(400).send({ error: 'No phone number on account' })
+    }
+    await sendOtp(workerId, user.phone)
+    return reply.send({ message: 'OTP sent' })
+  })
+
+  // POST /workers/verify/phone/confirm
+  app.post('/workers/verify/phone/confirm', {
+    preHandler: [authenticate, requireWorker],
+  }, async (request, reply) => {
+    const codeSchema = z.object({ code: z.string().length(6).regex(/^\d{6}$/) })
+    const parsed = codeSchema.safeParse(request.body)
+    if (!parsed.success) return reply.status(400).send({ error: 'Invalid OTP format' })
+
+    const workerId = (request.user as { userId: string; id?: string }).userId ?? request.user.id
+    const result = await verifyOtp(workerId, parsed.data.code)
+
+    if (result === 'locked') return reply.status(429).send({ error: 'Too many attempts', code: 'MAX_ATTEMPTS_EXCEEDED' })
+    if (result === 'expired') return reply.status(410).send({ error: 'OTP expired or not found', code: 'OTP_EXPIRED' })
+    if (result === 'wrong') return reply.status(400).send({ error: 'Invalid OTP', code: 'INVALID_OTP' })
+
+    await db.update(workerProfiles).set({ isPhoneVerified: true }).where(eq(workerProfiles.userId, workerId))
+    workerProfileCache.delete(workerId)
+    return reply.send({ verified: true })
+  })
+
   // GET /workers/earnings — aggregate earnings stats (30d window, Redis-cached 5 min)
   app.get("/workers/earnings", { preHandler: [requireWorker] }, async (request, reply) => {
     const workerId = request.user.id

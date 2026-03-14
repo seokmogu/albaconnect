@@ -133,10 +133,6 @@ export async function start() {
   initWebPush()
   initKakaoAlimTalk()
 
-  // Initialize KakaoTalk Alim Talk alongside Web Push
-  const { initKakaoAlimTalk } = await import("./services/kakaoAlimTalk.js")
-  initKakaoAlimTalk()
-
   try {
     await runMigrations()
     await runNotificationsMigration()
