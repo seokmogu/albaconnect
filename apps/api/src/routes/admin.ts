@@ -8,6 +8,7 @@ import { eq } from "drizzle-orm"
 import { sql } from "drizzle-orm"
 import { db, employerProfiles, workerProfiles } from "../db"
 import { processExpiredJobs } from "../services/jobExpiry"
+import { runWorkerAlerts } from "../services/workerAlertWorker"
 import { getRedisClient } from "../lib/redis"
 import { z } from "zod"
 
@@ -380,6 +381,29 @@ export async function adminRoutes(app: FastifyInstance) {
     return reply.send({
       expired: result.expiredCount,
       noshows: result.noshowCount,
+      triggeredAt: new Date().toISOString(),
+    })
+  })
+
+  // POST /admin/workers/send-alerts — manually trigger re-engagement alerts
+  app.post("/admin/workers/send-alerts", { preHandler }, async (request, reply) => {
+    const { dry_run: dryRun = false } = (request.body as { dry_run?: boolean }) ?? {}
+
+    const redis = getRedisClient()
+    if (!dryRun && redis) {
+      const acquired = await redis.set("admin:worker-alerts:lock", "1", "EX", 60, "NX")
+      if (!acquired) {
+        return reply.status(429).send({
+          error: { code: "LOCKED", message: "Alert run already in progress — retry in 60s" },
+        })
+      }
+    }
+
+    const result = await runWorkerAlerts(db as any)
+    return reply.send({
+      sent: result.sent,
+      skipped: result.skipped,
+      errors: result.errors,
       triggeredAt: new Date().toISOString(),
     })
   })
