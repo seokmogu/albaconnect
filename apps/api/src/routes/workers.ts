@@ -573,6 +573,107 @@ export async function workerRoutes(app: FastifyInstance) {
     return reply.send({ verified: true })
   })
 
+  app.get("/workers/me/earnings/summary", { preHandler: [requireWorker] }, async (request, reply) => {
+    const monthSchema = z.object({ month: z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/).optional() })
+    const parsed = monthSchema.safeParse(request.query)
+    if (!parsed.success) {
+      return reply.status(400).send({ error: 'Validation failed', details: parsed.error.flatten() })
+    }
+
+    const workerId = request.user.id
+    const targetMonth = parsed.data.month ?? new Date().toISOString().slice(0, 7)
+    const cacheKey = `earnings:summary:${workerId}:${targetMonth}`
+
+    const cached = await cacheGetL2(earningsCache as any, cacheKey, CACHE_TTL.EARNINGS_SUMMARY)
+    if (cached !== undefined) return reply.send(cached)
+
+    const [year, month] = targetMonth.split('-').map(Number)
+    const monthDate = `${year}-${String(month).padStart(2, '0')}-01`
+    const prev = new Date(Date.UTC(year, month - 2, 1))
+    const prevMonthDate = `${prev.getUTCFullYear()}-${String(prev.getUTCMonth() + 1).padStart(2, '0')}-01`
+
+    const [currentRows, prevRows] = await Promise.all([
+      db.execute<{ total_jobs: string; total_hours: string; total_pay: string; avg_hourly_rate: string; by_job: any[] }>(sql`
+        SELECT COUNT(DISTINCT ja.id)::int as total_jobs,
+          COALESCE(SUM(jp.duration_hours),0)::float as total_hours,
+          COALESCE(SUM(p.amount - p.platform_fee),0)::int as total_pay,
+          COALESCE(ROUND(AVG(jp.hourly_rate)),0)::int as avg_hourly_rate,
+          COALESCE(json_agg(json_build_object('jobId',jp.id,'title',jp.title,'hours',jp.duration_hours,'pay',p.amount-p.platform_fee,'completedAt',ja.responded_at)) FILTER (WHERE ja.id IS NOT NULL), '[]') as by_job
+        FROM job_applications ja
+        JOIN job_postings jp ON jp.id=ja.job_id
+        LEFT JOIN payments p ON p.job_id=ja.job_id AND p.payer_id!=ja.worker_id AND p.payment_type='payout'
+        WHERE ja.worker_id=${workerId} AND ja.status='completed' AND DATE_TRUNC('month',jp.start_at AT TIME ZONE 'Asia/Seoul')=${monthDate}::date
+      `),
+      db.execute<{ total_jobs: string; total_hours: string; total_pay: string; avg_hourly_rate: string; by_job: any[] }>(sql`
+        SELECT COUNT(DISTINCT ja.id)::int as total_jobs,
+          COALESCE(SUM(jp.duration_hours),0)::float as total_hours,
+          COALESCE(SUM(p.amount - p.platform_fee),0)::int as total_pay,
+          COALESCE(ROUND(AVG(jp.hourly_rate)),0)::int as avg_hourly_rate,
+          COALESCE(json_agg(json_build_object('jobId',jp.id,'title',jp.title,'hours',jp.duration_hours,'pay',p.amount-p.platform_fee,'completedAt',ja.responded_at)) FILTER (WHERE ja.id IS NOT NULL), '[]') as by_job
+        FROM job_applications ja
+        JOIN job_postings jp ON jp.id=ja.job_id
+        LEFT JOIN payments p ON p.job_id=ja.job_id AND p.payer_id!=ja.worker_id AND p.payment_type='payout'
+        WHERE ja.worker_id=${workerId} AND ja.status='completed' AND DATE_TRUNC('month',jp.start_at AT TIME ZONE 'Asia/Seoul')=${prevMonthDate}::date
+      `),
+    ])
+
+    const current = currentRows.rows[0] ?? { total_jobs: '0', total_hours: '0', total_pay: '0', avg_hourly_rate: '0', by_job: [] }
+    const previous = prevRows.rows[0] ?? { total_jobs: '0', total_hours: '0', total_pay: '0' }
+    const currPay = Number(current.total_pay ?? 0)
+    const prevPay = Number(previous.total_pay ?? 0)
+    const currJobs = Number(current.total_jobs ?? 0)
+    const prevJobs = Number(previous.total_jobs ?? 0)
+
+    const result = {
+      month: targetMonth,
+      total_jobs: currJobs,
+      total_hours: Number(current.total_hours ?? 0),
+      total_pay: currPay,
+      avg_hourly_rate: Number(current.avg_hourly_rate ?? 0),
+      by_job: current.by_job ?? [],
+      vs_previous_month: {
+        total_pay_delta_pct: prevPay === 0 ? 0 : Math.round(((currPay - prevPay) / prevPay) * 100),
+        total_jobs_delta: currJobs - prevJobs,
+      },
+    }
+
+    await cacheSetL2(earningsCache as any, cacheKey, result, CACHE_TTL.EARNINGS_SUMMARY)
+    return reply.send(result)
+  })
+
+  app.get("/workers/me/earnings/history", { preHandler: [requireWorker] }, async (request, reply) => {
+    const querySchema = z.object({ limit: z.coerce.number().int().min(1).max(24).default(12) })
+    const parsed = querySchema.safeParse(request.query)
+    if (!parsed.success) {
+      return reply.status(400).send({ error: 'Validation failed', details: parsed.error.flatten() })
+    }
+
+    const workerId = request.user.id
+    const limit = parsed.data.limit
+    const cacheKey = `earnings:history:${workerId}:${limit}`
+
+    const cached = await cacheGetL2(earningsCache as any, cacheKey, CACHE_TTL.EARNINGS_SUMMARY)
+    if (cached !== undefined) return reply.send(cached)
+
+    const rows = await db.execute<{ month: string; total_jobs: string; total_hours: string; total_pay: string }>(sql`
+      SELECT TO_CHAR(DATE_TRUNC('month',jp.start_at AT TIME ZONE 'Asia/Seoul'),'YYYY-MM') as month,
+        COUNT(DISTINCT ja.id)::int as total_jobs,
+        COALESCE(SUM(jp.duration_hours),0)::float as total_hours,
+        COALESCE(SUM(p.amount-p.platform_fee),0)::int as total_pay
+      FROM job_applications ja
+      JOIN job_postings jp ON jp.id=ja.job_id
+      LEFT JOIN payments p ON p.job_id=ja.job_id AND p.payer_id!=ja.worker_id AND p.payment_type='payout'
+      WHERE ja.worker_id=${workerId} AND ja.status='completed'
+      GROUP BY DATE_TRUNC('month',jp.start_at AT TIME ZONE 'Asia/Seoul')
+      ORDER BY DATE_TRUNC('month',jp.start_at AT TIME ZONE 'Asia/Seoul') DESC
+      LIMIT ${Math.min(limit,24)}
+    `)
+
+    const result = { history: rows.rows }
+    await cacheSetL2(earningsCache as any, cacheKey, result, CACHE_TTL.EARNINGS_SUMMARY)
+    return reply.send(result)
+  })
+
   // GET /workers/earnings — aggregate earnings stats (30d window, Redis-cached 5 min)
   app.get("/workers/earnings", { preHandler: [requireWorker] }, async (request, reply) => {
     const workerId = request.user.id
