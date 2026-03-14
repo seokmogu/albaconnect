@@ -65,6 +65,7 @@ export const workerProfiles = pgTable("worker_profiles", {
   inviteCode: varchar("invite_code", { length: 12 }),
   location: point("location"),
   lastSeenAt: timestamp("last_seen_at"),
+  lastAlertSentAt: timestamp("last_alert_sent_at"),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
   // Web Push subscription (nullable — set when worker grants notification permission)
   pushSubscription: jsonb("push_subscription"),

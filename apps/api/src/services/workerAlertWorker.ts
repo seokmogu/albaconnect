@@ -83,28 +83,32 @@ export async function runWorkerAlerts(
 
       if (nearbyJobs.length === 0) {
         skipped++
-        counters?.incSkipped()
+        resolvedCounters?.incSkipped()
         continue
       }
 
       const topJob = nearbyJobs[0]!
-      await jobAlertAlimTalk({
-        phone: worker.phone,
-        jobCount: nearbyJobs.length,
-        topJobTitle: topJob.title,
-        hourlyRate: topJob.hourlyRate,
-      })
+      if (!dryRun) {
+        await jobAlertAlimTalk({
+          phone: worker.phone,
+          jobCount: nearbyJobs.length,
+          topJobTitle: topJob.title,
+          hourlyRate: topJob.hourlyRate,
+        })
 
-      await db
-        .update(workerProfiles)
-        .set({ lastAlertSentAt: new Date() })
-        .where(eq(workerProfiles.userId, worker.userId))
+        await db
+          .update(workerProfiles)
+          .set({ lastAlertSentAt: new Date() })
+          .where(eq(workerProfiles.userId, worker.userId))
+      } else {
+        console.log(`[WorkerAlert:dry-run] Would send alert to worker ${worker.userId}: ${nearbyJobs.length} job(s), top="${topJob.title}"`)
+      }
 
       sent++
-      counters?.incSent()
+      resolvedCounters?.incSent()
     } catch {
       errors++
-      counters?.incErrors()
+      resolvedCounters?.incErrors()
     }
   }
 
