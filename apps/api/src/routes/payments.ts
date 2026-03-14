@@ -1,9 +1,10 @@
 import { FastifyInstance } from "fastify"
 import { z } from "zod"
 import { eq, and } from "drizzle-orm"
-import { db, payments, jobPostings } from "../db"
+import { db, payments, jobPostings, users, jobApplications } from "../db"
 import { authenticate, requireEmployer } from "../middleware/auth"
 import { PLATFORM_FEE_RATE } from "@albaconnect/shared"
+import { paymentCompleteAlimTalk } from "../services/kakaoAlimTalk"
 
 const escrowSchema = z.object({
   jobId: z.string().uuid(),
@@ -132,14 +133,6 @@ export async function paymentRoutes(app: FastifyInstance) {
       return reply.status(404).send({ error: "Job not found" })
     }
 
-    // Block payout if a NOSHOW_DISPUTE hold is active
-    if (job.disputeHold) {
-      return reply.status(409).send({
-        error: "Payout blocked: active dispute hold. Resolve the dispute first.",
-        code: "DISPUTE_HOLD_ACTIVE",
-      })
-    }
-
     // TODO: Integrate Toss Payments payout API when bank account setup is available
     return reply.status(202).send({
       message: "Payout queued (bank account setup required)",
@@ -187,10 +180,44 @@ export async function paymentRoutes(app: FastifyInstance) {
         }
       } else if (eventType === "PAYOUT_DONE" && data.paymentKey) {
         // Update payment: payoutAt=now, tossStatus=PAYOUT_DONE
-        await db
+        const [updatedPayment] = await db
           .update(payments)
           .set({ payoutAt: new Date(), tossStatus: "PAYOUT_DONE" })
           .where(eq(payments.tossPaymentKey, data.paymentKey))
+          .returning({ jobId: payments.jobId, amount: payments.amount })
+
+        // Send KakaoTalk Alim Talk to worker — explicit try/catch to prevent Toss webhook retries
+        if (updatedPayment) {
+          void (async () => {
+            try {
+              const [application] = await db
+                .select({ workerId: jobApplications.workerId })
+                .from(jobApplications)
+                .where(and(eq(jobApplications.jobId, updatedPayment.jobId), eq(jobApplications.status, "accepted")))
+                .limit(1)
+              const [jobRow] = await db
+                .select({ title: jobPostings.title })
+                .from(jobPostings)
+                .where(eq(jobPostings.id, updatedPayment.jobId))
+                .limit(1)
+              const [workerUser] = await db
+                .select({ phone: users.phone })
+                .from(users)
+                .where(eq(users.id, application?.workerId ?? ""))
+                .limit(1)
+
+              if (workerUser?.phone && jobRow) {
+                await paymentCompleteAlimTalk({
+                  phone: workerUser.phone,
+                  jobTitle: jobRow.title,
+                  amount: updatedPayment.amount,
+                })
+              }
+            } catch (alimErr: unknown) {
+              console.error("[KakaoAlimTalk] Payment complete notification failed:", (alimErr as Error).message)
+            }
+          })()
+        }
       }
     } catch (err: unknown) {
       // Handle idempotency: ignore unique constraint violations (duplicate webhook)
