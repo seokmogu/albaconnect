@@ -1,8 +1,8 @@
 import { FastifyInstance } from "fastify"
 import { z } from "zod"
-import { eq } from "drizzle-orm"
-import { db, workerProfiles, users, workerAvailability, workerBlackout } from "../db"
-import { authenticate, requireWorker } from "../middleware/auth"
+import { eq, and } from "drizzle-orm"
+import { db, workerProfiles, users, workerAvailability, workerBlackout, workerCertifications } from "../db"
+import { authenticate, requireWorker, requireAdmin } from "../middleware/auth"
 import { dispatchJob } from "../services/matching"
 import { sql } from "drizzle-orm"
 import { jobPostings } from "../db"
@@ -170,7 +170,16 @@ export async function workerRoutes(app: FastifyInstance) {
     const rows = await db.execute(sql`
       SELECT u.id, u.name, wp.categories, wp.rating_avg, wp.rating_count,
         ST_Y(wp.location::geometry) AS lat,
-        ST_X(wp.location::geometry) AS lng
+        ST_X(wp.location::geometry) AS lng,
+        COALESCE(
+          ARRAY(
+            SELECT wc.type FROM worker_certifications wc
+            WHERE wc.worker_id = u.id
+              AND wc.status = 'verified'
+              AND (wc.expires_at IS NULL OR wc.expires_at > NOW())
+          ),
+          ARRAY[]::worker_cert_type[]
+        ) AS certification_types
       FROM users u
       JOIN worker_profiles wp ON wp.user_id = u.id
       WHERE u.role = 'worker'
@@ -670,5 +679,92 @@ export async function workerRoutes(app: FastifyInstance) {
         total_pages: Math.ceil(total / Number(limit)),
       },
     })
+  })
+
+  // ── Worker Certifications ─────────────────────────────────────────────────
+
+  const certSubmitSchema = z.object({
+    type: z.enum(["ID_VERIFIED", "DRIVER_LICENSE", "FOOD_HANDLER", "FORKLIFT", "FIRST_AID"]),
+    evidence_url: z.string().url().optional(),
+  })
+
+  const adminCertUpdateSchema = z.object({
+    status: z.enum(["verified", "rejected", "expired"]),
+    expires_at: z.string().datetime().optional(),
+  })
+
+  // POST /api/workers/certifications — worker submits a certification claim
+  app.post("/workers/certifications", { preHandler: [requireWorker] }, async (request, reply) => {
+    const body = certSubmitSchema.safeParse(request.body)
+    if (!body.success) {
+      return reply.status(400).send({ error: "Validation failed", details: body.error.flatten() })
+    }
+    const { type, evidence_url } = body.data
+    const workerId = request.user.id
+
+    const [cert] = await db
+      .insert(workerCertifications)
+      .values({ workerId, type, evidenceUrl: evidence_url ?? null, status: "pending" })
+      .returning()
+
+    return reply.status(201).send({ certification: cert })
+  })
+
+  // GET /api/workers/:id/certifications — list certifications for a worker
+  // Public: only verified and non-expired; Admin (x-admin-key): all statuses
+  app.get("/workers/:id/certifications", { preHandler: [authenticate] }, async (request, reply) => {
+    const { id } = request.params as { id: string }
+    const isAdmin = Boolean(
+      process.env["ADMIN_KEY"] && request.headers["x-admin-key"] === process.env["ADMIN_KEY"],
+    )
+
+    let certs: typeof workerCertifications.$inferSelect[]
+    if (isAdmin) {
+      certs = await db
+        .select()
+        .from(workerCertifications)
+        .where(eq(workerCertifications.workerId, id))
+    } else {
+      // Public: verified and not expired
+      certs = await db.execute<typeof workerCertifications.$inferSelect>(sql`
+        SELECT * FROM worker_certifications
+        WHERE worker_id = ${id}
+          AND status = 'verified'
+          AND (expires_at IS NULL OR expires_at > NOW())
+        ORDER BY created_at DESC
+      `).then(r => r.rows)
+    }
+
+    return reply.send({ certifications: certs })
+  })
+
+  // PATCH /api/workers/certifications/:id — admin verifies / rejects / expires
+  app.patch("/workers/certifications/:id", { preHandler: [requireAdmin] }, async (request, reply) => {
+    const { id } = request.params as { id: string }
+    const body = adminCertUpdateSchema.safeParse(request.body)
+    if (!body.success) {
+      return reply.status(400).send({ error: "Validation failed", details: body.error.flatten() })
+    }
+    const { status, expires_at } = body.data
+    const adminId = request.user.id
+
+    const updateValues: Partial<typeof workerCertifications.$inferInsert> = {
+      status,
+      verifiedBy: status === "verified" ? adminId : undefined,
+      verifiedAt: status === "verified" ? new Date() : undefined,
+      expiresAt: expires_at ? new Date(expires_at) : undefined,
+    }
+
+    const [updated] = await db
+      .update(workerCertifications)
+      .set(updateValues)
+      .where(eq(workerCertifications.id, id))
+      .returning()
+
+    if (!updated) {
+      return reply.status(404).send({ error: "Certification not found" })
+    }
+
+    return reply.send({ certification: updated })
   })
 }
