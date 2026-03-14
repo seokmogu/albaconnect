@@ -425,13 +425,11 @@ export async function adminRoutes(app: FastifyInstance) {
       }
     }
 
-    const result = await runWorkerAlerts(db as any, dryRun)
-    return reply.send({
+    const result = await runWorkerAlerts(db as any, dryRun)    return reply.send({
       sent: result.sent,
       skipped: result.skipped,
       errors: result.errors,
-      dryRun,
-      triggeredAt: new Date().toISOString(),
+      dryRun,      triggeredAt: new Date().toISOString(),
     })
   })
 }
