@@ -1,3 +1,5 @@
+import fs from "node:fs"
+import path from "node:path"
 import { sql } from "drizzle-orm"
 import { db, pool } from "./index"
 
@@ -195,6 +197,15 @@ export async function runMigrations() {
   `)
 
   await runNotificationsMigration()
+
+  const migrationFiles = [
+    path.join(process.cwd(), 'src/db/migrations/0007_admin_suspension.sql'),
+  ]
+  for (const file of migrationFiles) {
+    if (fs.existsSync(file)) {
+      await db.execute(sql.raw(fs.readFileSync(file, 'utf8')))
+    }
+  }
 
   // Add push_subscription column for Web Push API (nullable jsonb)
   await db.execute(sql`
