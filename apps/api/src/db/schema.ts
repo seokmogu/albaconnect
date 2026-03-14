@@ -49,6 +49,7 @@ export const employerProfiles = pgTable("employer_profiles", {
   ratingAvg: decimal("rating_avg", { precision: 3, scale: 2 }).default("0").notNull(),
   ratingCount: integer("rating_count").default(0).notNull(),
   isSuspended: boolean("is_suspended").notNull().default(false),
+  planTier: varchar("plan_tier", { length: 20 }).notNull().default("free"),  // free|basic|premium
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 })
 

@@ -59,6 +59,7 @@ vi.mock("../lib/redis", () => ({
 vi.mock("../middleware/auth", () => ({
   authenticate: vi.fn(),
   requireEmployer: vi.fn(),
+  requireAdmin: vi.fn(),
 }))
 
 vi.mock("../services/kakaoAlimTalk.js", () => ({
