@@ -133,6 +133,79 @@ export async function workerRoutes(app: FastifyInstance) {
     return reply.send({ ok: true })
   })
 
+  const scheduleUpsertSchema = z.object({
+    dayOfWeek: z.number().int().min(0).max(6),
+    startTime: z.string().regex(/^\d{2}:\d{2}$/),
+    endTime: z.string().regex(/^\d{2}:\d{2}$/),
+    timezone: z.string().optional(),
+  })
+
+  const scheduleUpdateSchema = z.object({
+    startTime: z.string().regex(/^\d{2}:\d{2}$/),
+    endTime: z.string().regex(/^\d{2}:\d{2}$/),
+    timezone: z.string().optional(),
+  })
+
+  app.post("/workers/schedule", { preHandler: [requireWorker] }, async (request, reply) => {
+    const body = scheduleUpsertSchema.safeParse(request.body)
+    if (!body.success) return reply.status(400).send({ error: "Validation failed", details: body.error.flatten() })
+    const workerId = request.user.id
+    const { dayOfWeek, startTime, endTime, timezone = 'Asia/Seoul' } = body.data
+    const row = await db.execute<{ id: string; day_of_week: number; start_time: string; end_time: string }>(sql`
+      INSERT INTO worker_availability (worker_id, day_of_week, start_time, end_time, timezone, valid_from)
+      VALUES (${workerId}, ${dayOfWeek}, ${startTime}, ${endTime}, ${timezone}, NOW())
+      ON CONFLICT (worker_id, day_of_week) DO UPDATE
+        SET start_time = EXCLUDED.start_time,
+            end_time = EXCLUDED.end_time,
+            timezone = EXCLUDED.timezone,
+            valid_from = NOW()
+      RETURNING id, day_of_week, start_time, end_time, timezone
+    `)
+    return reply.status(201).send(row.rows[0])
+  })
+
+  app.put("/workers/schedule/:dayOfWeek", { preHandler: [requireWorker] }, async (request, reply) => {
+    const { dayOfWeek } = request.params as { dayOfWeek: string }
+    const dayNum = parseInt(dayOfWeek, 10)
+    if (isNaN(dayNum) || dayNum < 0 || dayNum > 6) return reply.status(400).send({ error: "dayOfWeek must be 0-6" })
+    const body = scheduleUpdateSchema.safeParse(request.body)
+    if (!body.success) return reply.status(400).send({ error: "Validation failed", details: body.error.flatten() })
+    const workerId = request.user.id
+    const { startTime, endTime, timezone } = body.data
+    const updated = await db.execute<{ id: string }>(sql`
+      UPDATE worker_availability
+      SET start_time = ${startTime}, end_time = ${endTime}
+          ${timezone ? sql`, timezone = ${timezone}` : sql``}
+      WHERE worker_id = ${workerId} AND day_of_week = ${dayNum}
+      RETURNING id
+    `)
+    if (updated.rows.length === 0) return reply.status(404).send({ error: "Schedule not found for this day" })
+    return reply.send({ ok: true, dayOfWeek: dayNum, startTime, endTime })
+  })
+
+  app.delete("/workers/schedule/:dayOfWeek", { preHandler: [requireWorker] }, async (request, reply) => {
+    const { dayOfWeek } = request.params as { dayOfWeek: string }
+    const dayNum = parseInt(dayOfWeek, 10)
+    if (isNaN(dayNum) || dayNum < 0 || dayNum > 6) return reply.status(400).send({ error: "dayOfWeek must be 0-6" })
+    const workerId = request.user.id
+    const result = await db.execute<{ id: string }>(sql`
+      DELETE FROM worker_availability WHERE worker_id = ${workerId} AND day_of_week = ${dayNum} RETURNING id
+    `)
+    if (result.rows.length === 0) return reply.status(404).send({ error: "Schedule not found for this day" })
+    return reply.status(204).send()
+  })
+
+  app.get("/workers/schedule/:workerId", async (request, reply) => {
+    const { workerId } = request.params as { workerId: string }
+    const rows = await db.execute<{ day_of_week: number; start_time: string; end_time: string; timezone: string }>(sql`
+      SELECT day_of_week, start_time, end_time, timezone
+      FROM worker_availability
+      WHERE worker_id = ${workerId}
+      ORDER BY day_of_week ASC
+    `)
+    return reply.send({ schedule: rows.rows })
+  })
+
   app.post("/workers/blackout", { preHandler: [requireWorker] }, async (request, reply) => {
     const body = blackoutSchema.safeParse(request.body)
     if (!body.success) {
