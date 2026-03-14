@@ -513,7 +513,18 @@ export async function workerRoutes(app: FastifyInstance) {
     if (!parsed.success) return reply.status(400).send({ error: 'Invalid OTP format' })
 
     const workerId = (request.user as { userId: string; id?: string }).userId ?? request.user.id
-    const result = await verifyOtp(workerId, parsed.data.code)
+
+    let result: Awaited<ReturnType<typeof verifyOtp>>
+    try {
+      result = await verifyOtp(workerId, parsed.data.code)
+    } catch (err) {
+      // verifyOtp throws when Redis is unavailable — surface as 503, not 500
+      request.log.error({ err }, "OTP verification unavailable — Redis unreachable")
+      return reply.status(503).send({
+        error: "Verification service temporarily unavailable",
+        code: "VERIFICATION_SERVICE_UNAVAILABLE",
+      })
+    }
 
     if (result === 'locked') return reply.status(429).send({ error: 'Too many attempts', code: 'MAX_ATTEMPTS_EXCEEDED' })
     if (result === 'expired') return reply.status(410).send({ error: 'OTP expired or not found', code: 'OTP_EXPIRED' })
