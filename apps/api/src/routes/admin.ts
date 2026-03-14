@@ -91,6 +91,13 @@ export async function adminRoutes(app: FastifyInstance) {
     const noshowRate7d = await db.execute<any>(sql`SELECT COUNT(CASE WHEN status='noshow' THEN 1 END)::float / NULLIF(COUNT(CASE WHEN status IN ('accepted','completed','noshow') THEN 1 END), 0) as rate FROM job_applications WHERE created_at >= now() - interval '7 days'`)
     const avgFillTimeHours = await db.execute<any>(sql`SELECT AVG(EXTRACT(EPOCH FROM (ja.created_at - jp.created_at))/3600) as avg_hours FROM job_applications ja JOIN job_postings jp ON jp.id=ja.job_id WHERE ja.status='accepted' AND ja.created_at >= now() - interval '30 days'`)
 
+    // Platform health fields
+    const completedJobs7d = await db.execute<any>(sql`SELECT COUNT(*) as count FROM job_postings WHERE status='completed' AND updated_at >= now() - interval '7 days'`)
+    const escrowHeld = await db.execute<any>(sql`SELECT COALESCE(SUM(total_amount), 0) as total FROM job_postings WHERE escrow_status='escrowed'`)
+    const disputesResolved7d = await db.execute<any>(sql`SELECT COUNT(*) as count FROM job_disputes WHERE status IN ('resolved','dismissed') AND resolved_at >= now() - interval '7 days'`)
+    const referralsPending = await db.execute<any>(sql`SELECT COUNT(*) as count FROM referrals WHERE status='pending'`)
+    const activeJobs = await db.execute<any>(sql`SELECT COUNT(*) as count FROM job_postings WHERE status IN ('open','in_progress')`)
+
     const result = {
       users: users.rows[0],
       jobs: jobs.rows[0],
@@ -106,6 +113,16 @@ export async function adminRoutes(app: FastifyInstance) {
         open_disputes_count: Number(openDisputesCount.rows[0]?.count ?? 0),
         noshow_rate_7d: Number(noshowRate7d.rows[0]?.rate ?? 0),
         avg_fill_time_hours: Number(avgFillTimeHours.rows[0]?.avg_hours ?? 0),
+      },
+      platform: {
+        total_workers: Number(users.rows[0]?.workers ?? 0),
+        total_employers: Number(users.rows[0]?.employers ?? 0),
+        active_jobs: Number(activeJobs.rows[0]?.count ?? 0),
+        completed_jobs_7d: Number(completedJobs7d.rows[0]?.count ?? 0),
+        total_escrow_held_won: Number(escrowHeld.rows[0]?.total ?? 0),
+        disputes_open: Number(openDisputesCount.rows[0]?.count ?? 0),
+        disputes_resolved_7d: Number(disputesResolved7d.rows[0]?.count ?? 0),
+        referrals_pending: Number(referralsPending.rows[0]?.count ?? 0),
       },
     }
 
@@ -259,6 +276,80 @@ export async function adminRoutes(app: FastifyInstance) {
     return reply.send({
       employerId: id,
       isSuspended: body.action === 'suspend',
+    })
+  })
+
+  // GET /admin/stats/revenue — weekly revenue buckets
+  app.get("/admin/stats/revenue", { preHandler }, async (request, reply) => {
+    const { from, to } = request.query as { from?: string; to?: string }
+
+    const fromDate = from ?? new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+    const toDate = to ?? new Date().toISOString().split('T')[0]
+
+    const rows = await db.execute<any>(sql`
+      SELECT
+        date_trunc('week', p.paid_at)::date AS week_start,
+        COUNT(CASE WHEN jp.status = 'completed' THEN 1 END) AS jobs_completed,
+        COALESCE(SUM(p.amount), 0) AS total_payout_won,
+        COALESCE(SUM(p.platform_fee), 0) AS platform_fee_won
+      FROM payments p
+      JOIN job_postings jp ON jp.id = p.job_id
+      WHERE p.status = 'completed'
+        AND p.paid_at >= ${fromDate}::date
+        AND p.paid_at < ${toDate}::date + interval '1 day'
+      GROUP BY date_trunc('week', p.paid_at)
+      ORDER BY week_start ASC
+    `)
+
+    return reply.send({
+      from: fromDate,
+      to: toDate,
+      buckets: rows.rows.map((r: any) => ({
+        week_start: r.week_start,
+        jobs_completed: Number(r.jobs_completed),
+        total_payout_won: Number(r.total_payout_won),
+        platform_fee_won: Number(r.platform_fee_won),
+      })),
+    })
+  })
+
+  // GET /admin/stats/users — user analytics
+  app.get("/admin/stats/users", { preHandler }, async (request, reply) => {
+    const { period = '30d' } = request.query as { period?: string }
+    const days = parseInt(period.replace('d', ''), 10) || 30
+    const intervalSql = sql`interval '${sql.raw(String(days))} days'`
+
+    const newWorkers = await db.execute<any>(sql`
+      SELECT COUNT(*) AS count FROM users
+      WHERE role = 'worker' AND created_at >= now() - ${intervalSql}
+    `)
+
+    const newEmployers = await db.execute<any>(sql`
+      SELECT COUNT(*) AS count FROM users
+      WHERE role = 'employer' AND created_at >= now() - ${intervalSql}
+    `)
+
+    const activeWorkers = await db.execute<any>(sql`
+      SELECT COUNT(DISTINCT ja.worker_id) AS count
+      FROM job_applications ja
+      WHERE ja.status = 'completed'
+        AND ja.updated_at >= now() - ${intervalSql}
+    `)
+
+    const totalWorkers = await db.execute<any>(sql`
+      SELECT COUNT(*) AS count FROM users WHERE role = 'worker'
+    `)
+
+    const totalActive = Number(activeWorkers.rows[0]?.count ?? 0)
+    const total = Number(totalWorkers.rows[0]?.count ?? 0)
+    const retentionRate = total > 0 ? Math.round((totalActive / total) * 100) : 0
+
+    return reply.send({
+      period,
+      new_workers_count: Number(newWorkers.rows[0]?.count ?? 0),
+      new_employers_count: Number(newEmployers.rows[0]?.count ?? 0),
+      active_workers_last_period: totalActive,
+      retention_rate_pct: retentionRate,
     })
   })
 
