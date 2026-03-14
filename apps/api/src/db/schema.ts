@@ -45,6 +45,7 @@ export const employerProfiles = pgTable("employer_profiles", {
   businessNumber: varchar("business_number", { length: 20 }),
   ratingAvg: decimal("rating_avg", { precision: 3, scale: 2 }).default("0").notNull(),
   ratingCount: integer("rating_count").default(0).notNull(),
+  isSuspended: boolean("is_suspended").notNull().default(false),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 })
 
@@ -55,6 +56,7 @@ export const workerProfiles = pgTable("worker_profiles", {
   ratingAvg: decimal("rating_avg", { precision: 3, scale: 2 }).default("0").notNull(),
   ratingCount: integer("rating_count").default(0).notNull(),
   isAvailable: boolean("is_available").default(false).notNull(),
+  isSuspended: boolean("is_suspended").notNull().default(false),
   location: point("location"),
   lastSeenAt: timestamp("last_seen_at"),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
