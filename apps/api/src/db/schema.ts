@@ -20,6 +20,8 @@ const point = customType<{ data: { lat: number; lng: number }; driverData: strin
 })
 
 export const userRoleEnum = pgEnum("user_role", ["employer", "worker"])
+export const disputeTypeEnum = pgEnum("dispute_type", ["NOSHOW_DISPUTE", "PAYMENT_DISPUTE", "QUALITY_DISPUTE"])
+export const disputeStatusEnum = pgEnum("dispute_status", ["open", "resolved", "dismissed"])
 export const jobStatusEnum = pgEnum("job_status", ["draft", "open", "matched", "in_progress", "completed", "cancelled"])
 export const paymentStatusEnum2 = pgEnum("payment_status_job", ["pending", "triggered", "completed", "failed"])
 export const escrowStatusEnum = pgEnum("escrow_status", ["pending", "escrowed", "released", "refunded"])
@@ -112,6 +114,7 @@ export const jobPostings = pgTable("job_postings", {
   status: jobStatusEnum("status").default("open").notNull(),
   escrowStatus: escrowStatusEnum("escrow_status").default("pending").notNull(),
   paymentStatus: paymentStatusEnum2("payment_status_job").default("pending").notNull(),
+  disputeHold: boolean("dispute_hold").default(false).notNull(),
   statusUpdatedAt: timestamp("status_updated_at"),
   completedAt: timestamp("completed_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -177,3 +180,21 @@ export type JobApplication = typeof jobApplications.$inferSelect
 export type Payment = typeof payments.$inferSelect
 export type Penalty = typeof penalties.$inferSelect
 export type Review = typeof reviews.$inferSelect
+
+// ── Dispute Resolution ──────────────────────────────────────────────────────
+export const jobDisputes = pgTable("job_disputes", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  jobId: uuid("job_id").references(() => jobPostings.id).notNull(),
+  raisedById: uuid("raised_by_id").references(() => users.id).notNull(),
+  raisedByRole: userRoleEnum("raised_by_role").notNull(),
+  type: disputeTypeEnum("type").notNull(),
+  description: text("description").notNull(),
+  status: disputeStatusEnum("status").default("open").notNull(),
+  resolutionNotes: text("resolution_notes"),
+  resolvedBy: uuid("resolved_by").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  resolvedAt: timestamp("resolved_at"),
+})
+
+export type JobDispute = typeof jobDisputes.$inferSelect
+export type NewJobDispute = typeof jobDisputes.$inferInsert
