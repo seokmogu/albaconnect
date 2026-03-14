@@ -20,6 +20,7 @@ import { jobTemplateRoutes } from './routes/jobTemplates'
 import { notificationRoutes } from './routes/notifications'
 import { paymentRoutes } from "./routes/payments"
 import { disputeRoutes } from "./routes/disputes"
+import { referralRoutes } from "./routes/referrals"
 import { setupSocketIO } from "./plugins/socket"
 import { setupRateLimit } from "./plugins/rateLimit"
 import sentryPlugin from "./plugins/sentry"
@@ -91,6 +92,7 @@ export async function buildApp() {
   await app.register(notificationRoutes)
   await app.register(paymentRoutes)
   await app.register(disputeRoutes)
+  await app.register(referralRoutes)
 
   // Enhanced health check: DB connectivity + Redis + uptime + version
   app.get("/health", async (_req, reply) => {

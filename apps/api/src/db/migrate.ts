@@ -216,6 +216,7 @@ export async function runMigrations() {
 
   await runDisputeMigration()
   await runCertificationMigration()
+  await runReferralMigration()
 
   console.log('Migrations completed successfully')
 }
@@ -271,6 +272,36 @@ export async function runCertificationMigration() {
   `)
   await db.execute(sql`CREATE INDEX IF NOT EXISTS idx_worker_certs_worker_id ON worker_certifications(worker_id)`)
   await db.execute(sql`CREATE INDEX IF NOT EXISTS idx_worker_certs_status ON worker_certifications(status)`)
+}
+
+export async function runReferralMigration() {
+  // Create referral_status enum (idempotent)
+  await db.execute(sql`
+    DO $$ BEGIN
+      IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'referral_status') THEN
+        CREATE TYPE referral_status AS ENUM ('pending', 'qualified', 'rewarded');
+      END IF;
+    END $$
+  `)
+
+  // Add invite_code column to worker_profiles
+  await db.execute(sql`ALTER TABLE worker_profiles ADD COLUMN IF NOT EXISTS invite_code VARCHAR(12) UNIQUE`)
+
+  // Create referrals table
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS referrals (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      referrer_id UUID NOT NULL REFERENCES users(id),
+      referee_id UUID NOT NULL UNIQUE REFERENCES users(id),
+      status referral_status NOT NULL DEFAULT 'pending',
+      bonus_amount INTEGER NOT NULL DEFAULT 5000,
+      qualified_at TIMESTAMPTZ,
+      rewarded_at TIMESTAMPTZ,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `)
+  await db.execute(sql`CREATE INDEX IF NOT EXISTS idx_referrals_referrer ON referrals(referrer_id)`)
+  await db.execute(sql`CREATE INDEX IF NOT EXISTS idx_referrals_status ON referrals(referrer_id, status)`)
 }
 
 export async function runDisputeMigration() {
