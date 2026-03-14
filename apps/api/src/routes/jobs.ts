@@ -368,12 +368,17 @@ export async function jobRoutes(app: FastifyInstance) {
     let applications: unknown[] = []
 
     if (request.user.role === "employer" && request.user.id === job.employer_id) {
+      const employerId = request.user.id
       const apps = await db.execute<any>(sql`
         SELECT 
           ja.*,
           u.name as worker_name,
           wp.rating_avg as worker_rating,
-          wp.categories as worker_categories
+          wp.categories as worker_categories,
+          EXISTS(
+            SELECT 1 FROM employer_favorites ef
+            WHERE ef.employer_id = ${employerId} AND ef.worker_id = ja.worker_id
+          ) AS is_favorited
         FROM job_applications ja
         JOIN users u ON u.id = ja.worker_id
         LEFT JOIN worker_profiles wp ON wp.user_id = ja.worker_id

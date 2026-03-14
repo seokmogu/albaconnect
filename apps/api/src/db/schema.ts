@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, text, timestamp, boolean, integer, decimal, pgEnum, customType, jsonb, date, time } from "drizzle-orm/pg-core"
+import { pgTable, uuid, varchar, text, timestamp, boolean, integer, decimal, pgEnum, customType, jsonb, date, time, uniqueIndex } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
 
 // Custom PostGIS point type
@@ -227,6 +227,24 @@ export const referrals = pgTable("referrals", {
 
 export type Referral = typeof referrals.$inferSelect
 export type NewReferral = typeof referrals.$inferInsert
+
+// ── Employer favorites (worker shortlist) ──────────────────────────────────────
+export const employerFavorites = pgTable(
+  "employer_favorites",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    employerId: uuid("employer_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+    workerId: uuid("worker_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+    note: text("note"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    employerWorkerUniq: uniqueIndex("employer_favorites_employer_worker_uniq").on(table.employerId, table.workerId),
+  })
+)
+
+export type EmployerFavorite = typeof employerFavorites.$inferSelect
+export type NewEmployerFavorite = typeof employerFavorites.$inferInsert
 
 export type User = typeof users.$inferSelect
 export type NewUser = typeof users.$inferInsert

@@ -1,7 +1,7 @@
 import { FastifyInstance } from "fastify"
 import { z } from "zod"
 import { eq, and } from "drizzle-orm"
-import { db, users, employerProfiles, jobPostings, jobApplications, payments } from "../db"
+import { db, users, employerProfiles, jobPostings, jobApplications, payments, employerFavorites } from "../db"
 import { authenticate, requireEmployer, requireAdmin } from "../middleware/auth"
 import { sql } from "drizzle-orm"
 import { getRedisClient } from "../lib/redis"
@@ -699,5 +699,100 @@ export async function employerRoutes(app: FastifyInstance) {
       .header('Content-Type', 'text/csv; charset=utf-8')
       .header('Content-Disposition', 'attachment; filename="analytics-export.csv"')
       .send(csv)
+  })
+
+  // ─── EMPLOYER FAVORITES (WORKER SHORTLIST) ─────────────────────────────────
+
+  // POST /employers/favorites/:workerId — toggle favorite
+  // Idempotent: first call adds, second call removes
+  app.post("/employers/favorites/:workerId", { preHandler: [requireEmployer] }, async (request, reply) => {
+    const employerId = request.user.id
+    const { workerId } = request.params as { workerId: string }
+
+    // Use INSERT ON CONFLICT DO NOTHING to avoid race condition
+    const insertResult = await db.execute<{ id: string }>(sql`
+      INSERT INTO employer_favorites (employer_id, worker_id)
+      VALUES (${employerId}, ${workerId})
+      ON CONFLICT (employer_id, worker_id) DO NOTHING
+      RETURNING id
+    `)
+
+    if (insertResult.rowCount === 0) {
+      // Already existed — remove (toggle off)
+      await db.execute(sql`
+        DELETE FROM employer_favorites
+        WHERE employer_id = ${employerId} AND worker_id = ${workerId}
+      `)
+      return reply.send({ favorited: false, workerId })
+    }
+
+    return reply.status(201).send({ favorited: true, workerId })
+  })
+
+  // GET /employers/favorites — paginated list of favorited workers
+  app.get("/employers/favorites", { preHandler: [requireEmployer] }, async (request, reply) => {
+    const employerId = request.user.id
+    const querySchema = z.object({
+      page: z.coerce.number().int().min(1).default(1),
+      limit: z.coerce.number().int().min(1).max(50).default(20),
+    })
+    const parsed = querySchema.safeParse(request.query)
+    if (!parsed.success) return reply.status(400).send({ error: "Invalid query params" })
+
+    const { page, limit } = parsed.data
+    const offset = (page - 1) * limit
+
+    const rows = await db.execute<any>(sql`
+      SELECT
+        ef.worker_id,
+        ef.note,
+        ef.created_at,
+        u.name,
+        wp.rating_avg,
+        wp.rating_count,
+        COALESCE(
+          ARRAY_AGG(DISTINCT wc.type) FILTER (WHERE wc.id IS NOT NULL),
+          ARRAY[]::text[]
+        ) AS certifications,
+        (
+          SELECT COUNT(*)::int
+          FROM job_applications ja
+          WHERE ja.worker_id = ef.worker_id AND ja.status = 'completed'
+        ) AS completed_jobs,
+        (
+          SELECT MAX(ja.responded_at)
+          FROM job_applications ja
+          WHERE ja.worker_id = ef.worker_id AND ja.status = 'completed'
+        ) AS last_job_at
+      FROM employer_favorites ef
+      JOIN users u ON u.id = ef.worker_id
+      LEFT JOIN worker_profiles wp ON wp.user_id = ef.worker_id
+      LEFT JOIN worker_certifications wc
+        ON wc.worker_id = ef.worker_id AND wc.status = 'verified'
+        AND (wc.expires_at IS NULL OR wc.expires_at > now())
+      WHERE ef.employer_id = ${employerId}
+      GROUP BY ef.worker_id, ef.note, ef.created_at, u.name, wp.rating_avg, wp.rating_count
+      ORDER BY ef.created_at DESC
+      LIMIT ${limit} OFFSET ${offset}
+    `)
+
+    return reply.send({ favorites: rows.rows, page, limit })
+  })
+
+  // DELETE /employers/favorites/:workerId — explicit unfavorite
+  app.delete("/employers/favorites/:workerId", { preHandler: [requireEmployer] }, async (request, reply) => {
+    const employerId = request.user.id
+    const { workerId } = request.params as { workerId: string }
+
+    const result = await db.execute(sql`
+      DELETE FROM employer_favorites
+      WHERE employer_id = ${employerId} AND worker_id = ${workerId}
+    `)
+
+    if (result.rowCount === 0) {
+      return reply.status(404).send({ error: "Favorite not found" })
+    }
+
+    return reply.status(204).send()
   })
 }
