@@ -20,6 +20,8 @@ const point = customType<{ data: { lat: number; lng: number }; driverData: strin
 })
 
 export const userRoleEnum = pgEnum("user_role", ["employer", "worker"])
+export const workerCertTypeEnum = pgEnum("worker_cert_type", ["ID_VERIFIED", "DRIVER_LICENSE", "FOOD_HANDLER", "FORKLIFT", "FIRST_AID"])
+export const certStatusEnum = pgEnum("cert_status", ["pending", "verified", "expired", "rejected"])
 export const disputeTypeEnum = pgEnum("dispute_type", ["NOSHOW_DISPUTE", "PAYMENT_DISPUTE", "QUALITY_DISPUTE"])
 export const disputeStatusEnum = pgEnum("dispute_status", ["open", "resolved", "dismissed"])
 export const jobStatusEnum = pgEnum("job_status", ["draft", "open", "matched", "in_progress", "completed", "cancelled"])
@@ -190,8 +192,22 @@ export const jobDisputes = pgTable("job_disputes", {
   resolvedAt: timestamp("resolved_at"),
 })
 
+export const workerCertifications = pgTable("worker_certifications", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  workerId: uuid("worker_id").references(() => users.id).notNull(),
+  type: workerCertTypeEnum("type").notNull(),
+  status: certStatusEnum("status").default("pending").notNull(),
+  evidenceUrl: text("evidence_url"),
+  verifiedBy: uuid("verified_by").references(() => users.id),
+  verifiedAt: timestamp("verified_at"),
+  expiresAt: timestamp("expires_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+})
+
 export type JobDispute = typeof jobDisputes.$inferSelect
 export type NewJobDispute = typeof jobDisputes.$inferInsert
+export type WorkerCertification = typeof workerCertifications.$inferSelect
+export type NewWorkerCertification = typeof workerCertifications.$inferInsert
 
 export type User = typeof users.$inferSelect
 export type NewUser = typeof users.$inferInsert

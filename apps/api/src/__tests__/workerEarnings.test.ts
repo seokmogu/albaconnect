@@ -57,6 +57,7 @@ vi.mock("../services/cache", () => ({
 vi.mock("../middleware/auth", () => ({
   authenticate: vi.fn(),
   requireWorker: vi.fn(),
+  requireAdmin: vi.fn(),
 }))
 
 vi.mock("../services/matching", () => ({
@@ -84,6 +85,7 @@ function buildAppStub() {
     get:    (path: string, _opts: any, handler: Handler) => { routes[`GET:${path}`] = handler },
     post:   (path: string, _opts: any, handler: Handler) => { routes[`POST:${path}`] = handler },
     put:    (path: string, _opts: any, handler: Handler) => { routes[`PUT:${path}`] = handler },
+    patch:  (path: string, _opts: any, handler: Handler) => { routes[`PATCH:${path}`] = handler },
     delete: (path: string, _opts: any, handler: Handler) => { routes[`DELETE:${path}`] = handler },
     decorateRequest: vi.fn(),
     addHook: vi.fn(),

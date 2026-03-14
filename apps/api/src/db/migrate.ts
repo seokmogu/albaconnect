@@ -215,6 +215,7 @@ export async function runMigrations() {
   `)
 
   await runDisputeMigration()
+  await runCertificationMigration()
 
   console.log('Migrations completed successfully')
 }
@@ -241,6 +242,35 @@ export async function runNotificationsMigration() {
     )
   `)
   await db.execute(sql`CREATE INDEX IF NOT EXISTS idx_notif_user ON notifications(user_id, created_at DESC)`)
+}
+
+export async function runCertificationMigration() {
+  // Create worker_cert_type enum
+  await db.execute(sql`DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'worker_cert_type') THEN
+      CREATE TYPE worker_cert_type AS ENUM ('ID_VERIFIED', 'DRIVER_LICENSE', 'FOOD_HANDLER', 'FORKLIFT', 'FIRST_AID');
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'cert_status') THEN
+      CREATE TYPE cert_status AS ENUM ('pending', 'verified', 'expired', 'rejected');
+    END IF;
+  END $$`)
+
+  // Create worker_certifications table
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS worker_certifications (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      worker_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      type worker_cert_type NOT NULL,
+      status cert_status NOT NULL DEFAULT 'pending',
+      evidence_url TEXT,
+      verified_by UUID REFERENCES users(id),
+      verified_at TIMESTAMPTZ,
+      expires_at TIMESTAMPTZ,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `)
+  await db.execute(sql`CREATE INDEX IF NOT EXISTS idx_worker_certs_worker_id ON worker_certifications(worker_id)`)
+  await db.execute(sql`CREATE INDEX IF NOT EXISTS idx_worker_certs_status ON worker_certifications(status)`)
 }
 
 export async function runDisputeMigration() {
