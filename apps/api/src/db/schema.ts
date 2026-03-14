@@ -30,6 +30,7 @@ export const paymentStatusEnum2 = pgEnum("payment_status_job", ["pending", "trig
 export const escrowStatusEnum = pgEnum("escrow_status", ["pending", "escrowed", "released", "refunded"])
 export const applicationStatusEnum = pgEnum("application_status", ["offered", "accepted", "rejected", "timeout", "completed", "noshow"])
 export const penaltyTypeEnum = pgEnum("penalty_type", ["worker_noshow", "employer_noshow", "employer_cancel_late"])
+export const penaltyAppealStatusEnum = pgEnum("penalty_appeal_status", ["none", "pending", "approved", "rejected"])
 export const paymentStatusEnum = pgEnum("payment_status", ["pending", "completed", "failed", "refunded"])
 
 export const users = pgTable("users", {
@@ -164,6 +165,10 @@ export const penalties = pgTable("penalties", {
   amount: integer("amount").notNull(),
   reason: text("reason").notNull(),
   status: paymentStatusEnum("status").default("pending").notNull(),
+  appealStatus: penaltyAppealStatusEnum("appeal_status").default("none").notNull(),
+  appealNote: text("appeal_note"),
+  appealSubmittedAt: timestamp("appeal_submitted_at", { withTimezone: true }),
+  adminAppealNote: text("admin_appeal_note"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 })
 
@@ -257,6 +262,7 @@ export type NewJobPosting = typeof jobPostings.$inferInsert
 export type JobApplication = typeof jobApplications.$inferSelect
 export type Payment = typeof payments.$inferSelect
 export type Penalty = typeof penalties.$inferSelect
+export type NewPenalty = typeof penalties.$inferInsert
 export type Review = typeof reviews.$inferSelect
 
 

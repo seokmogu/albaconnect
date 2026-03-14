@@ -165,24 +165,50 @@ export async function adminRoutes(app: FastifyInstance) {
     return reply.send({ users: rows.rows, page: Number(page), limit: Number(limit) })
   })
 
-  // GET /admin/penalties — penalty log
+  // GET /admin/penalties — penalty log (supports ?appeal_status=pending|approved|rejected|none)
   app.get("/admin/penalties", { preHandler }, async (request, reply) => {
-    const { page = 1, limit = 20 } = request.query as { page?: number; limit?: number }
+    const { page = 1, limit = 20, appeal_status } = request.query as {
+      page?: number
+      limit?: number
+      appeal_status?: string
+    }
     const offset = (Number(page) - 1) * Number(limit)
 
-    const rows = await db.execute<any>(sql`
-      SELECT
-        p.*,
-        fu.name as from_user_name, fu.role as from_role,
-        tu.name as to_user_name, tu.role as to_role,
-        jp.title as job_title
-      FROM penalties p
-      JOIN users fu ON fu.id = p.from_user_id
-      JOIN users tu ON tu.id = p.to_user_id
-      JOIN job_postings jp ON jp.id = p.job_id
-      ORDER BY p.created_at DESC
-      LIMIT ${Number(limit)} OFFSET ${offset}
-    `)
+    const validStatuses = ["none", "pending", "approved", "rejected"]
+    if (appeal_status && !validStatuses.includes(appeal_status)) {
+      return reply.status(400).send({ error: "Invalid appeal_status value" })
+    }
+
+    const rows = await db.execute<any>(
+      appeal_status
+        ? sql`
+          SELECT
+            p.*,
+            fu.name as from_user_name, fu.role as from_role,
+            tu.name as to_user_name, tu.role as to_role,
+            jp.title as job_title
+          FROM penalties p
+          JOIN users fu ON fu.id = p.from_user_id
+          JOIN users tu ON tu.id = p.to_user_id
+          JOIN job_postings jp ON jp.id = p.job_id
+          WHERE p.appeal_status = ${appeal_status}::penalty_appeal_status
+          ORDER BY p.created_at DESC
+          LIMIT ${Number(limit)} OFFSET ${offset}
+        `
+        : sql`
+          SELECT
+            p.*,
+            fu.name as from_user_name, fu.role as from_role,
+            tu.name as to_user_name, tu.role as to_role,
+            jp.title as job_title
+          FROM penalties p
+          JOIN users fu ON fu.id = p.from_user_id
+          JOIN users tu ON tu.id = p.to_user_id
+          JOIN job_postings jp ON jp.id = p.job_id
+          ORDER BY p.created_at DESC
+          LIMIT ${Number(limit)} OFFSET ${offset}
+        `
+    )
 
     return reply.send({ penalties: rows.rows })
   })
