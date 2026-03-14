@@ -584,4 +584,120 @@ export async function employerRoutes(app: FastifyInstance) {
       return reply.send({ userId: id, plan_tier, updated: true })
     }
   )
+
+  // ── Analytics Export ───────────────────────────────────────────────────────
+
+  const exportQuerySchema = z.object({
+    format: z.enum(['csv', 'json']).default('json'),
+    from: z.string().datetime({ message: 'from must be ISO 8601 datetime' }),
+    to: z.string().datetime({ message: 'to must be ISO 8601 datetime' }),
+  })
+
+  const EXPORT_COLS = [
+    'job_id', 'job_title', 'start_at', 'end_at', 'headcount',
+    'avg_hourly_rate', 'applications_count', 'accepted_count',
+    'noshow_count', 'completed_count', 'total_payout',
+  ] as const
+
+  type ExportRow = {
+    job_id: string
+    job_title: string
+    start_at: string | Date
+    end_at: string | Date
+    headcount: number
+    avg_hourly_rate: number
+    applications_count: string | number
+    accepted_count: string | number
+    noshow_count: string | number
+    completed_count: string | number
+    total_payout: string | number
+  }
+
+  // GET /employers/analytics/export/status
+  app.get('/employers/analytics/export/status', { preHandler: [requireEmployer] }, async (_request, reply) => {
+    return reply.send({ available: true, maxDays: 90, formats: ['csv', 'json'] })
+  })
+
+  // GET /employers/analytics/export
+  app.get('/employers/analytics/export', { preHandler: [requireEmployer] }, async (request, reply) => {
+    const parsed = exportQuerySchema.safeParse(request.query)
+    if (!parsed.success) {
+      return reply.status(400).send({ error: 'Validation failed', details: parsed.error.flatten() })
+    }
+
+    const { format, from, to } = parsed.data
+    const fromMs = new Date(from).getTime()
+    const toMs = new Date(to).getTime()
+
+    if (isNaN(fromMs) || isNaN(toMs)) {
+      return reply.status(400).send({ error: 'Invalid date values' })
+    }
+    if (fromMs > toMs) {
+      return reply.status(400).send({ error: 'from must be before to' })
+    }
+    const diffMs = toMs - fromMs
+    const MAX_MS = 90 * 24 * 60 * 60 * 1000
+    if (diffMs > MAX_MS) {
+      return reply.status(400).send({ error: 'Date range must not exceed 90 days' })
+    }
+
+    const employerId = request.user.id
+
+    const result = await db.execute<ExportRow>(sql`
+      SELECT
+        jp.id                                                     AS job_id,
+        jp.title                                                  AS job_title,
+        jp.start_at,
+        jp.end_at,
+        jp.headcount,
+        jp.hourly_rate                                            AS avg_hourly_rate,
+        COUNT(DISTINCT ja.id)                                     AS applications_count,
+        COUNT(DISTINCT CASE WHEN ja.status = 'accepted'   THEN ja.id END) AS accepted_count,
+        COUNT(DISTINCT CASE WHEN ja.status = 'noshow'     THEN ja.id END) AS noshow_count,
+        COUNT(DISTINCT CASE WHEN ja.status = 'completed'  THEN ja.id END) AS completed_count,
+        COALESCE((
+          SELECT SUM(p2.amount - p2.platform_fee)
+          FROM payments p2
+          WHERE p2.job_id = jp.id
+            AND p2.payment_type = 'payout'
+            AND p2.status = 'completed'
+        ), 0)                                                     AS total_payout
+      FROM job_postings jp
+      LEFT JOIN job_applications ja ON ja.job_id = jp.id
+      WHERE jp.employer_id = ${employerId}::uuid
+        AND jp.start_at >= ${from}::timestamptz
+        AND jp.start_at <= ${to}::timestamptz
+      GROUP BY jp.id
+      ORDER BY jp.start_at DESC
+    `)
+
+    const rows = result.rows
+
+    if (format === 'json') {
+      return reply
+        .header('Content-Type', 'application/json')
+        .header('Content-Disposition', 'attachment; filename="analytics-export.json"')
+        .send(JSON.stringify({
+          meta: { from, to, jobCount: rows.length, exportedAt: new Date().toISOString() },
+          rows,
+        }))
+    }
+
+    // CSV with UTF-8 BOM for Excel compatibility
+    const header = EXPORT_COLS.join(',')
+    const csvRows = rows.map(r =>
+      EXPORT_COLS.map(c => {
+        const val = (r as Record<string, unknown>)[c]
+        if (val === null || val === undefined) return ''
+        if (val instanceof Date) return val.toISOString()
+        return JSON.stringify(String(val))
+      }).join(',')
+    )
+    const csv = '\uFEFF' + header + '\n' + csvRows.join('\n')
+
+    return reply
+      .header('Content-Type', 'text/csv; charset=utf-8')
+      .header('Content-Disposition', 'attachment; filename="analytics-export.csv"')
+      .send(csv)
+  })
 }
