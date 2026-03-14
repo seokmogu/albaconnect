@@ -27,6 +27,13 @@ interface RecommendedJob {
   score: number
 }
 
+interface EarningsSummary {
+  total_earned: number
+  pending_payout: number
+  completed_jobs: number
+  avg_hourly_rate: number
+}
+
 export default function WorkerHomePage() {
   const router = useRouter()
   const { user, logout } = useAuthStore()
@@ -38,6 +45,7 @@ export default function WorkerHomePage() {
   const [recommendedJobs, setRecommendedJobs] = useState<RecommendedJob[]>([])
   const [pushPermission, setPushPermission] = useState<NotificationPermission | "unsupported">("default")
   const [pushLoading, setPushLoading] = useState(false)
+  const [earnings, setEarnings] = useState<EarningsSummary | null>(null)
   const socket = useSocket()
 
   useEffect(() => {
@@ -52,6 +60,11 @@ export default function WorkerHomePage() {
     // Fetch recommended jobs
     api.get("/workers/recommended-jobs", { params: { limit: 5 } }).then(({ data }) => {
       setRecommendedJobs(data.jobs ?? [])
+    }).catch(() => {})
+
+    // Fetch earnings summary for badge
+    api.get("/workers/earnings").then(({ data }) => {
+      setEarnings(data)
     }).catch(() => {})
   }, [user, router])
 
@@ -158,6 +171,26 @@ export default function WorkerHomePage() {
       <div className="px-4 py-6 space-y-4">
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-600 rounded-xl px-4 py-3 text-sm">{error}</div>
+        )}
+
+        {/* Earnings Summary Badge — shown when worker has earnings in the last 30 days */}
+        {earnings && earnings.total_earned > 0 && (
+          <Link href="/worker/earnings">
+            <div className="card bg-green-50 border border-green-200 p-4 flex items-center justify-between gap-3 cursor-pointer hover:bg-green-100 transition-colors">
+              <div>
+                <div className="font-semibold text-green-800 text-sm">💰 최근 30일 수입</div>
+                <div className="text-xs text-green-700 mt-0.5">
+                  완료 {earnings.completed_jobs}건 · 시급 평균 {earnings.avg_hourly_rate.toLocaleString()}원
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-lg font-bold text-green-700">{earnings.total_earned.toLocaleString()}원</div>
+                {earnings.pending_payout > 0 && (
+                  <div className="text-xs text-orange-500">대기 중: {earnings.pending_payout.toLocaleString()}원</div>
+                )}
+              </div>
+            </div>
+          </Link>
         )}
 
         {/* Push Notification Permission Banner */}

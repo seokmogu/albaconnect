@@ -6,7 +6,7 @@ import { authenticate, requireWorker } from "../middleware/auth"
 import { dispatchJob } from "../services/matching"
 import { sql } from "drizzle-orm"
 import { jobPostings } from "../db"
-import { workerProfileCache, recommendedJobsCache, CACHE_TTL } from "../services/cache"
+import { workerProfileCache, recommendedJobsCache, earningsCache, cacheGetL2, cacheSetL2, cacheDelL2, CACHE_TTL } from "../services/cache"
 import { computeMatchScore } from "../services/scoring"
 
 const availabilitySchema = z.object({
@@ -487,5 +487,142 @@ export async function workerRoutes(app: FastifyInstance) {
       .set({ pushSubscription: null })
       .where(eq(workerProfiles.userId, userId))
     return reply.status(200).send({ ok: true })
+  })
+
+  // GET /workers/earnings — aggregate earnings stats (30d window, Redis-cached 5 min)
+  app.get("/workers/earnings", { preHandler: [requireWorker] }, async (request, reply) => {
+    const workerId = request.user.id
+    const cacheKey = `earnings:${workerId}`
+
+    const cached = await cacheGetL2(earningsCache as any, cacheKey, CACHE_TTL.EARNINGS_STATS)
+    if (cached !== undefined) return reply.send(cached)
+
+    const rows = await db.execute<{
+      total_earned: string
+      pending_payout: string
+      completed_jobs: string
+      avg_hourly_rate: string
+    }>(sql`
+      SELECT
+        COALESCE(SUM(p.amount - p.platform_fee) FILTER (
+          WHERE p.status = 'completed'
+            AND p.created_at >= NOW() - INTERVAL '30 days'
+        ), 0) AS total_earned,
+        COALESCE(SUM(p.amount - p.platform_fee) FILTER (
+          WHERE p.status = 'pending'
+        ), 0) AS pending_payout,
+        COUNT(DISTINCT ja.job_id) FILTER (
+          WHERE ja.status = 'completed'
+            AND ja.created_at >= NOW() - INTERVAL '30 days'
+        ) AS completed_jobs,
+        COALESCE(AVG(jp.hourly_rate) FILTER (
+          WHERE ja.status = 'completed'
+        ), 0) AS avg_hourly_rate
+      FROM job_applications ja
+      JOIN job_postings jp ON jp.id = ja.job_id
+      LEFT JOIN payments p ON p.job_id = ja.job_id
+      WHERE ja.worker_id = ${workerId}
+    `)
+
+    const row = rows.rows[0]
+    const result = {
+      total_earned: Number(row?.total_earned ?? 0),
+      pending_payout: Number(row?.pending_payout ?? 0),
+      completed_jobs: Number(row?.completed_jobs ?? 0),
+      avg_hourly_rate: Math.round(Number(row?.avg_hourly_rate ?? 0)),
+    }
+
+    await cacheSetL2(earningsCache as any, cacheKey, result, CACHE_TTL.EARNINGS_STATS)
+    return reply.send(result)
+  })
+
+  // GET /workers/payments — paginated payment history with optional status filter
+  app.get("/workers/payments", {
+    preHandler: [requireWorker],
+    schema: {
+      querystring: {
+        type: "object",
+        properties: {
+          status: { type: "string", enum: ["pending", "processing", "completed", "failed"] },
+          page: { type: "integer", minimum: 1, default: 1 },
+          limit: { type: "integer", minimum: 1, maximum: 50, default: 20 },
+        },
+      },
+    },
+  }, async (request, reply) => {
+    const workerId = request.user.id
+    const { status, page = 1, limit = 20 } = request.query as {
+      status?: string
+      page?: number
+      limit?: number
+    }
+    const offset = (Number(page) - 1) * Number(limit)
+
+    // Map 'processing' to 'pending' since schema uses pending/completed/failed/refunded
+    const dbStatus = status === "processing" ? "pending" : status
+
+    const rows = await db.execute<{
+      id: string
+      job_title: string
+      employer_name: string
+      company_name: string | null
+      hours_worked: string
+      amount: number
+      platform_fee: number
+      status: string
+      paid_at: string
+    }>(sql`
+      SELECT
+        p.id,
+        jp.title AS job_title,
+        u.name AS employer_name,
+        ep.company_name,
+        ROUND(EXTRACT(EPOCH FROM (jp.end_at - jp.start_at)) / 3600.0, 2) AS hours_worked,
+        p.amount,
+        p.platform_fee,
+        p.status,
+        p.created_at AS paid_at
+      FROM job_applications ja
+      JOIN job_postings jp ON jp.id = ja.job_id
+      JOIN payments p ON p.job_id = ja.job_id
+      JOIN users u ON u.id = jp.employer_id
+      LEFT JOIN employer_profiles ep ON ep.user_id = jp.employer_id
+      WHERE ja.worker_id = ${workerId}
+      ${dbStatus ? sql`AND p.status = ${dbStatus}` : sql``}
+      ORDER BY p.created_at DESC
+      LIMIT ${Number(limit)} OFFSET ${offset}
+    `)
+
+    const countRows = await db.execute<{ total: string }>(sql`
+      SELECT COUNT(*) AS total
+      FROM job_applications ja
+      JOIN payments p ON p.job_id = ja.job_id
+      WHERE ja.worker_id = ${workerId}
+      ${dbStatus ? sql`AND p.status = ${dbStatus}` : sql``}
+    `)
+
+    const total = Number(countRows.rows[0]?.total ?? 0)
+
+    const payments = rows.rows.map(r => ({
+      id: r.id,
+      job_title: r.job_title,
+      employer_name: r.employer_name,
+      company_name: r.company_name ?? null,
+      hours_worked: Number(r.hours_worked),
+      amount: r.amount,
+      net_amount: r.amount - r.platform_fee,
+      status: r.status,
+      paid_at: r.paid_at,
+    }))
+
+    return reply.send({
+      payments,
+      pagination: {
+        page: Number(page),
+        limit: Number(limit),
+        total,
+        total_pages: Math.ceil(total / Number(limit)),
+      },
+    })
   })
 }

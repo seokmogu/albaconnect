@@ -66,12 +66,15 @@ export const workerProfileCache = new TTLCache<unknown>(500)
 export const recommendedJobsCache = new TTLCache<unknown>(500)
 /** Caches findNearbyWorkers results keyed by jobId */
 export const nearbyWorkersCache = new TTLCache<unknown>(200)
+/** Caches worker earnings aggregate stats */
+export const earningsCache = new TTLCache<unknown>(200)
 
 export const CACHE_TTL = {
   WORKER_PROFILE: 60_000,      // 60 s
   RECOMMENDED_JOBS: 120_000,   // 2 min
   NEARBY_WORKERS: 30_000,      // 30 s — geospatial results
   NEARBY_JOBS: 30_000,         // 30 s
+  EARNINGS_STATS: 300_000,     // 5 min
 }
 
 // ─── Two-layer helpers ───────────────────────────────────────────────────────
