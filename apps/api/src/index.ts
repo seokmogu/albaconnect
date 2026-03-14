@@ -27,6 +27,7 @@ import loggerPlugin from "./plugins/logger"
 import { processExpiredJobs, type EmitFn } from "./services/jobExpiry"
 import { workerSockets } from "./services/matching"
 import { checkRedisHealth } from "./lib/redis"
+import { initKakaoAlimTalk } from './services/kakaoAlimTalk.js'
 
 export async function buildApp() {
   const logLevel =
@@ -130,6 +131,7 @@ export async function start() {
   // Initialize Web Push VAPID keys before accepting connections
   const { initWebPush } = await import("./services/webPush.js")
   initWebPush()
+  initKakaoAlimTalk()
 
   try {
     await runMigrations()

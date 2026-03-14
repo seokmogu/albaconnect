@@ -57,6 +57,7 @@ export const workerProfiles = pgTable("worker_profiles", {
   ratingCount: integer("rating_count").default(0).notNull(),
   isAvailable: boolean("is_available").default(false).notNull(),
   isSuspended: boolean("is_suspended").notNull().default(false),
+  isPhoneVerified: boolean("is_phone_verified").notNull().default(false),
   location: point("location"),
   lastSeenAt: timestamp("last_seen_at"),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
