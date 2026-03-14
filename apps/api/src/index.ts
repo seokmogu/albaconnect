@@ -21,6 +21,7 @@ import { notificationRoutes } from './routes/notifications'
 import { paymentRoutes } from "./routes/payments"
 import { disputeRoutes } from "./routes/disputes"
 import { referralRoutes } from "./routes/referrals"
+import { startEscrowAutoReleaseWorker, stopEscrowAutoReleaseWorker } from "./services/escrowAutoRelease"
 import { setupSocketIO } from "./plugins/socket"
 import { setupRateLimit } from "./plugins/rateLimit"
 import sentryPlugin from "./plugins/sentry"
@@ -179,10 +180,14 @@ export async function start() {
     expiryTimer.ref = setInterval(() => void runExpiry(), 300_000) // every 5 minutes
   }, jitterMs)
 
+  // Start escrow auto-release worker
+  startEscrowAutoReleaseWorker(db as any)
+
   // Cleanup on server close
   app.addHook("onClose", async () => {
     clearTimeout(startupTimer)
     if (expiryTimer.ref) clearInterval(expiryTimer.ref)
+    stopEscrowAutoReleaseWorker()
   })
 }
 
