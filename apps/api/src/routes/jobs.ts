@@ -158,7 +158,7 @@ export async function jobRoutes(app: FastifyInstance) {
 
   // GET /jobs - list with optional location filter
   app.get("/jobs", { preHandler: [authenticate] }, async (request, reply) => {
-    const { lat, lng, radius_km = 10, category, status = "open", page = 1, limit = 20, min_hourly_rate, start_date } = request.query as {
+    const { lat, lng, radius_km = 10, category, status = "open", page = 1, limit = 20, min_hourly_rate, start_date, avail_day, avail_from, avail_to } = request.query as {
       lat?: string
       lng?: string
       radius_km?: string
@@ -168,6 +168,9 @@ export async function jobRoutes(app: FastifyInstance) {
       limit?: number
       min_hourly_rate?: string
       start_date?: string
+      avail_day?: string
+      avail_from?: string
+      avail_to?: string
     }
 
     const offset = (Number(page) - 1) * Number(limit)
@@ -216,6 +219,9 @@ export async function jobRoutes(app: FastifyInstance) {
         ${category ? sql`AND jp.category = ${category}` : sql``}
         ${min_hourly_rate ? sql`AND jp.hourly_rate >= ${Number(min_hourly_rate)}` : sql``}
         ${start_date ? sql`AND jp.start_at::date = ${start_date}::date` : sql``}
+        ${avail_day !== undefined ? sql`AND EXTRACT(DOW FROM jp.start_at AT TIME ZONE 'Asia/Seoul')::int = ${parseInt(avail_day, 10)}` : sql``}
+        ${avail_from ? sql`AND TO_CHAR(jp.start_at AT TIME ZONE 'Asia/Seoul', 'HH24:MI') >= ${avail_from}` : sql``}
+        ${avail_to ? sql`AND TO_CHAR(jp.end_at AT TIME ZONE 'Asia/Seoul', 'HH24:MI') <= ${avail_to}` : sql``}
         AND ST_DWithin(
           jp.location::geography,
           ST_SetSRID(ST_MakePoint(${Number(lng)}, ${Number(lat)}), 4326)::geography,
@@ -240,6 +246,9 @@ export async function jobRoutes(app: FastifyInstance) {
         ${category ? sql`AND jp.category = ${category}` : sql``}
         ${min_hourly_rate ? sql`AND jp.hourly_rate >= ${Number(min_hourly_rate)}` : sql``}
         ${start_date ? sql`AND jp.start_at::date = ${start_date}::date` : sql``}
+        ${avail_day !== undefined ? sql`AND EXTRACT(DOW FROM jp.start_at AT TIME ZONE 'Asia/Seoul')::int = ${parseInt(avail_day, 10)}` : sql``}
+        ${avail_from ? sql`AND TO_CHAR(jp.start_at AT TIME ZONE 'Asia/Seoul', 'HH24:MI') >= ${avail_from}` : sql``}
+        ${avail_to ? sql`AND TO_CHAR(jp.end_at AT TIME ZONE 'Asia/Seoul', 'HH24:MI') <= ${avail_to}` : sql``}
         ORDER BY jp.created_at DESC
         LIMIT ${Number(limit)} OFFSET ${offset}
       `)
