@@ -1,7 +1,7 @@
 import { FastifyInstance } from "fastify"
 import { z } from "zod"
 import { eq, and, count, sql, desc } from "drizzle-orm"
-import { db, jobPostings, jobApplications, users, penalties, workerProfiles, employerProfiles } from "../db"
+import { db, jobPostings, jobApplications, users, penalties, workerProfiles, employerProfiles, shiftTemplates } from "../db"
 import { authenticate, requireEmployer, requireWorker } from "../middleware/auth"
 import { dispatchJob } from "../services/matching"
 import { LATE_CANCEL_PENALTY_RATE, PLATFORM_FEE_RATE } from "@albaconnect/shared"
@@ -782,6 +782,57 @@ export async function jobRoutes(app: FastifyInstance) {
       radiusKm: radius_km,
       lat,
       lng,
+    })
+  })
+
+  // GET /jobs/:id/available-workers — employer sees workers with shift coverage for job start_at
+  app.get("/jobs/:id/available-workers", { preHandler: [requireEmployer] }, async (request, reply) => {
+    const employerId = (request as any).userId
+    const { id: jobId } = request.params as { id: string }
+
+    // Verify job belongs to employer
+    const [job] = await db
+      .select({ startAt: jobPostings.startAt, employerId: jobPostings.employerId })
+      .from(jobPostings)
+      .where(eq(jobPostings.id, jobId))
+      .limit(1)
+
+    if (!job) return reply.status(404).send({ error: { code: "NOT_FOUND", message: "Job not found" } })
+    if (job.employerId !== employerId) return reply.status(403).send({ error: { code: "FORBIDDEN", message: "Not your job" } })
+
+    // Find available workers with shift coverage flag
+    const rows = await db.execute<{
+      user_id: string; name: string; rating_avg: string | null;
+      categories: string[] | null; has_shift_coverage: boolean
+    }>(sql`
+      SELECT
+        wp.user_id,
+        u.name,
+        wp.rating_avg,
+        wp.categories,
+        EXISTS (
+          SELECT 1 FROM shift_templates st
+          WHERE st.worker_id = wp.user_id
+            AND st.day_of_week = EXTRACT(DOW FROM ${job.startAt} AT TIME ZONE 'Asia/Seoul')::int
+            AND st.start_time <= (${job.startAt} AT TIME ZONE 'Asia/Seoul')::time
+            AND st.end_time >= (${job.startAt} AT TIME ZONE 'Asia/Seoul')::time
+            AND (st.repeat_until IS NULL OR st.repeat_until >= CURRENT_DATE)
+        ) AS has_shift_coverage
+      FROM worker_profiles wp
+      JOIN users u ON u.id = wp.user_id
+      WHERE wp.is_available = true
+      ORDER BY has_shift_coverage DESC, wp.rating_avg DESC NULLS LAST
+    `)
+
+    return reply.send({
+      jobId,
+      workers: rows.rows.map((r) => ({
+        userId: r.user_id,
+        name: r.name,
+        ratingAvg: r.rating_avg ? Number(r.rating_avg) : null,
+        categories: r.categories ?? [],
+        hasShiftCoverage: Boolean(r.has_shift_coverage),
+      })),
     })
   })
 }

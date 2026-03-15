@@ -285,3 +285,21 @@ export const messages = pgTable("messages", {
 
 export type Message = typeof messages.$inferSelect
 export type NewMessage = typeof messages.$inferInsert
+
+// ============================================================
+// shift_templates (근로자 반복 교대 스케줄 템플릿)
+// ============================================================
+export const shiftTemplates = pgTable("shift_templates", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  workerId: uuid("worker_id")
+    .references(() => workerProfiles.userId, { onDelete: "cascade" })
+    .notNull(),
+  dayOfWeek: integer("day_of_week").notNull(),
+  startTime: time("start_time").notNull(),
+  endTime: time("end_time").notNull(),
+  repeatUntil: date("repeat_until"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+})
+
+export type ShiftTemplate = typeof shiftTemplates.$inferSelect
+export type NewShiftTemplate = typeof shiftTemplates.$inferInsert
