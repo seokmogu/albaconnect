@@ -9,6 +9,7 @@ import { jobPostings } from "../db"
 import { workerProfileCache, recommendedJobsCache, earningsCache, cacheGetL2, cacheSetL2, cacheDelL2, CACHE_TTL } from "../services/cache"
 import { computeMatchScore } from "../services/scoring"
 import { sendOtp, verifyOtp } from '../services/otpService.js'
+import { computeReportCard } from "../services/reportCard"
 
 const availabilitySchema = z.object({
   isAvailable: z.boolean(),
@@ -998,4 +999,139 @@ export async function workerRoutes(app: FastifyInstance) {
     if (!result.rows.length) return reply.status(404).send({ error: { code: "NOT_FOUND", message: "Shift template not found or not yours" } })
     return reply.status(204).send()
   })
+
+  // ── GET /workers/me/report-card ─────────────────────────────────────────────
+  app.get(
+    "/workers/me/report-card",
+    { preHandler: [requireWorker] },
+    async (request, reply) => {
+      const { month: rawMonth } = request.query as { month?: string }
+      let month: string
+      if (rawMonth) {
+        if (!/^\d{4}-\d{2}$/.test(rawMonth)) {
+          return reply.status(400).send({ error: "Invalid month format. Use YYYY-MM." })
+        }
+        month = rawMonth
+      } else {
+        const prev = new Date()
+        prev.setMonth(prev.getMonth() - 1)
+        month = prev.toISOString().slice(0, 7)
+      }
+      const workerId = (request as any).user?.id ?? (request as any).userId
+      const data = await computeReportCard(workerId, month)
+      return reply.send(data)
+    }
+  )
+
+  // ── GET /workers/me/report-card/pdf ────────────────────────────────────────
+  app.get(
+    "/workers/me/report-card/pdf",
+    { preHandler: [requireWorker] },
+    async (request, reply) => {
+      const { month: rawMonth } = request.query as { month?: string }
+      let month: string
+      if (rawMonth) {
+        if (!/^\d{4}-\d{2}$/.test(rawMonth)) {
+          return reply.status(400).send({ error: "Invalid month format. Use YYYY-MM." })
+        }
+        month = rawMonth
+      } else {
+        const prev = new Date()
+        prev.setMonth(prev.getMonth() - 1)
+        month = prev.toISOString().slice(0, 7)
+      }
+
+      const workerId = (request as any).user?.id ?? (request as any).userId
+
+      // Fetch user name
+      const userResult = await db.execute<{ name: string | null }>(sql`
+        SELECT name FROM users WHERE id = ${workerId}::uuid LIMIT 1
+      `)
+      const workerName = userResult.rows[0]?.name ?? "Worker"
+
+      // Fetch ALL data before streaming — prevents corrupted PDF on DB error
+      const reportData = await computeReportCard(workerId, month)
+
+      // Fetch top 10 completed jobs
+      const jobsResult = await db.execute<{
+        title: string
+        category: string
+        total_amount: number
+        start_at: string
+      }>(sql`
+        SELECT jp.title, jp.category, jp.total_amount, jp.start_at
+        FROM job_applications ja
+        JOIN job_postings jp ON jp.id = ja.job_id
+        WHERE ja.worker_id = ${workerId}::uuid
+          AND ja.status = 'completed'
+        ORDER BY jp.start_at DESC
+        LIMIT 10
+      `)
+
+      // Build PDF into a buffer (collect then send) — all DB work done above
+      const PDFDocument = (await import("pdfkit")).default
+      const doc = new PDFDocument({ size: "A4", margin: 50 })
+
+      const pdfBuffer = await new Promise<Buffer>((resolve, reject) => {
+        const chunks: Buffer[] = []
+        doc.on("data", (chunk: Buffer) => chunks.push(chunk))
+        doc.on("end", () => resolve(Buffer.concat(chunks)))
+        doc.on("error", reject)
+
+        // Header
+        doc.fontSize(24).font("Helvetica-Bold").text("AlbaConnect", 50, 50)
+        doc.fontSize(14).font("Helvetica").text("Worker Performance Report", 50, 82)
+        doc.fontSize(12).text(`Worker: ${workerName}`, 50, 102)
+        doc.fontSize(12).text(`Period: ${month}`, 50, 118)
+        doc.moveDown(2)
+
+        // KPI section
+        doc.fontSize(16).font("Helvetica-Bold").text("Performance Summary", { underline: true })
+        doc.moveDown(0.5)
+        doc.fontSize(11).font("Helvetica")
+        doc.text(`Jobs Completed:       ${reportData.total_jobs_completed}`)
+        doc.text(`Total Earnings:       ₩${reportData.total_earnings_won.toLocaleString("ko-KR")}`)
+        doc.text(`Average Rating:       ${reportData.avg_rating.toFixed(2)} / 5.0`)
+        doc.text(`On-Time Rate:         ${reportData.on_time_rate_pct.toFixed(1)}%`)
+        doc.text(`No-Shows:             ${reportData.noshow_count}`)
+        doc.text(`Verified Certs:       ${reportData.certifications_verified_count}`)
+        doc.moveDown(1)
+
+        // Top categories
+        if (reportData.top_job_categories.length > 0) {
+          doc.fontSize(14).font("Helvetica-Bold").text("Top Job Categories")
+          doc.moveDown(0.5)
+          doc.fontSize(11).font("Helvetica")
+          reportData.top_job_categories.forEach((cat, i) => {
+            doc.text(`${i + 1}. ${cat.category} (${cat.count} jobs)`)
+          })
+          doc.moveDown(1)
+        }
+
+        // Job history
+        if (jobsResult.rows.length > 0) {
+          doc.fontSize(14).font("Helvetica-Bold").text("Recent Completed Jobs (up to 10)")
+          doc.moveDown(0.5)
+          doc.fontSize(9).font("Helvetica")
+          jobsResult.rows.forEach((job, i) => {
+            const dateStr = new Date(job.start_at).toLocaleDateString("ko-KR")
+            doc.text(
+              `${i + 1}. ${job.title} | ${job.category} | ₩${Number(job.total_amount).toLocaleString("ko-KR")} | ${dateStr}`
+            )
+          })
+          doc.moveDown(1)
+        }
+
+        // Footer
+        doc.fontSize(9).font("Helvetica").text(`Generated: ${new Date().toISOString()}`, { align: "center" })
+
+        doc.end()
+      })
+
+      return reply
+        .type("application/pdf")
+        .header("Content-Disposition", `attachment; filename=report-${workerId}-${month}.pdf`)
+        .send(pdfBuffer)
+    }
+  )
 }
