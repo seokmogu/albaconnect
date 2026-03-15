@@ -6,7 +6,7 @@
 import { FastifyInstance } from "fastify"
 import { eq } from "drizzle-orm"
 import { sql } from "drizzle-orm"
-import { db, employerProfiles, workerProfiles } from "../db"
+import { db, employerProfiles, workerProfiles, jobPostings } from "../db"
 import { processExpiredJobs } from "../services/jobExpiry"
 import { runWorkerAlerts } from "../services/workerAlertWorker"
 import { applyDailySurge } from "../services/surgePricing"
@@ -434,6 +434,31 @@ export async function adminRoutes(app: FastifyInstance) {
       dryRun,
       triggeredAt: new Date().toISOString(),
     })
+  })
+
+  // PATCH /admin/jobs/:id — admin override for job settings (e.g. location_enforcement)
+  app.patch("/admin/jobs/:id", { preHandler }, async (request, reply) => {
+    const { id } = request.params as { id: string }
+    const body = request.body as { location_enforcement?: boolean }
+
+    if (body.location_enforcement !== undefined) {
+      await db
+        .update(jobPostings)
+        .set({ locationEnforcement: body.location_enforcement, updatedAt: new Date() })
+        .where(eq(jobPostings.id, id))
+    }
+
+    const [updated] = await db
+      .select({ id: jobPostings.id, locationEnforcement: jobPostings.locationEnforcement })
+      .from(jobPostings)
+      .where(eq(jobPostings.id, id))
+      .limit(1)
+
+    if (!updated) {
+      return reply.status(404).send({ error: "Job not found" })
+    }
+
+    return reply.send({ id, location_enforcement: updated.locationEnforcement, updatedAt: new Date().toISOString() })
   })
 
   // POST /admin/surge/apply — trigger batch surge recalculation for all open jobs

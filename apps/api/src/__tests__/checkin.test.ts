@@ -67,9 +67,13 @@ describe('check-in / check-out routes', () => {
   })
 
   it('POST /jobs/:jobId/checkin records GPS coordinates (200)', async () => {
-    // select().from().where().limit() — for "accepted application" query
+    // 1st select: accepted application
     mocks.selectLimitMock.mockResolvedValueOnce([
       { id: 'app-1', jobId: 'job-1', workerId: 'worker-1', status: 'accepted', checkin_at: null },
+    ])
+    // 2nd select: job geofence config (no lat/lon = bypass geofence)
+    mocks.selectLimitMock.mockResolvedValueOnce([
+      { locationLat: null, locationLon: null, checkinRadiusMeters: 300, locationEnforcement: true },
     ])
     // db.execute() for the UPDATE
     mocks.executeMock.mockResolvedValueOnce({ rows: [] })
