@@ -1,7 +1,7 @@
 import { FastifyInstance } from "fastify"
 import { z } from "zod"
 import { eq, and } from "drizzle-orm"
-import { db, workerProfiles, users, workerAvailability, workerBlackout, workerCertifications } from "../db"
+import { db, workerProfiles, users, workerAvailability, workerBlackout, workerCertifications, shiftTemplates } from "../db"
 import { authenticate, requireWorker, requireAdmin } from "../middleware/auth"
 import { dispatchJob } from "../services/matching"
 import { sql } from "drizzle-orm"
@@ -943,6 +943,59 @@ export async function workerRoutes(app: FastifyInstance) {
       .update(workerProfiles)
       .set({ fcmToken: null } as any)
       .where(eq(workerProfiles.userId, workerId))
+    return reply.status(204).send()
+  })
+
+  // ─── Shift Templates ────────────────────────────────────────────────────────
+
+  const shiftTemplateBody = z.object({
+    dayOfWeek: z.number().int().min(0).max(6),
+    startTime: z.string().regex(/^\d{2}:\d{2}$/),
+    endTime: z.string().regex(/^\d{2}:\d{2}$/),
+    repeatUntil: z.string().date().optional(),
+  })
+
+  // POST /workers/me/shifts — create a new shift template
+  app.post("/workers/me/shifts", { preHandler: [requireWorker] }, async (request, reply) => {
+    const workerId = (request as any).userId
+    const parsed = shiftTemplateBody.safeParse(request.body)
+    if (!parsed.success) return reply.status(400).send({ error: { code: "VALIDATION_ERROR", details: parsed.error.flatten() } })
+
+    const { dayOfWeek, startTime, endTime, repeatUntil } = parsed.data
+    const [created] = await db
+      .insert(shiftTemplates)
+      .values({ workerId, dayOfWeek, startTime, endTime, repeatUntil: repeatUntil ?? null })
+      .returning()
+
+    return reply.status(201).send(created)
+  })
+
+  // GET /workers/me/shifts — list own active shift templates
+  app.get("/workers/me/shifts", { preHandler: [requireWorker] }, async (request, reply) => {
+    const workerId = (request as any).userId
+    const rows = await db.execute<{
+      id: string; worker_id: string; day_of_week: number; start_time: string;
+      end_time: string; repeat_until: string | null; created_at: string
+    }>(sql`
+      SELECT id, worker_id, day_of_week, start_time, end_time, repeat_until, created_at
+      FROM shift_templates
+      WHERE worker_id = ${workerId}
+        AND (repeat_until IS NULL OR repeat_until >= CURRENT_DATE)
+      ORDER BY day_of_week, start_time
+    `)
+    return reply.send(rows.rows)
+  })
+
+  // DELETE /workers/me/shifts/:id — remove a shift template
+  app.delete("/workers/me/shifts/:id", { preHandler: [requireWorker] }, async (request, reply) => {
+    const workerId = (request as any).userId
+    const { id } = request.params as { id: string }
+    const result = await db.execute<{ count: string }>(sql`
+      DELETE FROM shift_templates
+      WHERE id = ${id} AND worker_id = ${workerId}
+      RETURNING id
+    `)
+    if (!result.rows.length) return reply.status(404).send({ error: { code: "NOT_FOUND", message: "Shift template not found or not yours" } })
     return reply.status(204).send()
   })
 }

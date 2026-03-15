@@ -1,6 +1,7 @@
 import { Server } from "socket.io"
 import { sql, eq, and, ne } from "drizzle-orm"
 import { db, jobPostings, jobApplications, workerProfiles, users } from "../db"
+import { shiftTemplates } from "../db/schema"
 import { MATCH_RADIUS_KM, OFFER_TIMEOUT_SECONDS, LATE_CANCEL_PENALTY_RATE } from "@albaconnect/shared"
 import { createNotification } from "../routes/notifications"
 import { rankWorkers } from "./scoring"
@@ -232,6 +233,19 @@ async function offerJobToWorker(jobId: string, workerId: string, distanceKm: num
   const durationMs = new Date(job.endAt).getTime() - new Date(job.startAt).getTime()
   const durationHours = durationMs / (1000 * 60 * 60)
 
+  // Check shift template coverage for this worker
+  const coverageResult = await db.execute<{ covered: boolean }>(sql`
+    SELECT EXISTS (
+      SELECT 1 FROM shift_templates
+      WHERE worker_id = ${workerId}
+        AND day_of_week = EXTRACT(DOW FROM ${job.startAt} AT TIME ZONE 'Asia/Seoul')::int
+        AND start_time <= (${job.startAt} AT TIME ZONE 'Asia/Seoul')::time
+        AND end_time >= (${job.startAt} AT TIME ZONE 'Asia/Seoul')::time
+        AND (repeat_until IS NULL OR repeat_until >= CURRENT_DATE)
+    ) AS covered
+  `)
+  const shiftWarning = !coverageResult.rows[0]?.covered
+
   // Emit offer to worker
   io.to(socketId).emit("job_offer", {
     type: "job_offer",
@@ -248,6 +262,7 @@ async function offerJobToWorker(jobId: string, workerId: string, distanceKm: num
     startAt: job.startAt.toISOString(),
     durationHours,
     expiresAt: expiresAt.toISOString(),
+    shiftWarning,
   })
 
   console.log(`[Matching] Offered job ${jobId} to worker ${workerId}, expires at ${expiresAt.toISOString()}`)
