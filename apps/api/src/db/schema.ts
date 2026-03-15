@@ -131,6 +131,11 @@ export const jobPostings = pgTable("job_postings", {
   statusUpdatedAt: timestamp("status_updated_at"),
   completedAt: timestamp("completed_at"),
   invoiceDownloadedAt: timestamp("invoice_downloaded_at"),
+  // Geofence enforcement
+  locationLat: decimal("location_lat", { precision: 9, scale: 6 }),
+  locationLon: decimal("location_lon", { precision: 9, scale: 6 }),
+  checkinRadiusMeters: integer("checkin_radius_meters").default(300).notNull(),
+  locationEnforcement: boolean("location_enforcement").default(true).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 })
@@ -143,6 +148,7 @@ export const jobApplications = pgTable("job_applications", {
   offeredAt: timestamp("offered_at").defaultNow().notNull(),
   respondedAt: timestamp("responded_at"),
   expiresAt: timestamp("expires_at").notNull(),
+  checkinDistanceMeters: integer("checkin_distance_meters"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 })
 
@@ -183,7 +189,6 @@ export const reviews = pgTable("reviews", {
   revieweeId: uuid("reviewee_id").references(() => users.id).notNull(),
   rating: integer("rating").notNull(), // 1-5
   comment: text("comment"),
-  reviewerRole: userRoleEnum("reviewer_role").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 })
 
@@ -269,7 +274,6 @@ export type Payment = typeof payments.$inferSelect
 export type Penalty = typeof penalties.$inferSelect
 export type NewPenalty = typeof penalties.$inferInsert
 export type Review = typeof reviews.$inferSelect
-export type NewReview = typeof reviews.$inferInsert
 
 
 

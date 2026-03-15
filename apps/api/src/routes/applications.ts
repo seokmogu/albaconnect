@@ -2,7 +2,7 @@ import { FastifyInstance } from "fastify"
 import { eq, and, or, sql, isNull, isNotNull } from "drizzle-orm"
 import { db, jobApplications, jobPostings, users, penalties, workerProfiles, referrals, payments } from "../db"
 import { authenticate, requireWorker, requireEmployer } from "../middleware/auth"
-import { handleAcceptOffer, handleRejectOffer } from "../services/matching"
+import { handleAcceptOffer, handleRejectOffer, distanceKm } from "../services/matching"
 import { createNotification } from "./notifications"
 import { PLATFORM_FEE_RATE } from "@albaconnect/shared"
 
@@ -219,7 +219,7 @@ export async function applicationRoutes(app: FastifyInstance) {
     })
   })
 
-  // POST /jobs/:jobId/checkin — worker checks in with GPS coordinates
+  // POST /jobs/:jobId/checkin — worker checks in with GPS coordinates (geofence enforced)
   app.post("/jobs/:jobId/checkin", { preHandler: [requireWorker] }, async (request, reply) => {
     const { jobId } = request.params as { jobId: string }
     const workerId = request.user.id
@@ -240,15 +240,67 @@ export async function applicationRoutes(app: FastifyInstance) {
       return reply.status(409).send({ error: "Already checked in" })
     }
 
+    // Geofence enforcement: fetch job location config
+    const [job] = await db
+      .select({
+        locationLat: jobPostings.locationLat,
+        locationLon: jobPostings.locationLon,
+        checkinRadiusMeters: jobPostings.checkinRadiusMeters,
+        locationEnforcement: jobPostings.locationEnforcement,
+      })
+      .from(jobPostings)
+      .where(eq(jobPostings.id, jobId))
+      .limit(1)
+
+    let checkinDistanceMeters: number | null = null
+
+    if (job?.locationLat != null && job?.locationLon != null && job.locationEnforcement) {
+      // Job has geofence configured and enforcement is active
+      if (body.latitude == null || body.longitude == null) {
+        return reply.status(422).send({
+          code: "CHECKIN_LOCATION_REQUIRED",
+          error: "GPS coordinates required for check-in at this job site",
+        })
+      }
+
+      const jobLat = parseFloat(String(job.locationLat))
+      const jobLon = parseFloat(String(job.locationLon))
+      const distKm = distanceKm(jobLat, jobLon, body.latitude, body.longitude)
+      const distMeters = Math.round(distKm * 1000)
+      checkinDistanceMeters = distMeters
+
+      const allowedMeters = job.checkinRadiusMeters ?? 300
+
+      if (distMeters > allowedMeters) {
+        return reply.status(422).send({
+          code: "CHECKIN_OUT_OF_RANGE",
+          error: "Worker is too far from job site for check-in",
+          distance_m: distMeters,
+          allowed_m: allowedMeters,
+        })
+      }
+    } else if (body.latitude != null && body.longitude != null && job?.locationLat != null && job?.locationLon != null) {
+      // Enforcement disabled (admin override) — still record distance for audit
+      const jobLat = parseFloat(String(job.locationLat))
+      const jobLon = parseFloat(String(job.locationLon))
+      checkinDistanceMeters = Math.round(distanceKm(jobLat, jobLon, body.latitude, body.longitude) * 1000)
+    }
+
     await db.execute(sql`
       UPDATE job_applications
       SET checkin_at = NOW(),
           checkin_latitude = ${body.latitude ?? null},
-          checkin_longitude = ${body.longitude ?? null}
+          checkin_longitude = ${body.longitude ?? null},
+          checkin_distance_meters = ${checkinDistanceMeters}
       WHERE id = ${application.id}
     `)
 
-    return reply.send({ checkedInAt: new Date().toISOString(), jobId, workerId })
+    return reply.send({
+      checkedInAt: new Date().toISOString(),
+      jobId,
+      workerId,
+      ...(checkinDistanceMeters != null ? { distance_m: checkinDistanceMeters } : {}),
+    })
   })
 
   // POST /jobs/:jobId/checkout — worker checks out, calculates actual hours
