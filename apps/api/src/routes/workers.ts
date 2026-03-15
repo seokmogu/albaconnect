@@ -917,4 +917,32 @@ export async function workerRoutes(app: FastifyInstance) {
 
     return reply.send({ certification: updated })
   })
+
+  // ── FCM Token registration ─────────────────────────────────────────────────
+
+  // POST /workers/me/fcm-token — register or update FCM device token
+  app.post("/workers/me/fcm-token", { preHandler: [requireWorker] }, async (request, reply) => {
+    const { token } = request.body as { token?: string }
+    if (!token || typeof token !== 'string' || token.length > 255) {
+      return reply.status(400).send({ error: { code: "VALIDATION_ERROR", message: "Invalid FCM token" } })
+    }
+    const workerId = (request as any).userId
+    const [updated] = await db
+      .update(workerProfiles)
+      .set({ fcmToken: token } as any)
+      .where(eq(workerProfiles.userId, workerId))
+      .returning({ userId: workerProfiles.userId })
+    if (!updated) return reply.status(404).send({ error: { code: "NOT_FOUND", message: "Worker profile not found" } })
+    return reply.status(200).send({ message: "FCM token registered" })
+  })
+
+  // DELETE /workers/me/fcm-token — unregister FCM token (e.g. logout)
+  app.delete("/workers/me/fcm-token", { preHandler: [requireWorker] }, async (request, reply) => {
+    const workerId = (request as any).userId
+    await db
+      .update(workerProfiles)
+      .set({ fcmToken: null } as any)
+      .where(eq(workerProfiles.userId, workerId))
+    return reply.status(204).send()
+  })
 }
