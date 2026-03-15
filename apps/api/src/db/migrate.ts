@@ -201,6 +201,7 @@ export async function runMigrations() {
   const migrationFiles = [
     path.join(process.cwd(), 'src/db/migrations/0007_admin_suspension.sql'),
     path.join(process.cwd(), 'src/db/migrations/0011_phone_verification.sql'),
+    path.join(process.cwd(), 'src/db/migrations/0018_review_reviewer_role.sql'),
   ]
   for (const file of migrationFiles) {
     if (fs.existsSync(file)) {
