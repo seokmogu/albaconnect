@@ -183,6 +183,7 @@ export const reviews = pgTable("reviews", {
   revieweeId: uuid("reviewee_id").references(() => users.id).notNull(),
   rating: integer("rating").notNull(), // 1-5
   comment: text("comment"),
+  reviewerRole: userRoleEnum("reviewer_role").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 })
 
@@ -268,6 +269,7 @@ export type Payment = typeof payments.$inferSelect
 export type Penalty = typeof penalties.$inferSelect
 export type NewPenalty = typeof penalties.$inferInsert
 export type Review = typeof reviews.$inferSelect
+export type NewReview = typeof reviews.$inferInsert
 
 
 
