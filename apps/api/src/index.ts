@@ -8,7 +8,7 @@ import helmet from "@fastify/helmet"
 import { createServer } from "http"
 import { sql } from "drizzle-orm"
 import { db } from "./db"
-import { runMigrations, runNotificationsMigration } from "./db/migrate"
+import { runMigrations, runNotificationsMigration, runInvoiceMigration } from "./db/migrate"
 import { authRoutes } from "./routes/auth"
 import { jobRoutes } from "./routes/jobs"
 import { workerRoutes } from "./routes/workers"
@@ -23,6 +23,7 @@ import { paymentRoutes } from "./routes/payments"
 import { disputeRoutes } from "./routes/disputes"
 import { referralRoutes } from "./routes/referrals"
 import { penaltyAppealRoutes } from "./routes/penaltyAppeals"
+import { invoiceRoutes } from "./routes/invoices"
 import { startEscrowAutoReleaseWorker, stopEscrowAutoReleaseWorker } from "./services/escrowAutoRelease"
 import { startWorkerAlertWorker, stopWorkerAlertWorker } from "./services/workerAlertWorker"
 import { setupSocketIO } from "./plugins/socket"
@@ -99,6 +100,7 @@ export async function buildApp() {
   await app.register(disputeRoutes)
   await app.register(referralRoutes)
   await app.register(penaltyAppealRoutes)
+  await app.register(invoiceRoutes)
 
   // Enhanced health check: DB connectivity + Redis + uptime + version
   app.get("/health", async (_req, reply) => {
@@ -145,6 +147,7 @@ export async function start() {
   try {
     await runMigrations()
     await runNotificationsMigration()
+    await runInvoiceMigration()
   } catch (err) {
     console.error("Migration failed:", err)
     process.exit(1)
