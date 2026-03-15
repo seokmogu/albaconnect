@@ -1,12 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import { Suspense, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { useAuthStore } from "@/store/auth"
 import api from "@/lib/api"
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { setAuth } = useAuthStore()
@@ -40,6 +40,41 @@ export default function LoginPage() {
   }
 
   return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-600 rounded-xl px-4 py-3 text-sm">{error}</div>
+      )}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">이메일</label>
+        <input
+          type="email"
+          className="input-field"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="example@email.com"
+          required
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">비밀번호</label>
+        <input
+          type="password"
+          className="input-field"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="8자 이상"
+          required
+        />
+      </div>
+      <button type="submit" className="btn-primary mt-2" disabled={loading}>
+        {loading ? "로그인 중..." : "로그인"}
+      </button>
+    </form>
+  )
+}
+
+export default function LoginPage() {
+  return (
     <div className="min-h-screen flex flex-col justify-center px-6 py-12 bg-gray-50">
       <div className="mb-8 text-center">
         <div className="text-5xl mb-3">⚡</div>
@@ -47,36 +82,9 @@ export default function LoginPage() {
         <p className="text-gray-500 mt-1">로그인</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-600 rounded-xl px-4 py-3 text-sm">{error}</div>
-        )}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">이메일</label>
-          <input
-            type="email"
-            className="input-field"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="example@email.com"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">비밀번호</label>
-          <input
-            type="password"
-            className="input-field"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="8자 이상"
-            required
-          />
-        </div>
-        <button type="submit" className="btn-primary mt-2" disabled={loading}>
-          {loading ? "로그인 중..." : "로그인"}
-        </button>
-      </form>
+      <Suspense fallback={<div className="space-y-4 animate-pulse"><div className="h-12 bg-gray-100 rounded-xl" /><div className="h-12 bg-gray-100 rounded-xl" /><div className="h-12 bg-blue-100 rounded-xl" /></div>}>
+        <LoginForm />
+      </Suspense>
 
       <p className="text-center text-sm text-gray-500 mt-6">
         계정이 없으신가요?{" "}

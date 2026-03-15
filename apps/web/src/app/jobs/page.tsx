@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import type { Metadata } from "next"
 import JobBoard, { type PublicJob } from "./JobBoard"
 
@@ -47,7 +48,9 @@ export default async function JobsPage() {
 
       {/* Content */}
       <div className="max-w-4xl mx-auto px-4 py-6">
-        <JobBoard initialJobs={jobs} />
+        <Suspense fallback={<div className="animate-pulse space-y-4"><div className="h-40 bg-white rounded-2xl" /><div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">{Array.from({length:6}).map((_,i)=><div key={i} className="h-48 bg-white rounded-2xl" />)}</div></div>}>
+          <JobBoard initialJobs={jobs} />
+        </Suspense>
       </div>
     </main>
   )

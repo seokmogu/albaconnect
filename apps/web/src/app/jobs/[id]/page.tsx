@@ -5,8 +5,6 @@ import { buildJobPosting, type PublicJobDetail } from "@/lib/seo"
 
 export const dynamic = "force-dynamic"
 
-export { buildJobPosting }
-
 async function getJob(id: string): Promise<PublicJobDetail | null> {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001"
   // UUID validation
