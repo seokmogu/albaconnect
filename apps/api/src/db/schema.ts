@@ -266,3 +266,19 @@ export type NewPenalty = typeof penalties.$inferInsert
 export type Review = typeof reviews.$inferSelect
 
 
+
+// ============================================================
+// messages (고용주-근로자 다이렉트 메시지)
+// ============================================================
+export const messages = pgTable("messages", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  jobId: uuid("job_id").references(() => jobPostings.id, { onDelete: "cascade" }).notNull(),
+  senderId: uuid("sender_id").references(() => users.id).notNull(),
+  recipientId: uuid("recipient_id").references(() => users.id).notNull(),
+  body: text("body").notNull(),
+  readAt: timestamp("read_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+})
+
+export type Message = typeof messages.$inferSelect
+export type NewMessage = typeof messages.$inferInsert

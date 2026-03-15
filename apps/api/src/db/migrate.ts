@@ -219,6 +219,8 @@ export async function runMigrations() {
   await runCertificationMigration()
   await runReferralMigration()
 
+  await runMessagesMigration()
+
   console.log('Migrations completed successfully')
 }
 
@@ -350,5 +352,29 @@ export async function runPlanTierMigration() {
   `)
   await db.execute(sql`
     UPDATE employer_profiles SET plan_tier = 'free' WHERE plan_tier IS NULL
+  `)
+}
+
+export async function runMessagesMigration() {
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS messages (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      job_id UUID NOT NULL REFERENCES job_postings(id) ON DELETE CASCADE,
+      sender_id UUID NOT NULL REFERENCES users(id),
+      recipient_id UUID NOT NULL REFERENCES users(id),
+      body TEXT NOT NULL CHECK (char_length(body) BETWEEN 1 AND 1000),
+      read_at TIMESTAMP,
+      created_at TIMESTAMP DEFAULT NOW() NOT NULL
+    )
+  `)
+
+  await db.execute(sql`
+    CREATE INDEX IF NOT EXISTS idx_messages_thread
+      ON messages(job_id, sender_id, recipient_id, created_at DESC)
+  `)
+
+  await db.execute(sql`
+    CREATE INDEX IF NOT EXISTS idx_messages_recipient
+      ON messages(recipient_id, read_at)
   `)
 }
