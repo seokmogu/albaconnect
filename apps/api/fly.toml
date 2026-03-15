@@ -1,0 +1,44 @@
+# fly.toml — AlbaConnect API (Fastify + WebSocket)
+# Deploy from monorepo root: flyctl deploy --config apps/api/fly.toml
+app = "albaconnect-api"
+primary_region = "nrt"  # Tokyo — closest to Korean market
+
+[build]
+  dockerfile = "apps/api/Dockerfile"
+
+[env]
+  PORT = "3001"
+  NODE_ENV = "production"
+
+[http_service]
+  internal_port = 3001
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 1
+
+  # WebSocket (socket.io) requires sticky sessions for multi-instance deployments.
+  # Without this, socket.io handshake may fail across instances.
+  # NOTE: enable sticky sessions if scaling to 2+ machines:
+  #   fly scale count 2 --app albaconnect-api
+  #   → add: [http_service] sticky_sessions = true
+
+  [http_service.concurrency]
+    type = "connections"
+    hard_limit = 200
+    soft_limit = 150
+
+[[vm]]
+  memory = "512mb"
+  cpu_kind = "shared"
+  cpus = 1
+
+[checks]
+  [checks.health]
+    grace_period = "30s"
+    interval = "15s"
+    method = "GET"
+    path = "/health"
+    port = 3001
+    timeout = "5s"
+    type = "http"
