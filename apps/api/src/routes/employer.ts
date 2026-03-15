@@ -6,6 +6,7 @@ import { db, users, employerProfiles, jobPostings, jobApplications, payments, em
 import { authenticate, requireEmployer, requireAdmin } from "../middleware/auth"
 import { sql } from "drizzle-orm"
 import { getRedisClient } from "../lib/redis"
+import { notifications } from "./notifications"
 
 const profileSchema = z.object({
   companyName: z.string().min(1).max(200).optional(),
@@ -31,6 +32,15 @@ export async function employerRoutes(app: FastifyInstance) {
       WHERE employer_id = ${userId}
     `)
 
+    // Unread notification badge count
+    let unreadNotificationCount = 0
+    try {
+      const unreadResult = await db.execute<{ count: string }>(sql`
+        SELECT COUNT(*) as count FROM notifications WHERE user_id = ${userId} AND read = false
+      `)
+      unreadNotificationCount = parseInt(unreadResult.rows?.[0]?.count ?? "0", 10)
+    } catch {}
+
     return reply.send({
       id: user.id,
       email: user.email,
@@ -41,6 +51,7 @@ export async function employerRoutes(app: FastifyInstance) {
       ratingAvg: profile.ratingAvg,
       ratingCount: profile.ratingCount,
       stats: stats.rows[0],
+      unreadNotificationCount,
     })
   })
 

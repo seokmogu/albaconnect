@@ -267,6 +267,15 @@ async function offerJobToWorker(jobId: string, workerId: string, distanceKm: num
 
   console.log(`[Matching] Offered job ${jobId} to worker ${workerId}, expires at ${expiresAt.toISOString()}`)
 
+  // Notify employer: new worker offer dispatched (application_submitted)
+  void createNotification(
+    job.employerId,
+    "application_submitted",
+    "새 지원자",
+    `"${job.title}" 공고에 새 근로자가 매칭 대기 중입니다.`,
+    { jobId, applicationId: application.id }
+  )
+
   // Fire-and-forget Web Push alongside Socket.IO — wrapped in try/catch IIFE to catch
   // synchronous throws from VAPID init (cannot be caught by .catch() alone)
   if (workerRow?.pushSubscription) {
