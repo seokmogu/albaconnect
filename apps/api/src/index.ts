@@ -26,6 +26,7 @@ import { penaltyAppealRoutes } from "./routes/penaltyAppeals"
 import { invoiceRoutes } from "./routes/invoices"
 import { startEscrowAutoReleaseWorker, stopEscrowAutoReleaseWorker } from "./services/escrowAutoRelease"
 import { startWorkerAlertWorker, stopWorkerAlertWorker } from "./services/workerAlertWorker"
+import { startReconciliationWorker, stopReconciliationWorker } from "./services/tossWebhook"
 import { setupSocketIO } from "./plugins/socket"
 import { setupRateLimit } from "./plugins/rateLimit"
 import sentryPlugin from "./plugins/sentry"
@@ -191,6 +192,7 @@ export async function start() {
   // Start escrow auto-release worker
   startEscrowAutoReleaseWorker(db as any)
   startWorkerAlertWorker(db as any)
+  startReconciliationWorker()
 
   // Cleanup on server close
   app.addHook("onClose", async () => {
@@ -198,6 +200,7 @@ export async function start() {
     if (expiryTimer.ref) clearInterval(expiryTimer.ref)
     stopEscrowAutoReleaseWorker()
     stopWorkerAlertWorker()
+    stopReconciliationWorker()
   })
 }
 
