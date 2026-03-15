@@ -1,4 +1,5 @@
 import { FastifyInstance } from "fastify"
+import { computeSurgeMultiplier, runSurgeCalc } from "../services/surgePricing"
 import { z } from "zod"
 import { eq, and } from "drizzle-orm"
 import { db, users, employerProfiles, jobPostings, jobApplications, payments, employerFavorites } from "../db"
@@ -795,4 +796,25 @@ export async function employerRoutes(app: FastifyInstance) {
 
     return reply.status(204).send()
   })
+
+  // GET /employer/jobs/:id/surge-preview — preview surge multiplier before posting
+  app.get<{ Params: { id: string } }>("/employer/jobs/:id/surge-preview", { preHandler: [requireEmployer] }, async (request, reply) => {
+    const jobId = request.params.id
+    const result = await runSurgeCalc(db as any, jobId)
+    return reply.send(result)
+  })
+
+  // GET /employer/jobs/surge-estimate — estimate surge for a new job (no DB required)
+  app.get("/employer/jobs/surge-estimate", { preHandler: [requireEmployer] }, async (request, reply) => {
+    const { start_at, demand_ratio } = request.query as { start_at?: string; demand_ratio?: string }
+
+    const startAt = start_at ? new Date(start_at) : new Date(Date.now() + 60 * 60 * 1000)
+    if (isNaN(startAt.getTime())) {
+      return reply.status(400).send({ error: "Invalid start_at date" })
+    }
+    const demandRatio = demand_ratio ? Number(demand_ratio) : 1.0
+    const surgeMultiplier = computeSurgeMultiplier({ demandRatio, startAt })
+    return reply.send({ surgeMultiplier, demandRatio, startAt })
+  })
+
 }

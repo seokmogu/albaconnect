@@ -219,6 +219,7 @@ export async function runMigrations() {
   await runCertificationMigration()
   await runReferralMigration()
 
+  await runSurgeMigration()
   await runMessagesMigration()
 
   console.log('Migrations completed successfully')
@@ -376,5 +377,12 @@ export async function runMessagesMigration() {
   await db.execute(sql`
     CREATE INDEX IF NOT EXISTS idx_messages_recipient
       ON messages(recipient_id, read_at)
+  `)
+}
+
+export async function runSurgeMigration() {
+  await db.execute(sql`
+    ALTER TABLE job_postings
+    ADD COLUMN IF NOT EXISTS surge_multiplier NUMERIC(3,2) NOT NULL DEFAULT 1.00
   `)
 }

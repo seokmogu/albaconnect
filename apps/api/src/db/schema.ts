@@ -125,6 +125,7 @@ export const jobPostings = pgTable("job_postings", {
   escrowStatus: escrowStatusEnum("escrow_status").default("pending").notNull(),
   paymentStatus: paymentStatusEnum2("payment_status_job").default("pending").notNull(),
   disputeHold: boolean("dispute_hold").default(false).notNull(),
+  surgeMultiplier: decimal("surge_multiplier", { precision: 3, scale: 2 }).default("1.00").notNull(),
   statusUpdatedAt: timestamp("status_updated_at"),
   completedAt: timestamp("completed_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
