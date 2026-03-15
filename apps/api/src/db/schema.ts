@@ -304,3 +304,17 @@ export const shiftTemplates = pgTable("shift_templates", {
 
 export type ShiftTemplate = typeof shiftTemplates.$inferSelect
 export type NewShiftTemplate = typeof shiftTemplates.$inferInsert
+
+// ============================================================
+// toss_webhook_events (Toss Payments 웹훅 멱등성 로그)
+// ============================================================
+export const tossWebhookEvents = pgTable("toss_webhook_events", {
+  id:          uuid("id").primaryKey().defaultRandom(),
+  orderKey:    varchar("order_key", { length: 200 }).notNull().unique(),
+  eventType:   varchar("event_type", { length: 100 }).notNull(),
+  payload:     jsonb("payload").notNull().default({}),
+  processedAt: timestamp("processed_at", { withTimezone: true }).defaultNow().notNull(),
+  createdAt:   timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+})
+
+export type TossWebhookEvent = typeof tossWebhookEvents.$inferSelect

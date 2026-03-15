@@ -7,6 +7,18 @@ const kakaoMocks = vi.hoisted(() => ({
 
 vi.mock('../services/kakaoAlimTalk.js', () => kakaoMocks)
 
+// Mock tossWebhook service — prevents real HMAC/idempotency logic from running in payment route tests
+vi.mock('../services/tossWebhook', () => ({
+  verifyTossSignature: vi.fn().mockReturnValue(true),
+  recordWebhookEvent: vi.fn().mockResolvedValue(true),
+  handlePaymentStatusChanged: vi.fn().mockResolvedValue(undefined),
+  handleVirtualAccountDeposit: vi.fn().mockResolvedValue(undefined),
+  runPaymentReconciliation: vi.fn().mockResolvedValue({ checked: 0, updated: 0, errors: 0 }),
+  incrementWebhookCounter: vi.fn(),
+  startReconciliationWorker: vi.fn(),
+  stopReconciliationWorker: vi.fn(),
+}))
+
 const mocks = vi.hoisted(() => {
   const selectLimitMock = vi.fn()
   const selectWhereMock = vi.fn(() => ({ limit: selectLimitMock }))
@@ -180,14 +192,18 @@ describe('payment routes', () => {
     await app.close()
   })
 
-  it('POST /payments/webhook with invalid auth returns 401', async () => {
+  it('POST /payments/webhook with invalid signature returns 401', async () => {
     process.env.TOSS_WEBHOOK_SECRET = 'webhook-secret'
+
+    // Override verifyTossSignature to return false for this test
+    const tossWebhook = await import('../services/tossWebhook')
+    vi.mocked(tossWebhook.verifyTossSignature).mockReturnValueOnce(false)
 
     const app = await buildApp()
     const response = await app.inject({
       method: 'POST',
       url: '/payments/webhook',
-      headers: { authorization: 'Basic wrong-token' },
+      headers: { tosssignature: 'bad-signature-hex' },
       payload: {
         eventType: 'PAYMENT_STATUS_CHANGED',
         data: { paymentKey: 'pay_key_abc', status: 'DONE' },
@@ -199,12 +215,12 @@ describe('payment routes', () => {
     await app.close()
   })
 
-  it('POST /payments/webhook duplicate (idempotency) returns 200', async () => {
+  it('POST /payments/webhook duplicate (idempotency) returns 200 with duplicate flag', async () => {
     delete process.env.TOSS_WEBHOOK_SECRET
 
-    // Simulate unique constraint violation (idempotency)
-    const pgError = Object.assign(new Error('duplicate key'), { code: '23505' })
-    mocks.updateWhereMock.mockRejectedValueOnce(pgError)
+    // Simulate recordWebhookEvent returning false (already seen)
+    const { recordWebhookEvent } = await import('../services/tossWebhook')
+    vi.mocked(recordWebhookEvent).mockResolvedValueOnce(false)
 
     const app = await buildApp()
     const response = await app.inject({
@@ -218,6 +234,7 @@ describe('payment routes', () => {
 
     expect(response.statusCode).toBe(200)
     expect(response.json().received).toBe(true)
+    expect(response.json().duplicate).toBe(true)
     await app.close()
   })
 

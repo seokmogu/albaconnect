@@ -5,6 +5,14 @@ import { db, payments, jobPostings, users, jobApplications } from "../db"
 import { authenticate, requireEmployer } from "../middleware/auth"
 import { PLATFORM_FEE_RATE } from "@albaconnect/shared"
 import { paymentCompleteAlimTalk } from "../services/kakaoAlimTalk"
+import {
+  verifyTossSignature,
+  recordWebhookEvent,
+  handlePaymentStatusChanged,
+  handleVirtualAccountDeposit,
+  runPaymentReconciliation,
+  incrementWebhookCounter,
+} from "../services/tossWebhook"
 
 const escrowSchema = z.object({
   jobId: z.string().uuid(),
@@ -148,94 +156,97 @@ export async function paymentRoutes(app: FastifyInstance) {
     })
   })
 
-  // POST /payments/webhook - Toss Payments webhook handler
-  app.post("/payments/webhook", async (request, reply) => {
-    // Validate Basic auth from Toss webhook
-    const authHeader = request.headers["authorization"] as string | undefined
-    const expected = "Basic " + Buffer.from((process.env.TOSS_WEBHOOK_SECRET ?? "") + ":").toString("base64")
+  // POST /payments/webhook - Toss Payments webhook handler (HMAC-SHA256 + idempotency)
+  app.post(
+    "/payments/webhook",
+    { config: { rawBody: true } },
+    async (request, reply) => {
+      // 1. HMAC-SHA256 signature verification on raw body
+      const signature = request.headers["tosssignature"] as string | undefined
+        ?? request.headers["toss-signature"] as string | undefined
+      const rawBody = (request as unknown as { rawBody?: Buffer }).rawBody
+        ?? Buffer.from(JSON.stringify(request.body))
 
-    if (process.env.TOSS_WEBHOOK_SECRET && authHeader !== expected) {
-      return reply.status(401).send({ error: "Unauthorized webhook" })
-    }
+      if (!verifyTossSignature(rawBody, signature)) {
+        incrementWebhookCounter("unknown", "error")
+        return reply.status(401).send({ error: "Invalid webhook signature" })
+      }
 
-    const body = webhookSchema.safeParse(request.body)
-    if (!body.success) {
-      return reply.status(400).send({ error: "Invalid webhook payload" })
-    }
+      // 2. Parse body
+      const parsed = webhookSchema.safeParse(request.body)
+      if (!parsed.success) {
+        return reply.status(400).send({ error: "Invalid webhook payload" })
+      }
 
-    const { eventType, data } = body.data
+      const { eventType, data } = parsed.data
 
-    try {
-      if (data.status === "DONE" && data.paymentKey) {
-        // Update payment: escrowStatus=escrowed, tossStatus=DONE
-        await db
-          .update(payments)
-          .set({ tossStatus: "DONE" })
-          .where(eq(payments.tossPaymentKey, data.paymentKey))
+      // 3. Idempotency: deduplicate by orderKey = eventType + orderId/paymentKey
+      const orderKey = `${eventType}:${data.orderId ?? data.paymentKey ?? Date.now()}`
+      const isNew = await recordWebhookEvent(orderKey, eventType, { eventType, data })
+      if (!isNew) {
+        // Duplicate — already processed
+        incrementWebhookCounter(eventType, "skipped")
+        return reply.status(200).send({ received: true, duplicate: true })
+      }
 
-        // Update job escrow status
-        const [existingPayment] = await db
-          .select()
-          .from(payments)
-          .where(eq(payments.tossPaymentKey, data.paymentKey))
-          .limit(1)
+      // 4. Process event
+      try {
+        if (eventType === "PAYMENT_STATUS_CHANGED") {
+          await handlePaymentStatusChanged(data)
+          incrementWebhookCounter(eventType, "processed")
+        } else if (eventType === "VIRTUAL_ACCOUNT_DEPOSIT") {
+          await handleVirtualAccountDeposit(data)
+          incrementWebhookCounter(eventType, "processed")
+        } else if (eventType === "PAYOUT_DONE" && data.paymentKey) {
+          // Legacy PAYOUT_DONE handler — send KakaoTalk notification
+          const [updatedPayment] = await db
+            .update(payments)
+            .set({ payoutAt: new Date(), tossStatus: "PAYOUT_DONE" })
+            .where(eq(payments.tossPaymentKey, data.paymentKey!))
+            .returning({ jobId: payments.jobId, amount: payments.amount })
 
-        if (existingPayment) {
-          await db
-            .update(jobPostings)
-            .set({ escrowStatus: "escrowed", updatedAt: new Date() })
-            .where(eq(jobPostings.id, existingPayment.jobId))
-        }
-      } else if (eventType === "PAYOUT_DONE" && data.paymentKey) {
-        // Update payment: payoutAt=now, tossStatus=PAYOUT_DONE
-        const [updatedPayment] = await db
-          .update(payments)
-          .set({ payoutAt: new Date(), tossStatus: "PAYOUT_DONE" })
-          .where(eq(payments.tossPaymentKey, data.paymentKey))
-          .returning({ jobId: payments.jobId, amount: payments.amount })
-
-        // Send KakaoTalk Alim Talk to worker — explicit try/catch to prevent Toss webhook retries
-        if (updatedPayment) {
-          void (async () => {
-            try {
-              const [application] = await db
-                .select({ workerId: jobApplications.workerId })
-                .from(jobApplications)
-                .where(and(eq(jobApplications.jobId, updatedPayment.jobId), eq(jobApplications.status, "accepted")))
-                .limit(1)
-              const [jobRow] = await db
-                .select({ title: jobPostings.title })
-                .from(jobPostings)
-                .where(eq(jobPostings.id, updatedPayment.jobId))
-                .limit(1)
-              const [workerUser] = await db
-                .select({ phone: users.phone })
-                .from(users)
-                .where(eq(users.id, application?.workerId ?? ""))
-                .limit(1)
-
-              if (workerUser?.phone && jobRow) {
-                await paymentCompleteAlimTalk({
-                  phone: workerUser.phone,
-                  jobTitle: jobRow.title,
-                  amount: updatedPayment.amount,
-                })
+          if (updatedPayment) {
+            void (async () => {
+              try {
+                const [application] = await db
+                  .select({ workerId: jobApplications.workerId })
+                  .from(jobApplications)
+                  .where(and(eq(jobApplications.jobId, updatedPayment.jobId), eq(jobApplications.status, "accepted")))
+                  .limit(1)
+                const [jobRow] = await db.select({ title: jobPostings.title }).from(jobPostings)
+                  .where(eq(jobPostings.id, updatedPayment.jobId)).limit(1)
+                const [workerUser] = await db.select({ phone: users.phone }).from(users)
+                  .where(eq(users.id, application?.workerId ?? "")).limit(1)
+                if (workerUser?.phone && jobRow) {
+                  await paymentCompleteAlimTalk({ phone: workerUser.phone, jobTitle: jobRow.title, amount: updatedPayment.amount })
+                }
+              } catch (e: unknown) {
+                console.error("[KakaoAlimTalk] Payment complete notification failed:", (e as Error).message)
               }
-            } catch (alimErr: unknown) {
-              console.error("[KakaoAlimTalk] Payment complete notification failed:", (alimErr as Error).message)
-            }
-          })()
+            })()
+          }
+          incrementWebhookCounter(eventType, "processed")
+        } else {
+          incrementWebhookCounter(eventType, "skipped")
         }
+      } catch (err: unknown) {
+        incrementWebhookCounter(eventType, "error")
+        throw err
       }
-    } catch (err: unknown) {
-      // Handle idempotency: ignore unique constraint violations (duplicate webhook)
-      if (err && typeof err === "object" && "code" in err && (err as { code: string }).code === "23505") {
-        // Duplicate - idempotent, return 200
-        return reply.status(200).send({ received: true })
-      }
-      throw err
+
+      return reply.status(200).send({ received: true })
+    }
+  )
+
+  // PATCH /payments/admin/reconcile/:id — manual reconcile a specific pending payment
+  app.patch("/payments/admin/reconcile/:id", async (request, reply) => {
+    const adminKey = request.headers["x-admin-key"] as string | undefined
+    if (!adminKey || adminKey !== process.env.ADMIN_KEY) {
+      return reply.status(401).send({ error: "Unauthorized" })
     }
 
-    return reply.status(200).send({ received: true })
+    const { id } = request.params as { id: string }
+    const result = await runPaymentReconciliation(false)
+    return reply.send({ id, reconciliation: result })
   })
 }
