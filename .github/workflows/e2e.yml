@@ -4,38 +4,91 @@ on:
   pull_request:
     branches:
       - main
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   e2e:
     name: Playwright E2E
     runs-on: ubuntu-latest
-    container:
-      image: mcr.microsoft.com/playwright:v1.42.0-jammy
+
+    services:
+      postgres:
+        image: postgis/postgis:15-3.4
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: albaconnect_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 9
+          cache: pnpm
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        working-directory: apps/web
+        run: npx playwright install chromium --with-deps
+
+      - name: Start API server
+        working-directory: apps/api
+        run: npx tsx src/index.ts &
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/albaconnect_test
+          REDIS_URL: redis://localhost:6379
+          JWT_SECRET: ci-e2e-test-jwt-secret-must-be-32-chars
+          JWT_REFRESH_SECRET: ci-e2e-refresh-secret-must-be-32-ch
+          NODE_ENV: test
+          PORT: 3001
+          KAKAO_BIZ_API_KEY: fake-kakao-key-ci
+          KAKAO_SENDER_KEY: fake-sender-key-ci
+          TOSS_SECRET_KEY: test_sk_fake_ci
+          TOSS_CLIENT_KEY: test_ck_fake_ci
+          FIREBASE_SERVICE_ACCOUNT_JSON: ""
+
+      - name: Wait for API to be ready
+        run: npx wait-on http://localhost:3001/health --timeout 60000 --interval 2000
 
       - name: Run Playwright E2E tests
         working-directory: apps/web
         run: pnpm test:e2e
         env:
           CI: true
-          USE_EXISTING_SERVER: false
+          NEXT_PUBLIC_API_URL: http://localhost:3001
           PLAYWRIGHT_BASE_URL: http://localhost:3000
+          TEST_EMPLOYER_EMAIL: employer@e2etest.com
+          TEST_EMPLOYER_PASS: E2eTestPass123!
+          TEST_WORKER_EMAIL: worker@e2etest.com
+          TEST_WORKER_PASS: E2eTestPass123!
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4
