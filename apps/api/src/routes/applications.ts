@@ -3,6 +3,7 @@ import { eq, and, or, sql, isNull, isNotNull } from "drizzle-orm"
 import { db, jobApplications, jobPostings, users, penalties, workerProfiles, referrals, payments } from "../db"
 import { authenticate, requireWorker, requireEmployer } from "../middleware/auth"
 import { handleAcceptOffer, handleRejectOffer } from "../services/matching"
+import { createNotification } from "./notifications"
 import { PLATFORM_FEE_RATE } from "@albaconnect/shared"
 
 export async function applicationRoutes(app: FastifyInstance) {
@@ -111,6 +112,16 @@ export async function applicationRoutes(app: FastifyInstance) {
         // All workers completed, mark job as completed
         await db.update(jobPostings).set({ status: "completed", updatedAt: new Date() }).where(eq(jobPostings.id, job.id))
       }
+
+      // Notify employer: worker completed
+      const [worker] = await db.select({ name: users.name }).from(users).where(eq(users.id, userId)).limit(1)
+      void createNotification(
+        job.employerId,
+        "application_completed",
+        "근무 완료",
+        `${worker?.name ?? "근로자"}님이 "${job.title}" 근무를 완료했습니다.`,
+        { jobId: job.id, applicationId: id }
+      )
     }
 
     // Referral qualification: fire-and-forget with explicit error logging
@@ -187,6 +198,15 @@ export async function applicationRoutes(app: FastifyInstance) {
     })
 
     await db.update(jobApplications).set({ status: "noshow", respondedAt: new Date() }).where(eq(jobApplications.id, id))
+
+    // Notify employer about noshow + penalty (KakaoTalk fires for "noshow" type)
+    void createNotification(
+      employerId,
+      "noshow",
+      "결근 처리됨",
+      `근로자가 "${job.title}" 근무에 결근했습니다. 위약금 ₩${penaltyAmount.toLocaleString()}이 적용됩니다.`,
+      { jobId: job.id, applicationId: id, penaltyAmount }
+    )
 
     // Try to find replacement
     setImmediate(() => {

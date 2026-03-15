@@ -4,6 +4,7 @@ import { createServer } from "http"
 import { db, workerProfiles } from "../db"
 import { eq } from "drizzle-orm"
 import { workerSockets, setSocketServer, handleAcceptOffer, handleRejectOffer } from "../services/matching"
+import { setNotificationEmitter } from "../routes/notifications"
 import { sql } from "drizzle-orm"
 
 export async function setupSocketIO(app: FastifyInstance, httpServer: ReturnType<typeof createServer>) {
@@ -15,6 +16,7 @@ export async function setupSocketIO(app: FastifyInstance, httpServer: ReturnType
   })
 
   setSocketServer(io)
+  setNotificationEmitter(io, workerSockets)
 
   io.use(async (socket, next) => {
     try {
