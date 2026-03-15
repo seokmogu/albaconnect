@@ -1013,9 +1013,13 @@ export async function workerRoutes(app: FastifyInstance) {
         }
         month = rawMonth
       } else {
-        const prev = new Date()
-        prev.setMonth(prev.getMonth() - 1)
-        month = prev.toISOString().slice(0, 7)
+        // Safe previous-month: avoid day-of-month overflow (e.g. Mar 31 → Apr instead of Feb)
+        const now = new Date()
+        const y = now.getUTCFullYear()
+        const m = now.getUTCMonth() // 0-based
+        const prevM = m === 0 ? 12 : m
+        const prevY = m === 0 ? y - 1 : y
+        month = `${prevY}-${String(prevM).padStart(2, "0")}`
       }
       const workerId = (request as any).user?.id ?? (request as any).userId
       const data = await computeReportCard(workerId, month)
@@ -1036,9 +1040,13 @@ export async function workerRoutes(app: FastifyInstance) {
         }
         month = rawMonth
       } else {
-        const prev = new Date()
-        prev.setMonth(prev.getMonth() - 1)
-        month = prev.toISOString().slice(0, 7)
+        // Safe previous-month: avoid day-of-month overflow (e.g. Mar 31 → Apr instead of Feb)
+        const now = new Date()
+        const y = now.getUTCFullYear()
+        const m = now.getUTCMonth() // 0-based
+        const prevM = m === 0 ? 12 : m
+        const prevY = m === 0 ? y - 1 : y
+        month = `${prevY}-${String(prevM).padStart(2, "0")}`
       }
 
       const workerId = (request as any).user?.id ?? (request as any).userId
@@ -1052,7 +1060,11 @@ export async function workerRoutes(app: FastifyInstance) {
       // Fetch ALL data before streaming — prevents corrupted PDF on DB error
       const reportData = await computeReportCard(workerId, month)
 
-      // Fetch top 10 completed jobs
+      // Fetch top 10 completed jobs for the selected month
+      const [rcYear, rcMon] = month.split("-").map(Number)
+      const monthStart = new Date(Date.UTC(rcYear, rcMon - 1, 1)).toISOString()
+      const monthEnd = new Date(Date.UTC(rcYear, rcMon, 1)).toISOString()
+
       const jobsResult = await db.execute<{
         title: string
         category: string
@@ -1064,6 +1076,8 @@ export async function workerRoutes(app: FastifyInstance) {
         JOIN job_postings jp ON jp.id = ja.job_id
         WHERE ja.worker_id = ${workerId}::uuid
           AND ja.status = 'completed'
+          AND jp.start_at >= ${monthStart}::timestamptz
+          AND jp.start_at < ${monthEnd}::timestamptz
         ORDER BY jp.start_at DESC
         LIMIT 10
       `)

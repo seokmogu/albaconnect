@@ -14,8 +14,9 @@ export interface ReportCardData {
 
 export async function computeReportCard(workerId: string, month: string): Promise<ReportCardData> {
   const [year, mon] = month.split("-").map(Number)
-  const startDate = new Date(year, mon - 1, 1)
-  const endDate = new Date(year, mon, 1)
+  // Use UTC-based dates to avoid local-timezone boundary shift
+  const startDate = new Date(Date.UTC(year, mon - 1, 1))
+  const endDate = new Date(Date.UTC(year, mon, 1))
 
   const mainResult = await db.execute<{
     total_jobs_completed: string

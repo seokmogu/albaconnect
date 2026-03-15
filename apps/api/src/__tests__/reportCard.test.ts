@@ -36,7 +36,7 @@ vi.mock("pdfkit", () => {
     const self = this
     self.pipe = vi.fn().mockReturnThis()
     self.end = vi.fn(function () {
-      ;(callbacks["end"] ?? []).forEach((cb) => cb())
+      ;(callbacks["end"] ?? []).forEach((cb) => { cb() })
     })
     self.text = vi.fn().mockReturnThis()
     self.font = vi.fn().mockReturnThis()
