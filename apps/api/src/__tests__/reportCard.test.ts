@@ -36,7 +36,7 @@ vi.mock("pdfkit", () => {
     const self = this
     self.pipe = vi.fn().mockReturnThis()
     self.end = vi.fn(function () {
-      ;(callbacks["end"] ?? []).forEach((cb) => cb())
+      ;(callbacks["end"] ?? []).forEach((cb) => { cb() })
     })
     self.text = vi.fn().mockReturnThis()
     self.font = vi.fn().mockReturnThis()
@@ -153,6 +153,19 @@ describe("Report Card", () => {
     expect(body.total_earnings_won).toBe(0)
     expect(body.on_time_rate_pct).toBe(0)
     expect(body.top_job_categories).toEqual([])
+  })
+
+  it("returns 400 for invalid month format", async () => {
+    const app = buildApp()
+    const res1 = await app.inject({ method: "GET", url: "/workers/me/report-card?month=2026-13" })
+    expect(res1.statusCode).toBe(400)
+    expect(res1.json()).toHaveProperty("error")
+
+    const res2 = await app.inject({ method: "GET", url: "/workers/me/report-card?month=26-03" })
+    expect(res2.statusCode).toBe(400)
+
+    const res3 = await app.inject({ method: "GET", url: "/workers/me/report-card/pdf?month=bad-format" })
+    expect(res3.statusCode).toBe(400)
   })
 
   it("PDF endpoint returns application/pdf content-type", async () => {
