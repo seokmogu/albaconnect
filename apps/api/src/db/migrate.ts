@@ -394,3 +394,10 @@ export async function runFcmMigration() {
     ADD COLUMN IF NOT EXISTS fcm_token VARCHAR(255)
   `)
 }
+
+export async function runInvoiceMigration() {
+  await db.execute(sql`
+    ALTER TABLE job_postings
+    ADD COLUMN IF NOT EXISTS invoice_downloaded_at TIMESTAMPTZ
+  `)
+}

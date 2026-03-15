@@ -130,6 +130,7 @@ export const jobPostings = pgTable("job_postings", {
   surgeMultiplier: decimal("surge_multiplier", { precision: 3, scale: 2 }).default("1.00").notNull(),
   statusUpdatedAt: timestamp("status_updated_at"),
   completedAt: timestamp("completed_at"),
+  invoiceDownloadedAt: timestamp("invoice_downloaded_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 })
