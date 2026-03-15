@@ -83,8 +83,7 @@ export async function runWorkerAlerts(
 
       if (nearbyJobs.length === 0) {
         skipped++
-        resolvedCounters?.incSkipped()
-        continue
+        resolvedCounters?.incSkipped()        continue
       }
 
       const topJob = nearbyJobs[0]!
@@ -108,8 +107,7 @@ export async function runWorkerAlerts(
       resolvedCounters?.incSent()
     } catch {
       errors++
-      resolvedCounters?.incErrors()
-    }
+      resolvedCounters?.incErrors()    }
   }
 
   return { sent, skipped, errors }
