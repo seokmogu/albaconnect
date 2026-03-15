@@ -70,6 +70,8 @@ export const workerProfiles = pgTable("worker_profiles", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
   // Web Push subscription (nullable — set when worker grants notification permission)
   pushSubscription: jsonb("push_subscription"),
+  // FCM token for Android/iOS push notifications
+  fcmToken: varchar("fcm_token", { length: 255 }),
 })
 
 export const workerAvailability = pgTable("worker_availability", {

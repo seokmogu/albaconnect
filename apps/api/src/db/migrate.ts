@@ -219,6 +219,7 @@ export async function runMigrations() {
   await runCertificationMigration()
   await runReferralMigration()
 
+  await runFcmMigration()
   await runSurgeMigration()
   await runMessagesMigration()
 
@@ -384,5 +385,12 @@ export async function runSurgeMigration() {
   await db.execute(sql`
     ALTER TABLE job_postings
     ADD COLUMN IF NOT EXISTS surge_multiplier NUMERIC(3,2) NOT NULL DEFAULT 1.00
+  `)
+}
+
+export async function runFcmMigration() {
+  await db.execute(sql`
+    ALTER TABLE worker_profiles
+    ADD COLUMN IF NOT EXISTS fcm_token VARCHAR(255)
   `)
 }
