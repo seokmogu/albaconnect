@@ -9,6 +9,7 @@ import { sql } from "drizzle-orm"
 import { db, employerProfiles, workerProfiles } from "../db"
 import { processExpiredJobs } from "../services/jobExpiry"
 import { runWorkerAlerts } from "../services/workerAlertWorker"
+import { applyDailySurge } from "../services/surgePricing"
 import { getRedisClient } from "../lib/redis"
 import { z } from "zod"
 
@@ -433,5 +434,18 @@ export async function adminRoutes(app: FastifyInstance) {
       dryRun,
       triggeredAt: new Date().toISOString(),
     })
+  })
+
+  // POST /admin/surge/apply — trigger batch surge recalculation for all open jobs
+  app.post("/admin/surge/apply", { preHandler }, async (_request, reply) => {
+    const redis = getRedisClient()
+    if (redis) {
+      const acquired = await redis.set("admin:surge:lock", "1", "EX", 120, "NX")
+      if (!acquired) {
+        return reply.status(429).send({ error: { code: "LOCKED", message: "Surge calculation already running — retry in 120s" } })
+      }
+    }
+    const result = await applyDailySurge(db as any)
+    return reply.send({ ...result, triggeredAt: new Date().toISOString() })
   })
 }
