@@ -1008,8 +1008,8 @@ export async function workerRoutes(app: FastifyInstance) {
       const { month: rawMonth } = request.query as { month?: string }
       let month: string
       if (rawMonth) {
-        if (!/^\d{4}-\d{2}$/.test(rawMonth)) {
-          return reply.status(400).send({ error: "Invalid month format. Use YYYY-MM." })
+        if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(rawMonth)) {
+          return reply.status(400).send({ error: "Invalid month format. Use YYYY-MM (month must be 01-12)." })
         }
         month = rawMonth
       } else {
@@ -1031,8 +1031,8 @@ export async function workerRoutes(app: FastifyInstance) {
       const { month: rawMonth } = request.query as { month?: string }
       let month: string
       if (rawMonth) {
-        if (!/^\d{4}-\d{2}$/.test(rawMonth)) {
-          return reply.status(400).send({ error: "Invalid month format. Use YYYY-MM." })
+        if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(rawMonth)) {
+          return reply.status(400).send({ error: "Invalid month format. Use YYYY-MM (month must be 01-12)." })
         }
         month = rawMonth
       } else {
