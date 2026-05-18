@@ -194,14 +194,19 @@ export async function start() {
   startWorkerAlertWorker(db as any)
   startReconciliationWorker()
 
-  // Cleanup on server close
-  app.addHook("onClose", async () => {
+  // Cleanup on process signal.
+  // addHook("onClose") here errored because listen() above already started
+  // the Fastify instance; signal-based cleanup is equivalent for these
+  // background workers and avoids the FST_ERR_INSTANCE_ALREADY_LISTENING.
+  const cleanup = () => {
     clearTimeout(startupTimer)
     if (expiryTimer.ref) clearInterval(expiryTimer.ref)
     stopEscrowAutoReleaseWorker()
     stopWorkerAlertWorker()
     stopReconciliationWorker()
-  })
+  }
+  process.once("SIGTERM", cleanup)
+  process.once("SIGINT", cleanup)
 }
 
 if (!process.env.VITEST) {

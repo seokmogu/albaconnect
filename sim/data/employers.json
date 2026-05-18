@@ -1,0 +1,4998 @@
+{
+  "generatedAt": "2026-05-15T00:52:56.431Z",
+  "count": 312,
+  "employers": [
+    {
+      "id": "emp-001",
+      "name": "골목 포차",
+      "category": "restaurant",
+      "dong": "도곡2동",
+      "nearestHub": "양재역",
+      "location": {
+        "lat": 37.483044,
+        "lng": 127.03721
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.87,
+      "reviewCount": 106,
+      "monthlyJobBudget": 3383978,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-002",
+      "name": "도쿄 신논현 키친",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "신논현역",
+      "location": {
+        "lat": 37.50682,
+        "lng": 127.025324
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.16,
+      "reviewCount": 129,
+      "monthlyJobBudget": 1640250,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-003",
+      "name": "산 강남 키친",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.501455,
+        "lng": 127.027612
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.76,
+      "reviewCount": 184,
+      "monthlyJobBudget": 1889478,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-004",
+      "name": "오늘 이자카야",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "역삼역",
+      "location": {
+        "lat": 37.501311,
+        "lng": 127.040103
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.16,
+      "reviewCount": 13,
+      "monthlyJobBudget": 923134,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-005",
+      "name": "오피스 케어서비스",
+      "category": "cleaning",
+      "dong": "역삼1동",
+      "nearestHub": "신논현역",
+      "location": {
+        "lat": 37.508321,
+        "lng": 127.027814
+      },
+      "persona": "강남 오피스/원룸 정기 청소. 시간당 일감.",
+      "avgRating": 4.01,
+      "reviewCount": 2,
+      "monthlyJobBudget": 4627619,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-006",
+      "name": "골목 다이닝",
+      "category": "restaurant",
+      "dong": "청담동",
+      "nearestHub": "청담역",
+      "location": {
+        "lat": 37.522773,
+        "lng": 127.054824
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.09,
+      "reviewCount": 232,
+      "monthlyJobBudget": 1933876,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-007",
+      "name": "어반 베이크앤커피",
+      "category": "cafe",
+      "dong": "논현1동",
+      "nearestHub": "논현역",
+      "location": {
+        "lat": 37.515527,
+        "lng": 127.02523
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.2,
+      "reviewCount": 171,
+      "monthlyJobBudget": 4282765,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-008",
+      "name": "세븐일레븐 굿즈",
+      "category": "retail",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.497478,
+        "lng": 127.024202
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 4.3,
+      "reviewCount": 131,
+      "monthlyJobBudget": 2026160,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-009",
+      "name": "한가람 포차",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.501685,
+        "lng": 127.030564
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.21,
+      "reviewCount": 36,
+      "monthlyJobBudget": 4345980,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-010",
+      "name": "노블 강남 로스터스",
+      "category": "cafe",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.499053,
+        "lng": 127.028801
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 3.84,
+      "reviewCount": 184,
+      "monthlyJobBudget": 2940148,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-011",
+      "name": "모먼트 커피",
+      "category": "cafe",
+      "dong": "청담동",
+      "nearestHub": "청담역",
+      "location": {
+        "lat": 37.523315,
+        "lng": 127.055379
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 3.84,
+      "reviewCount": 44,
+      "monthlyJobBudget": 3850302,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-012",
+      "name": "옛맛 비스트로",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "신논현역",
+      "location": {
+        "lat": 37.504872,
+        "lng": 127.020707
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 3.95,
+      "reviewCount": 121,
+      "monthlyJobBudget": 5695820,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-013",
+      "name": "산 포차",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "역삼역",
+      "location": {
+        "lat": 37.500594,
+        "lng": 127.031764
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 3.96,
+      "reviewCount": 201,
+      "monthlyJobBudget": 3354968,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-014",
+      "name": "오피스 클리닝",
+      "category": "cleaning",
+      "dong": "일원본동",
+      "nearestHub": "일원역",
+      "location": {
+        "lat": 37.483059,
+        "lng": 127.089902
+      },
+      "persona": "강남 오피스/원룸 정기 청소. 시간당 일감.",
+      "avgRating": 4.07,
+      "reviewCount": 243,
+      "monthlyJobBudget": 1893413,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-015",
+      "name": "포레 카페",
+      "category": "cafe",
+      "dong": "삼성1동",
+      "nearestHub": "삼성역",
+      "location": {
+        "lat": 37.506919,
+        "lng": 127.062242
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.05,
+      "reviewCount": 229,
+      "monthlyJobBudget": 5501888,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-016",
+      "name": "에이트 로스터스",
+      "category": "cafe",
+      "dong": "역삼1동",
+      "nearestHub": "역삼역",
+      "location": {
+        "lat": 37.497907,
+        "lng": 127.03976
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.65,
+      "reviewCount": 3,
+      "monthlyJobBudget": 3303940,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-017",
+      "name": "CU 편의점",
+      "category": "retail",
+      "dong": "삼성1동",
+      "nearestHub": "삼성역",
+      "location": {
+        "lat": 37.508866,
+        "lng": 127.058502
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 4.56,
+      "reviewCount": 189,
+      "monthlyJobBudget": 2018903,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-018",
+      "name": "테라 카페",
+      "category": "cafe",
+      "dong": "역삼1동",
+      "nearestHub": "신논현역",
+      "location": {
+        "lat": 37.508863,
+        "lng": 127.022789
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.2,
+      "reviewCount": 246,
+      "monthlyJobBudget": 1727623,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-019",
+      "name": "도쿄 이자카야",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.499255,
+        "lng": 127.030111
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.84,
+      "reviewCount": 43,
+      "monthlyJobBudget": 5790589,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-020",
+      "name": "오사카 선정릉 비스트로",
+      "category": "restaurant",
+      "dong": "삼성2동",
+      "nearestHub": "선정릉",
+      "location": {
+        "lat": 37.511186,
+        "lng": 127.044353
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.83,
+      "reviewCount": 179,
+      "monthlyJobBudget": 1743290,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-021",
+      "name": "블루보틀 커피",
+      "category": "cafe",
+      "dong": "논현1동",
+      "nearestHub": "논현역",
+      "location": {
+        "lat": 37.511912,
+        "lng": 127.023589
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.22,
+      "reviewCount": 146,
+      "monthlyJobBudget": 3360121,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-022",
+      "name": "블루보틀 청담 카페",
+      "category": "cafe",
+      "dong": "청담동",
+      "nearestHub": "청담역",
+      "location": {
+        "lat": 37.516506,
+        "lng": 127.049939
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.55,
+      "reviewCount": 38,
+      "monthlyJobBudget": 5463180,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-023",
+      "name": "골목 키친",
+      "category": "restaurant",
+      "dong": "논현2동",
+      "nearestHub": "학동역",
+      "location": {
+        "lat": 37.509636,
+        "lng": 127.031954
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 3.9,
+      "reviewCount": 12,
+      "monthlyJobBudget": 2497424,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-024",
+      "name": "세븐일레븐 굿즈",
+      "category": "retail",
+      "dong": "일원본동",
+      "nearestHub": "일원역",
+      "location": {
+        "lat": 37.489887,
+        "lng": 127.081999
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 4.2,
+      "reviewCount": 97,
+      "monthlyJobBudget": 3310201,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-025",
+      "name": "오사카 청담 분식",
+      "category": "restaurant",
+      "dong": "청담동",
+      "nearestHub": "청담역",
+      "location": {
+        "lat": 37.52337,
+        "lng": 127.051051
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.6,
+      "reviewCount": 71,
+      "monthlyJobBudget": 857660,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-026",
+      "name": "도쿄 청담 분식",
+      "category": "restaurant",
+      "dong": "청담동",
+      "nearestHub": "청담역",
+      "location": {
+        "lat": 37.523568,
+        "lng": 127.046763
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 3.92,
+      "reviewCount": 183,
+      "monthlyJobBudget": 993020,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-027",
+      "name": "삼성 이벤트",
+      "category": "event",
+      "dong": "논현1동",
+      "nearestHub": "논현역",
+      "location": {
+        "lat": 37.515036,
+        "lng": 127.024237
+      },
+      "persona": "강남 코엑스/팝업 이벤트 운영. 단기 부스 운영 인력 필요.",
+      "avgRating": 4.66,
+      "reviewCount": 229,
+      "monthlyJobBudget": 3659197,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-028",
+      "name": "오늘 도곡 포차",
+      "category": "restaurant",
+      "dong": "도곡1동",
+      "nearestHub": "도곡역",
+      "location": {
+        "lat": 37.488075,
+        "lng": 127.045154
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.23,
+      "reviewCount": 199,
+      "monthlyJobBudget": 1506724,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-029",
+      "name": "참숯 삼역 키친",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "역삼역",
+      "location": {
+        "lat": 37.500345,
+        "lng": 127.03815
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 3.98,
+      "reviewCount": 146,
+      "monthlyJobBudget": 2995056,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-030",
+      "name": "CU 마트",
+      "category": "retail",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.499393,
+        "lng": 127.02815
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 4.76,
+      "reviewCount": 82,
+      "monthlyJobBudget": 2804591,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-031",
+      "name": "세븐일레븐 압구정 샵",
+      "category": "retail",
+      "dong": "압구정동",
+      "nearestHub": "압구정역",
+      "location": {
+        "lat": 37.524102,
+        "lng": 127.031064
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 4.58,
+      "reviewCount": 246,
+      "monthlyJobBudget": 3172999,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-032",
+      "name": "강남 이벤트",
+      "category": "event",
+      "dong": "청담동",
+      "nearestHub": "청담역",
+      "location": {
+        "lat": 37.518796,
+        "lng": 127.04948
+      },
+      "persona": "강남 코엑스/팝업 이벤트 운영. 단기 부스 운영 인력 필요.",
+      "avgRating": 3.85,
+      "reviewCount": 152,
+      "monthlyJobBudget": 4946844,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-033",
+      "name": "오피스 클리닝",
+      "category": "cleaning",
+      "dong": "역삼1동",
+      "nearestHub": "역삼역",
+      "location": {
+        "lat": 37.502618,
+        "lng": 127.040497
+      },
+      "persona": "강남 오피스/원룸 정기 청소. 시간당 일감.",
+      "avgRating": 4.36,
+      "reviewCount": 76,
+      "monthlyJobBudget": 4625725,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-034",
+      "name": "산 분식",
+      "category": "restaurant",
+      "dong": "논현1동",
+      "nearestHub": "논현역",
+      "location": {
+        "lat": 37.516291,
+        "lng": 127.022978
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 3.84,
+      "reviewCount": 67,
+      "monthlyJobBudget": 5702738,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-035",
+      "name": "테라 대치 로스터스",
+      "category": "cafe",
+      "dong": "대치1동",
+      "nearestHub": "대치역",
+      "location": {
+        "lat": 37.502335,
+        "lng": 127.062372
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.43,
+      "reviewCount": 123,
+      "monthlyJobBudget": 3541108,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-036",
+      "name": "오사카 비스트로",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "신논현역",
+      "location": {
+        "lat": 37.500348,
+        "lng": 127.028797
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.02,
+      "reviewCount": 51,
+      "monthlyJobBudget": 2520234,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-037",
+      "name": "모먼트 에스프레소바",
+      "category": "cafe",
+      "dong": "대치2동",
+      "nearestHub": "한티역",
+      "location": {
+        "lat": 37.493472,
+        "lng": 127.050748
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.52,
+      "reviewCount": 180,
+      "monthlyJobBudget": 3874949,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-038",
+      "name": "어반 커피",
+      "category": "cafe",
+      "dong": "신사동",
+      "nearestHub": "신사역",
+      "location": {
+        "lat": 37.519783,
+        "lng": 127.020657
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.83,
+      "reviewCount": 11,
+      "monthlyJobBudget": 2350597,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-039",
+      "name": "골목 비스트로",
+      "category": "restaurant",
+      "dong": "논현1동",
+      "nearestHub": "논현역",
+      "location": {
+        "lat": 37.508441,
+        "lng": 127.021246
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 3.91,
+      "reviewCount": 38,
+      "monthlyJobBudget": 4204070,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-040",
+      "name": "스피드 클리닝",
+      "category": "cleaning",
+      "dong": "신사동",
+      "nearestHub": "신사역",
+      "location": {
+        "lat": 37.514927,
+        "lng": 127.025777
+      },
+      "persona": "강남 오피스/원룸 정기 청소. 시간당 일감.",
+      "avgRating": 4.25,
+      "reviewCount": 242,
+      "monthlyJobBudget": 1676272,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-041",
+      "name": "산 식당",
+      "category": "restaurant",
+      "dong": "도곡2동",
+      "nearestHub": "양재역",
+      "location": {
+        "lat": 37.485146,
+        "lng": 127.039172
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.22,
+      "reviewCount": 198,
+      "monthlyJobBudget": 1955784,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-042",
+      "name": "오늘 분식",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.49971,
+        "lng": 127.029457
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.4,
+      "reviewCount": 57,
+      "monthlyJobBudget": 1906201,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-043",
+      "name": "장터 다이닝",
+      "category": "restaurant",
+      "dong": "수서동",
+      "nearestHub": "수서역",
+      "location": {
+        "lat": 37.483165,
+        "lng": 127.102653
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 3.83,
+      "reviewCount": 3,
+      "monthlyJobBudget": 5201814,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-044",
+      "name": "미니스톱 샵",
+      "category": "retail",
+      "dong": "신사동",
+      "nearestHub": "강남구청",
+      "location": {
+        "lat": 37.513302,
+        "lng": 127.045399
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 4.81,
+      "reviewCount": 21,
+      "monthlyJobBudget": 2317799,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-045",
+      "name": "선릉 논현 샵",
+      "category": "other",
+      "dong": "논현1동",
+      "nearestHub": "논현역",
+      "location": {
+        "lat": 37.515289,
+        "lng": 127.017041
+      },
+      "persona": "강남 매장 임시 인력 — 카테고리 외 단기 일감.",
+      "avgRating": 4.35,
+      "reviewCount": 105,
+      "monthlyJobBudget": 991180,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-046",
+      "name": "산 신논현 한식당",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "신논현역",
+      "location": {
+        "lat": 37.503812,
+        "lng": 127.023009
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.37,
+      "reviewCount": 216,
+      "monthlyJobBudget": 4537811,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-047",
+      "name": "오사카 식당",
+      "category": "restaurant",
+      "dong": "압구정동",
+      "nearestHub": "압구정역",
+      "location": {
+        "lat": 37.526397,
+        "lng": 127.028176
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.86,
+      "reviewCount": 57,
+      "monthlyJobBudget": 5969588,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-048",
+      "name": "그란데 강남 로스터스",
+      "category": "cafe",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.494288,
+        "lng": 127.023812
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.36,
+      "reviewCount": 21,
+      "monthlyJobBudget": 2044230,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-049",
+      "name": "골목 키친",
+      "category": "restaurant",
+      "dong": "개포2동",
+      "nearestHub": "대모산입구",
+      "location": {
+        "lat": 37.484283,
+        "lng": 127.074013
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 3.88,
+      "reviewCount": 8,
+      "monthlyJobBudget": 1789013,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-050",
+      "name": "데일리 브런치",
+      "category": "cafe",
+      "dong": "논현1동",
+      "nearestHub": "논현역",
+      "location": {
+        "lat": 37.512731,
+        "lng": 127.021727
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 3.85,
+      "reviewCount": 13,
+      "monthlyJobBudget": 5060934,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-051",
+      "name": "선릉 서비스",
+      "category": "other",
+      "dong": "논현1동",
+      "nearestHub": "논현역",
+      "location": {
+        "lat": 37.513781,
+        "lng": 127.026024
+      },
+      "persona": "강남 매장 임시 인력 — 카테고리 외 단기 일감.",
+      "avgRating": 4.79,
+      "reviewCount": 180,
+      "monthlyJobBudget": 2725891,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-052",
+      "name": "골목 이자카야",
+      "category": "restaurant",
+      "dong": "대치1동",
+      "nearestHub": "대치역",
+      "location": {
+        "lat": 37.500709,
+        "lng": 127.053014
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 3.96,
+      "reviewCount": 129,
+      "monthlyJobBudget": 3015454,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-053",
+      "name": "CU 마트",
+      "category": "retail",
+      "dong": "청담동",
+      "nearestHub": "압구정로데오",
+      "location": {
+        "lat": 37.530143,
+        "lng": 127.036174
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 4.07,
+      "reviewCount": 143,
+      "monthlyJobBudget": 2314940,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-054",
+      "name": "그란데 에스프레소바",
+      "category": "cafe",
+      "dong": "삼성2동",
+      "nearestHub": "선정릉",
+      "location": {
+        "lat": 37.511503,
+        "lng": 127.038617
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.21,
+      "reviewCount": 231,
+      "monthlyJobBudget": 959811,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-055",
+      "name": "에브리 개포동 샵",
+      "category": "other",
+      "dong": "개포1동",
+      "nearestHub": "개포동역",
+      "location": {
+        "lat": 37.484423,
+        "lng": 127.069434
+      },
+      "persona": "강남 매장 임시 인력 — 카테고리 외 단기 일감.",
+      "avgRating": 4.36,
+      "reviewCount": 61,
+      "monthlyJobBudget": 1220460,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-056",
+      "name": "장터 스시바",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "신논현역",
+      "location": {
+        "lat": 37.507462,
+        "lng": 127.022506
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.15,
+      "reviewCount": 137,
+      "monthlyJobBudget": 910303,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-057",
+      "name": "한가람 키친",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.498418,
+        "lng": 127.026107
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.87,
+      "reviewCount": 118,
+      "monthlyJobBudget": 1603812,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-058",
+      "name": "산 다이닝",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.50125,
+        "lng": 127.026517
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.36,
+      "reviewCount": 102,
+      "monthlyJobBudget": 5354861,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-059",
+      "name": "바로 대치 배달",
+      "category": "delivery",
+      "dong": "대치1동",
+      "nearestHub": "대치역",
+      "location": {
+        "lat": 37.500257,
+        "lng": 127.060382
+      },
+      "persona": "강남 도심 배달/퀵. 자가 오토바이 또는 도보 배달.",
+      "avgRating": 4.12,
+      "reviewCount": 215,
+      "monthlyJobBudget": 3177689,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-060",
+      "name": "코엑스 프로모션",
+      "category": "event",
+      "dong": "역삼1동",
+      "nearestHub": "신논현역",
+      "location": {
+        "lat": 37.506508,
+        "lng": 127.02948
+      },
+      "persona": "강남 코엑스/팝업 이벤트 운영. 단기 부스 운영 인력 필요.",
+      "avgRating": 4.68,
+      "reviewCount": 28,
+      "monthlyJobBudget": 2940972,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-061",
+      "name": "고깃집 다이닝",
+      "category": "restaurant",
+      "dong": "압구정동",
+      "nearestHub": "압구정역",
+      "location": {
+        "lat": 37.531665,
+        "lng": 127.032518
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.86,
+      "reviewCount": 102,
+      "monthlyJobBudget": 4587193,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-062",
+      "name": "옛맛 분식",
+      "category": "restaurant",
+      "dong": "삼성2동",
+      "nearestHub": "선정릉",
+      "location": {
+        "lat": 37.507139,
+        "lng": 127.039885
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.14,
+      "reviewCount": 44,
+      "monthlyJobBudget": 4578914,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-063",
+      "name": "도곡 라이더센터",
+      "category": "delivery",
+      "dong": "개포1동",
+      "nearestHub": "개포동역",
+      "location": {
+        "lat": 37.477825,
+        "lng": 127.064557
+      },
+      "persona": "강남 도심 배달/퀵. 자가 오토바이 또는 도보 배달.",
+      "avgRating": 4.24,
+      "reviewCount": 37,
+      "monthlyJobBudget": 3807264,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-064",
+      "name": "한가람 강남 한식당",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.493997,
+        "lng": 127.024104
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.17,
+      "reviewCount": 125,
+      "monthlyJobBudget": 5301708,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-065",
+      "name": "깔끔 압구정 클리닝",
+      "category": "cleaning",
+      "dong": "압구정동",
+      "nearestHub": "압구정역",
+      "location": {
+        "lat": 37.531555,
+        "lng": 127.034137
+      },
+      "persona": "강남 오피스/원룸 정기 청소. 시간당 일감.",
+      "avgRating": 4.71,
+      "reviewCount": 65,
+      "monthlyJobBudget": 869892,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-066",
+      "name": "모먼트 로스터스",
+      "category": "cafe",
+      "dong": "청담동",
+      "nearestHub": "청담역",
+      "location": {
+        "lat": 37.51964,
+        "lng": 127.055151
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 3.93,
+      "reviewCount": 68,
+      "monthlyJobBudget": 5193305,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-067",
+      "name": "역삼 이벤트",
+      "category": "event",
+      "dong": "개포4동",
+      "nearestHub": "구룡역",
+      "location": {
+        "lat": 37.490436,
+        "lng": 127.056642
+      },
+      "persona": "강남 코엑스/팝업 이벤트 운영. 단기 부스 운영 인력 필요.",
+      "avgRating": 4.9,
+      "reviewCount": 129,
+      "monthlyJobBudget": 2837639,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-068",
+      "name": "장터 이자카야",
+      "category": "restaurant",
+      "dong": "논현1동",
+      "nearestHub": "논현역",
+      "location": {
+        "lat": 37.516381,
+        "lng": 127.02109
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.11,
+      "reviewCount": 156,
+      "monthlyJobBudget": 4271277,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-069",
+      "name": "오늘 다이닝",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.501086,
+        "lng": 127.024724
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.2,
+      "reviewCount": 114,
+      "monthlyJobBudget": 5415176,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-070",
+      "name": "테라 대치 브런치",
+      "category": "cafe",
+      "dong": "대치1동",
+      "nearestHub": "대치역",
+      "location": {
+        "lat": 37.502038,
+        "lng": 127.062091
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.59,
+      "reviewCount": 49,
+      "monthlyJobBudget": 4125065,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-071",
+      "name": "역삼 선릉 배달",
+      "category": "delivery",
+      "dong": "역삼2동",
+      "nearestHub": "선릉역",
+      "location": {
+        "lat": 37.50502,
+        "lng": 127.045687
+      },
+      "persona": "강남 도심 배달/퀵. 자가 오토바이 또는 도보 배달.",
+      "avgRating": 4.31,
+      "reviewCount": 217,
+      "monthlyJobBudget": 4049726,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-072",
+      "name": "깔끔 클리닝",
+      "category": "cleaning",
+      "dong": "역삼2동",
+      "nearestHub": "선릉역",
+      "location": {
+        "lat": 37.504805,
+        "lng": 127.044622
+      },
+      "persona": "강남 오피스/원룸 정기 청소. 시간당 일감.",
+      "avgRating": 3.87,
+      "reviewCount": 114,
+      "monthlyJobBudget": 2384581,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-073",
+      "name": "이마트24 굿즈",
+      "category": "retail",
+      "dong": "일원본동",
+      "nearestHub": "일원역",
+      "location": {
+        "lat": 37.489155,
+        "lng": 127.082092
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 4.11,
+      "reviewCount": 133,
+      "monthlyJobBudget": 3020472,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-074",
+      "name": "도쿄 신논현 한식당",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "신논현역",
+      "location": {
+        "lat": 37.502547,
+        "lng": 127.019896
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.33,
+      "reviewCount": 91,
+      "monthlyJobBudget": 3203350,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-075",
+      "name": "코엑스 런칭",
+      "category": "event",
+      "dong": "대치1동",
+      "nearestHub": "대치역",
+      "location": {
+        "lat": 37.500215,
+        "lng": 127.059967
+      },
+      "persona": "강남 코엑스/팝업 이벤트 운영. 단기 부스 운영 인력 필요.",
+      "avgRating": 4.58,
+      "reviewCount": 63,
+      "monthlyJobBudget": 3550148,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-076",
+      "name": "오사카 구룡 한식당",
+      "category": "restaurant",
+      "dong": "개포4동",
+      "nearestHub": "구룡역",
+      "location": {
+        "lat": 37.490424,
+        "lng": 127.061525
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.47,
+      "reviewCount": 192,
+      "monthlyJobBudget": 5702355,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-077",
+      "name": "오늘 대치 분식",
+      "category": "restaurant",
+      "dong": "대치1동",
+      "nearestHub": "대치역",
+      "location": {
+        "lat": 37.496292,
+        "lng": 127.063373
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.37,
+      "reviewCount": 18,
+      "monthlyJobBudget": 5985947,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-078",
+      "name": "오늘 다이닝",
+      "category": "restaurant",
+      "dong": "논현1동",
+      "nearestHub": "논현역",
+      "location": {
+        "lat": 37.512589,
+        "lng": 127.02691
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.82,
+      "reviewCount": 235,
+      "monthlyJobBudget": 3113895,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-079",
+      "name": "리프트 청담 팩토리",
+      "category": "manufacturing",
+      "dong": "청담동",
+      "nearestHub": "청담역",
+      "location": {
+        "lat": 37.516178,
+        "lng": 127.045237
+      },
+      "persona": "강남 소형 공방/제조. 제품 포장·검수 단기 알바.",
+      "avgRating": 4.16,
+      "reviewCount": 1,
+      "monthlyJobBudget": 3938635,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-080",
+      "name": "GS25 마트",
+      "category": "retail",
+      "dong": "논현1동",
+      "nearestHub": "논현역",
+      "location": {
+        "lat": 37.508961,
+        "lng": 127.023338
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 3.89,
+      "reviewCount": 103,
+      "monthlyJobBudget": 5836951,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-081",
+      "name": "오사카 스시바",
+      "category": "restaurant",
+      "dong": "청담동",
+      "nearestHub": "청담역",
+      "location": {
+        "lat": 37.521556,
+        "lng": 127.046653
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.68,
+      "reviewCount": 214,
+      "monthlyJobBudget": 3754555,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-082",
+      "name": "오늘 분식",
+      "category": "restaurant",
+      "dong": "논현2동",
+      "nearestHub": "학동역",
+      "location": {
+        "lat": 37.513183,
+        "lng": 127.030243
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.13,
+      "reviewCount": 139,
+      "monthlyJobBudget": 2108325,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-083",
+      "name": "세븐일레븐 샵",
+      "category": "retail",
+      "dong": "역삼1동",
+      "nearestHub": "역삼역",
+      "location": {
+        "lat": 37.499974,
+        "lng": 127.03989
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 4.77,
+      "reviewCount": 139,
+      "monthlyJobBudget": 4448042,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-084",
+      "name": "어반 카페",
+      "category": "cafe",
+      "dong": "삼성1동",
+      "nearestHub": "삼성역",
+      "location": {
+        "lat": 37.504534,
+        "lng": 127.058587
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.38,
+      "reviewCount": 14,
+      "monthlyJobBudget": 2480949,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-085",
+      "name": "오늘 키친",
+      "category": "restaurant",
+      "dong": "삼성1동",
+      "nearestHub": "삼성역",
+      "location": {
+        "lat": 37.504329,
+        "lng": 127.068328
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.36,
+      "reviewCount": 86,
+      "monthlyJobBudget": 3919316,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-086",
+      "name": "노블 학동 브런치",
+      "category": "cafe",
+      "dong": "논현2동",
+      "nearestHub": "학동역",
+      "location": {
+        "lat": 37.518461,
+        "lng": 127.036251
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.02,
+      "reviewCount": 86,
+      "monthlyJobBudget": 1807408,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-087",
+      "name": "이마트24 신논현 굿즈",
+      "category": "retail",
+      "dong": "역삼1동",
+      "nearestHub": "신논현역",
+      "location": {
+        "lat": 37.500003,
+        "lng": 127.022391
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 4.42,
+      "reviewCount": 235,
+      "monthlyJobBudget": 3417819,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-088",
+      "name": "미니스톱 일원 샵",
+      "category": "retail",
+      "dong": "일원본동",
+      "nearestHub": "일원역",
+      "location": {
+        "lat": 37.482997,
+        "lng": 127.088369
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 4.58,
+      "reviewCount": 43,
+      "monthlyJobBudget": 2317416,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-089",
+      "name": "선릉 삼역 이벤트",
+      "category": "event",
+      "dong": "역삼1동",
+      "nearestHub": "역삼역",
+      "location": {
+        "lat": 37.49955,
+        "lng": 127.037203
+      },
+      "persona": "강남 코엑스/팝업 이벤트 운영. 단기 부스 운영 인력 필요.",
+      "avgRating": 4.05,
+      "reviewCount": 218,
+      "monthlyJobBudget": 3526624,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-090",
+      "name": "데일리 도곡 로스터스",
+      "category": "cafe",
+      "dong": "도곡1동",
+      "nearestHub": "도곡역",
+      "location": {
+        "lat": 37.490361,
+        "lng": 127.043753
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.9,
+      "reviewCount": 58,
+      "monthlyJobBudget": 4717742,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-091",
+      "name": "장터 분식",
+      "category": "restaurant",
+      "dong": "논현2동",
+      "nearestHub": "학동역",
+      "location": {
+        "lat": 37.513323,
+        "lng": 127.030442
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 3.98,
+      "reviewCount": 165,
+      "monthlyJobBudget": 3333169,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-092",
+      "name": "포레 커피",
+      "category": "cafe",
+      "dong": "개포4동",
+      "nearestHub": "구룡역",
+      "location": {
+        "lat": 37.484305,
+        "lng": 127.060835
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.7,
+      "reviewCount": 146,
+      "monthlyJobBudget": 1059308,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-093",
+      "name": "리얼 에스프레소바",
+      "category": "cafe",
+      "dong": "청담동",
+      "nearestHub": "압구정로데오",
+      "location": {
+        "lat": 37.531211,
+        "lng": 127.037493
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.35,
+      "reviewCount": 60,
+      "monthlyJobBudget": 5029572,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-094",
+      "name": "역삼 삼역 배달",
+      "category": "delivery",
+      "dong": "역삼1동",
+      "nearestHub": "역삼역",
+      "location": {
+        "lat": 37.50437,
+        "lng": 127.031954
+      },
+      "persona": "강남 도심 배달/퀵. 자가 오토바이 또는 도보 배달.",
+      "avgRating": 3.89,
+      "reviewCount": 235,
+      "monthlyJobBudget": 3661862,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-095",
+      "name": "미니스톱 삼성 편의점",
+      "category": "retail",
+      "dong": "삼성1동",
+      "nearestHub": "삼성역",
+      "location": {
+        "lat": 37.509639,
+        "lng": 127.062247
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 4.53,
+      "reviewCount": 111,
+      "monthlyJobBudget": 2514844,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-096",
+      "name": "데일리 커피",
+      "category": "cafe",
+      "dong": "삼성1동",
+      "nearestHub": "삼성역",
+      "location": {
+        "lat": 37.510376,
+        "lng": 127.064729
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.23,
+      "reviewCount": 237,
+      "monthlyJobBudget": 3197574,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-097",
+      "name": "오사카 강남 키친",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.499123,
+        "lng": 127.031055
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.44,
+      "reviewCount": 32,
+      "monthlyJobBudget": 2229500,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-098",
+      "name": "리얼 브런치",
+      "category": "cafe",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.49821,
+        "lng": 127.029471
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.41,
+      "reviewCount": 51,
+      "monthlyJobBudget": 5715469,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-099",
+      "name": "코엑스 이벤트",
+      "category": "event",
+      "dong": "대치1동",
+      "nearestHub": "대치역",
+      "location": {
+        "lat": 37.49893,
+        "lng": 127.053496
+      },
+      "persona": "강남 코엑스/팝업 이벤트 운영. 단기 부스 운영 인력 필요.",
+      "avgRating": 3.94,
+      "reviewCount": 28,
+      "monthlyJobBudget": 3697243,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-100",
+      "name": "선릉 신사 샵",
+      "category": "other",
+      "dong": "신사동",
+      "nearestHub": "신사역",
+      "location": {
+        "lat": 37.520144,
+        "lng": 127.022928
+      },
+      "persona": "강남 매장 임시 인력 — 카테고리 외 단기 일감.",
+      "avgRating": 4.73,
+      "reviewCount": 241,
+      "monthlyJobBudget": 1645185,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-101",
+      "name": "에이트 커피",
+      "category": "cafe",
+      "dong": "일원본동",
+      "nearestHub": "일원역",
+      "location": {
+        "lat": 37.482745,
+        "lng": 127.087995
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.12,
+      "reviewCount": 178,
+      "monthlyJobBudget": 4694928,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-102",
+      "name": "산 도곡 한식당",
+      "category": "restaurant",
+      "dong": "도곡1동",
+      "nearestHub": "도곡역",
+      "location": {
+        "lat": 37.493466,
+        "lng": 127.041983
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.22,
+      "reviewCount": 207,
+      "monthlyJobBudget": 5019660,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-103",
+      "name": "CU 샵",
+      "category": "retail",
+      "dong": "청담동",
+      "nearestHub": "압구정로데오",
+      "location": {
+        "lat": 37.529719,
+        "lng": 127.042755
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 4.84,
+      "reviewCount": 221,
+      "monthlyJobBudget": 5421833,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-104",
+      "name": "블루보틀 커피",
+      "category": "cafe",
+      "dong": "역삼1동",
+      "nearestHub": "신논현역",
+      "location": {
+        "lat": 37.50218,
+        "lng": 127.024819
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.47,
+      "reviewCount": 59,
+      "monthlyJobBudget": 4312850,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-105",
+      "name": "오늘 한식당",
+      "category": "restaurant",
+      "dong": "신사동",
+      "nearestHub": "강남구청",
+      "location": {
+        "lat": 37.519011,
+        "lng": 127.038254
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 3.83,
+      "reviewCount": 221,
+      "monthlyJobBudget": 5747480,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-106",
+      "name": "도쿄 분식",
+      "category": "restaurant",
+      "dong": "논현1동",
+      "nearestHub": "논현역",
+      "location": {
+        "lat": 37.508663,
+        "lng": 127.024423
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 3.91,
+      "reviewCount": 147,
+      "monthlyJobBudget": 4045650,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-107",
+      "name": "장터 구룡 다이닝",
+      "category": "restaurant",
+      "dong": "개포4동",
+      "nearestHub": "구룡역",
+      "location": {
+        "lat": 37.489166,
+        "lng": 127.056213
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.24,
+      "reviewCount": 210,
+      "monthlyJobBudget": 3452091,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-108",
+      "name": "미니스톱 편의점",
+      "category": "retail",
+      "dong": "논현2동",
+      "nearestHub": "학동역",
+      "location": {
+        "lat": 37.518571,
+        "lng": 127.028557
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 4.88,
+      "reviewCount": 192,
+      "monthlyJobBudget": 1077467,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-109",
+      "name": "강남 이벤트",
+      "category": "event",
+      "dong": "청담동",
+      "nearestHub": "청담역",
+      "location": {
+        "lat": 37.522707,
+        "lng": 127.054826
+      },
+      "persona": "강남 코엑스/팝업 이벤트 운영. 단기 부스 운영 인력 필요.",
+      "avgRating": 4.31,
+      "reviewCount": 198,
+      "monthlyJobBudget": 4381019,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-110",
+      "name": "역삼 이벤트",
+      "category": "event",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.4978,
+        "lng": 127.030815
+      },
+      "persona": "강남 코엑스/팝업 이벤트 운영. 단기 부스 운영 인력 필요.",
+      "avgRating": 4.82,
+      "reviewCount": 26,
+      "monthlyJobBudget": 5435861,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-111",
+      "name": "오늘 비스트로",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.497284,
+        "lng": 127.024641
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.59,
+      "reviewCount": 100,
+      "monthlyJobBudget": 3922527,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-112",
+      "name": "옛맛 키친",
+      "category": "restaurant",
+      "dong": "청담동",
+      "nearestHub": "청담역",
+      "location": {
+        "lat": 37.514972,
+        "lng": 127.049887
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 3.86,
+      "reviewCount": 7,
+      "monthlyJobBudget": 5744116,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-113",
+      "name": "GS25 강남 샵",
+      "category": "retail",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.494915,
+        "lng": 127.026864
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 4.69,
+      "reviewCount": 99,
+      "monthlyJobBudget": 2244231,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-114",
+      "name": "미니스톱 압구정로데오 굿즈",
+      "category": "retail",
+      "dong": "청담동",
+      "nearestHub": "압구정로데오",
+      "location": {
+        "lat": 37.52591,
+        "lng": 127.042283
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 4.65,
+      "reviewCount": 230,
+      "monthlyJobBudget": 2479240,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-115",
+      "name": "도쿄 분식",
+      "category": "restaurant",
+      "dong": "논현1동",
+      "nearestHub": "논현역",
+      "location": {
+        "lat": 37.509219,
+        "lng": 127.023687
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.81,
+      "reviewCount": 172,
+      "monthlyJobBudget": 5737801,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-116",
+      "name": "고깃집 식당",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.493749,
+        "lng": 127.025242
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.66,
+      "reviewCount": 67,
+      "monthlyJobBudget": 1119310,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-117",
+      "name": "미니스톱 샵",
+      "category": "retail",
+      "dong": "논현1동",
+      "nearestHub": "논현역",
+      "location": {
+        "lat": 37.513096,
+        "lng": 127.021202
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 4.79,
+      "reviewCount": 201,
+      "monthlyJobBudget": 3265047,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-118",
+      "name": "도쿄 비스트로",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "신논현역",
+      "location": {
+        "lat": 37.503976,
+        "lng": 127.028876
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.17,
+      "reviewCount": 210,
+      "monthlyJobBudget": 5036438,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-119",
+      "name": "한가람 도곡 비스트로",
+      "category": "restaurant",
+      "dong": "도곡1동",
+      "nearestHub": "도곡역",
+      "location": {
+        "lat": 37.491386,
+        "lng": 127.044621
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.85,
+      "reviewCount": 125,
+      "monthlyJobBudget": 5528897,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-120",
+      "name": "한가람 압구정 다이닝",
+      "category": "restaurant",
+      "dong": "압구정동",
+      "nearestHub": "압구정역",
+      "location": {
+        "lat": 37.528458,
+        "lng": 127.032503
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.17,
+      "reviewCount": 23,
+      "monthlyJobBudget": 5716366,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-121",
+      "name": "도곡 서비스",
+      "category": "other",
+      "dong": "청담동",
+      "nearestHub": "압구정로데오",
+      "location": {
+        "lat": 37.53155,
+        "lng": 127.037283
+      },
+      "persona": "강남 매장 임시 인력 — 카테고리 외 단기 일감.",
+      "avgRating": 4.85,
+      "reviewCount": 7,
+      "monthlyJobBudget": 4152673,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-122",
+      "name": "노블 베이크앤커피",
+      "category": "cafe",
+      "dong": "신사동",
+      "nearestHub": "강남구청",
+      "location": {
+        "lat": 37.517937,
+        "lng": 127.045167
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.59,
+      "reviewCount": 124,
+      "monthlyJobBudget": 4914156,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-123",
+      "name": "오늘 학동 키친",
+      "category": "restaurant",
+      "dong": "논현2동",
+      "nearestHub": "학동역",
+      "location": {
+        "lat": 37.51239,
+        "lng": 127.035107
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.52,
+      "reviewCount": 78,
+      "monthlyJobBudget": 4182196,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-124",
+      "name": "에브리 센터",
+      "category": "other",
+      "dong": "청담동",
+      "nearestHub": "압구정로데오",
+      "location": {
+        "lat": 37.525961,
+        "lng": 127.039804
+      },
+      "persona": "강남 매장 임시 인력 — 카테고리 외 단기 일감.",
+      "avgRating": 4.74,
+      "reviewCount": 45,
+      "monthlyJobBudget": 5502414,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-125",
+      "name": "오늘 이자카야",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.496337,
+        "lng": 127.023498
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.32,
+      "reviewCount": 14,
+      "monthlyJobBudget": 2659078,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-126",
+      "name": "참숯 신사 식당",
+      "category": "restaurant",
+      "dong": "신사동",
+      "nearestHub": "신사역",
+      "location": {
+        "lat": 37.521141,
+        "lng": 127.015215
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.64,
+      "reviewCount": 95,
+      "monthlyJobBudget": 2010261,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-127",
+      "name": "원룸 케어서비스",
+      "category": "cleaning",
+      "dong": "청담동",
+      "nearestHub": "청담역",
+      "location": {
+        "lat": 37.51856,
+        "lng": 127.050729
+      },
+      "persona": "강남 오피스/원룸 정기 청소. 시간당 일감.",
+      "avgRating": 4.56,
+      "reviewCount": 96,
+      "monthlyJobBudget": 2128112,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-128",
+      "name": "테라 대모산입구 카페",
+      "category": "cafe",
+      "dong": "개포2동",
+      "nearestHub": "대모산입구",
+      "location": {
+        "lat": 37.477362,
+        "lng": 127.068453
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 3.92,
+      "reviewCount": 56,
+      "monthlyJobBudget": 3624073,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-129",
+      "name": "도쿄 식당",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.496278,
+        "lng": 127.032142
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.11,
+      "reviewCount": 95,
+      "monthlyJobBudget": 2708669,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-130",
+      "name": "오피스 신논현 클리닝",
+      "category": "cleaning",
+      "dong": "역삼1동",
+      "nearestHub": "신논현역",
+      "location": {
+        "lat": 37.502598,
+        "lng": 127.02577
+      },
+      "persona": "강남 오피스/원룸 정기 청소. 시간당 일감.",
+      "avgRating": 4.1,
+      "reviewCount": 123,
+      "monthlyJobBudget": 1686614,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-131",
+      "name": "참숯 키친",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "역삼역",
+      "location": {
+        "lat": 37.497506,
+        "lng": 127.041597
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.73,
+      "reviewCount": 36,
+      "monthlyJobBudget": 1929044,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-132",
+      "name": "바로 배달",
+      "category": "delivery",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.499346,
+        "lng": 127.032001
+      },
+      "persona": "강남 도심 배달/퀵. 자가 오토바이 또는 도보 배달.",
+      "avgRating": 4.44,
+      "reviewCount": 217,
+      "monthlyJobBudget": 885600,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-133",
+      "name": "참숯 다이닝",
+      "category": "restaurant",
+      "dong": "도곡1동",
+      "nearestHub": "도곡역",
+      "location": {
+        "lat": 37.494151,
+        "lng": 127.047874
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.4,
+      "reviewCount": 222,
+      "monthlyJobBudget": 1851244,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-134",
+      "name": "이마트24 샵",
+      "category": "retail",
+      "dong": "일원본동",
+      "nearestHub": "일원역",
+      "location": {
+        "lat": 37.486033,
+        "lng": 127.081844
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 4.39,
+      "reviewCount": 49,
+      "monthlyJobBudget": 3496455,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-135",
+      "name": "삼성 이벤트",
+      "category": "event",
+      "dong": "도곡2동",
+      "nearestHub": "양재역",
+      "location": {
+        "lat": 37.480892,
+        "lng": 127.032414
+      },
+      "persona": "강남 코엑스/팝업 이벤트 운영. 단기 부스 운영 인력 필요.",
+      "avgRating": 4.09,
+      "reviewCount": 81,
+      "monthlyJobBudget": 1888078,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-136",
+      "name": "이마트24 논현 샵",
+      "category": "retail",
+      "dong": "논현1동",
+      "nearestHub": "논현역",
+      "location": {
+        "lat": 37.514212,
+        "lng": 127.024183
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 3.96,
+      "reviewCount": 4,
+      "monthlyJobBudget": 5519800,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-137",
+      "name": "장터 분식",
+      "category": "restaurant",
+      "dong": "도곡2동",
+      "nearestHub": "양재역",
+      "location": {
+        "lat": 37.486877,
+        "lng": 127.036417
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 3.85,
+      "reviewCount": 179,
+      "monthlyJobBudget": 3017043,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-138",
+      "name": "고깃집 분식",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.500355,
+        "lng": 127.029706
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 3.82,
+      "reviewCount": 120,
+      "monthlyJobBudget": 4995852,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-139",
+      "name": "고깃집 다이닝",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "신논현역",
+      "location": {
+        "lat": 37.501513,
+        "lng": 127.024653
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.25,
+      "reviewCount": 36,
+      "monthlyJobBudget": 1928009,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-140",
+      "name": "포레 카페",
+      "category": "cafe",
+      "dong": "역삼1동",
+      "nearestHub": "신논현역",
+      "location": {
+        "lat": 37.501398,
+        "lng": 127.028207
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 3.97,
+      "reviewCount": 40,
+      "monthlyJobBudget": 5450695,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-141",
+      "name": "장터 한식당",
+      "category": "restaurant",
+      "dong": "삼성1동",
+      "nearestHub": "삼성역",
+      "location": {
+        "lat": 37.505576,
+        "lng": 127.062743
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 3.88,
+      "reviewCount": 0,
+      "monthlyJobBudget": 4510420,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-142",
+      "name": "테라 커피",
+      "category": "cafe",
+      "dong": "도곡2동",
+      "nearestHub": "양재역",
+      "location": {
+        "lat": 37.480907,
+        "lng": 127.030039
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.07,
+      "reviewCount": 172,
+      "monthlyJobBudget": 2790375,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-143",
+      "name": "미니스톱 스토어",
+      "category": "retail",
+      "dong": "청담동",
+      "nearestHub": "청담역",
+      "location": {
+        "lat": 37.516647,
+        "lng": 127.046464
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 3.81,
+      "reviewCount": 108,
+      "monthlyJobBudget": 1342624,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-144",
+      "name": "어반 베이크앤커피",
+      "category": "cafe",
+      "dong": "일원본동",
+      "nearestHub": "일원역",
+      "location": {
+        "lat": 37.484734,
+        "lng": 127.08896
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.79,
+      "reviewCount": 77,
+      "monthlyJobBudget": 5089277,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-145",
+      "name": "장터 다이닝",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "신논현역",
+      "location": {
+        "lat": 37.501121,
+        "lng": 127.030445
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.46,
+      "reviewCount": 18,
+      "monthlyJobBudget": 3207828,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-146",
+      "name": "GS25 스토어",
+      "category": "retail",
+      "dong": "도곡1동",
+      "nearestHub": "도곡역",
+      "location": {
+        "lat": 37.493946,
+        "lng": 127.048398
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 4.22,
+      "reviewCount": 69,
+      "monthlyJobBudget": 1766753,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-147",
+      "name": "포레 삼성 카페",
+      "category": "cafe",
+      "dong": "삼성1동",
+      "nearestHub": "삼성역",
+      "location": {
+        "lat": 37.510721,
+        "lng": 127.06288
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.78,
+      "reviewCount": 8,
+      "monthlyJobBudget": 2029083,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-148",
+      "name": "세븐일레븐 강남 스토어",
+      "category": "retail",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.493944,
+        "lng": 127.030909
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 4.1,
+      "reviewCount": 249,
+      "monthlyJobBudget": 3130731,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-149",
+      "name": "포레 카페",
+      "category": "cafe",
+      "dong": "대치2동",
+      "nearestHub": "한티역",
+      "location": {
+        "lat": 37.492952,
+        "lng": 127.052007
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 3.89,
+      "reviewCount": 77,
+      "monthlyJobBudget": 3287149,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-150",
+      "name": "리얼 삼역 로스터스",
+      "category": "cafe",
+      "dong": "역삼1동",
+      "nearestHub": "역삼역",
+      "location": {
+        "lat": 37.500358,
+        "lng": 127.040237
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.1,
+      "reviewCount": 9,
+      "monthlyJobBudget": 4310704,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-151",
+      "name": "어반 에스프레소바",
+      "category": "cafe",
+      "dong": "도곡2동",
+      "nearestHub": "양재역",
+      "location": {
+        "lat": 37.484226,
+        "lng": 127.0369
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 3.84,
+      "reviewCount": 200,
+      "monthlyJobBudget": 3598981,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-152",
+      "name": "참숯 식당",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "신논현역",
+      "location": {
+        "lat": 37.508448,
+        "lng": 127.025729
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 3.93,
+      "reviewCount": 127,
+      "monthlyJobBudget": 2334149,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-153",
+      "name": "고깃집 삼역 이자카야",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "역삼역",
+      "location": {
+        "lat": 37.504575,
+        "lng": 127.040695
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.55,
+      "reviewCount": 209,
+      "monthlyJobBudget": 2966273,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-154",
+      "name": "에이트 에스프레소바",
+      "category": "cafe",
+      "dong": "개포1동",
+      "nearestHub": "개포동역",
+      "location": {
+        "lat": 37.480802,
+        "lng": 127.068997
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.66,
+      "reviewCount": 97,
+      "monthlyJobBudget": 3771868,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-155",
+      "name": "바로 퀵",
+      "category": "delivery",
+      "dong": "개포4동",
+      "nearestHub": "구룡역",
+      "location": {
+        "lat": 37.487954,
+        "lng": 127.059332
+      },
+      "persona": "강남 도심 배달/퀵. 자가 오토바이 또는 도보 배달.",
+      "avgRating": 4.4,
+      "reviewCount": 196,
+      "monthlyJobBudget": 5805243,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-156",
+      "name": "데일리 카페",
+      "category": "cafe",
+      "dong": "청담동",
+      "nearestHub": "압구정로데오",
+      "location": {
+        "lat": 37.524747,
+        "lng": 127.044139
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.32,
+      "reviewCount": 169,
+      "monthlyJobBudget": 1143601,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-157",
+      "name": "어반 카페",
+      "category": "cafe",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.50167,
+        "lng": 127.033075
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.63,
+      "reviewCount": 57,
+      "monthlyJobBudget": 860242,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-158",
+      "name": "에이트 강남 에스프레소바",
+      "category": "cafe",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.49435,
+        "lng": 127.030793
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.03,
+      "reviewCount": 231,
+      "monthlyJobBudget": 5334654,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-159",
+      "name": "산 신사 포차",
+      "category": "restaurant",
+      "dong": "신사동",
+      "nearestHub": "신사역",
+      "location": {
+        "lat": 37.519254,
+        "lng": 127.024249
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.16,
+      "reviewCount": 184,
+      "monthlyJobBudget": 5855618,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-160",
+      "name": "데일리 카페",
+      "category": "cafe",
+      "dong": "도곡1동",
+      "nearestHub": "도곡역",
+      "location": {
+        "lat": 37.486865,
+        "lng": 127.047048
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.5,
+      "reviewCount": 70,
+      "monthlyJobBudget": 3496877,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-161",
+      "name": "그란데 로스터스",
+      "category": "cafe",
+      "dong": "신사동",
+      "nearestHub": "신사역",
+      "location": {
+        "lat": 37.516384,
+        "lng": 127.015681
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.77,
+      "reviewCount": 140,
+      "monthlyJobBudget": 5844913,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-162",
+      "name": "오늘 한식당",
+      "category": "restaurant",
+      "dong": "대치1동",
+      "nearestHub": "대치역",
+      "location": {
+        "lat": 37.501005,
+        "lng": 127.062351
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.5,
+      "reviewCount": 197,
+      "monthlyJobBudget": 3630531,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-163",
+      "name": "옛맛 삼역 비스트로",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "역삼역",
+      "location": {
+        "lat": 37.50196,
+        "lng": 127.03565
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.22,
+      "reviewCount": 23,
+      "monthlyJobBudget": 2218469,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-164",
+      "name": "장터 일원 분식",
+      "category": "restaurant",
+      "dong": "일원본동",
+      "nearestHub": "일원역",
+      "location": {
+        "lat": 37.481503,
+        "lng": 127.090669
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 3.94,
+      "reviewCount": 40,
+      "monthlyJobBudget": 2603420,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-165",
+      "name": "고깃집 신사 포차",
+      "category": "restaurant",
+      "dong": "신사동",
+      "nearestHub": "신사역",
+      "location": {
+        "lat": 37.515679,
+        "lng": 127.01832
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.45,
+      "reviewCount": 237,
+      "monthlyJobBudget": 1089562,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-166",
+      "name": "어반 로스터스",
+      "category": "cafe",
+      "dong": "논현2동",
+      "nearestHub": "학동역",
+      "location": {
+        "lat": 37.511399,
+        "lng": 127.027345
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 3.96,
+      "reviewCount": 116,
+      "monthlyJobBudget": 1131160,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-167",
+      "name": "어반 베이크앤커피",
+      "category": "cafe",
+      "dong": "역삼2동",
+      "nearestHub": "선릉역",
+      "location": {
+        "lat": 37.505302,
+        "lng": 127.047019
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.08,
+      "reviewCount": 146,
+      "monthlyJobBudget": 5247644,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-168",
+      "name": "모먼트 카페",
+      "category": "cafe",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.495356,
+        "lng": 127.02961
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.21,
+      "reviewCount": 183,
+      "monthlyJobBudget": 3535742,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-169",
+      "name": "옛맛 청담 식당",
+      "category": "restaurant",
+      "dong": "청담동",
+      "nearestHub": "청담역",
+      "location": {
+        "lat": 37.520136,
+        "lng": 127.054875
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.75,
+      "reviewCount": 212,
+      "monthlyJobBudget": 3909338,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-170",
+      "name": "참숯 한식당",
+      "category": "restaurant",
+      "dong": "일원본동",
+      "nearestHub": "일원역",
+      "location": {
+        "lat": 37.487067,
+        "lng": 127.090875
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 3.91,
+      "reviewCount": 81,
+      "monthlyJobBudget": 5639230,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-171",
+      "name": "GS25 대치 마트",
+      "category": "retail",
+      "dong": "대치1동",
+      "nearestHub": "대치역",
+      "location": {
+        "lat": 37.497688,
+        "lng": 127.061163
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 4.41,
+      "reviewCount": 236,
+      "monthlyJobBudget": 1892164,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-172",
+      "name": "오늘 키친",
+      "category": "restaurant",
+      "dong": "청담동",
+      "nearestHub": "압구정로데오",
+      "location": {
+        "lat": 37.524589,
+        "lng": 127.041767
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.42,
+      "reviewCount": 146,
+      "monthlyJobBudget": 4382448,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-173",
+      "name": "세븐일레븐 스토어",
+      "category": "retail",
+      "dong": "신사동",
+      "nearestHub": "강남구청",
+      "location": {
+        "lat": 37.520169,
+        "lng": 127.039931
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 4.29,
+      "reviewCount": 199,
+      "monthlyJobBudget": 1499498,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-174",
+      "name": "오사카 포차",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.499734,
+        "lng": 127.027991
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.15,
+      "reviewCount": 1,
+      "monthlyJobBudget": 3253836,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-175",
+      "name": "강남 케어서비스",
+      "category": "cleaning",
+      "dong": "역삼1동",
+      "nearestHub": "역삼역",
+      "location": {
+        "lat": 37.498804,
+        "lng": 127.035442
+      },
+      "persona": "강남 오피스/원룸 정기 청소. 시간당 일감.",
+      "avgRating": 4.37,
+      "reviewCount": 161,
+      "monthlyJobBudget": 1154196,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-176",
+      "name": "워크샵 팩토리",
+      "category": "manufacturing",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.499493,
+        "lng": 127.023857
+      },
+      "persona": "강남 소형 공방/제조. 제품 포장·검수 단기 알바.",
+      "avgRating": 3.84,
+      "reviewCount": 29,
+      "monthlyJobBudget": 5394691,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-177",
+      "name": "세븐일레븐 편의점",
+      "category": "retail",
+      "dong": "도곡2동",
+      "nearestHub": "양재역",
+      "location": {
+        "lat": 37.488147,
+        "lng": 127.036988
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 4.48,
+      "reviewCount": 117,
+      "monthlyJobBudget": 2702595,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-178",
+      "name": "블루보틀 브런치",
+      "category": "cafe",
+      "dong": "역삼1동",
+      "nearestHub": "역삼역",
+      "location": {
+        "lat": 37.499277,
+        "lng": 127.032981
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.43,
+      "reviewCount": 5,
+      "monthlyJobBudget": 5741419,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-179",
+      "name": "포레 에스프레소바",
+      "category": "cafe",
+      "dong": "삼성1동",
+      "nearestHub": "삼성역",
+      "location": {
+        "lat": 37.511107,
+        "lng": 127.062843
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.64,
+      "reviewCount": 98,
+      "monthlyJobBudget": 5811204,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-180",
+      "name": "한가람 다이닝",
+      "category": "restaurant",
+      "dong": "논현1동",
+      "nearestHub": "논현역",
+      "location": {
+        "lat": 37.513548,
+        "lng": 127.026353
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.79,
+      "reviewCount": 148,
+      "monthlyJobBudget": 3508222,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-181",
+      "name": "산 삼성 한식당",
+      "category": "restaurant",
+      "dong": "삼성1동",
+      "nearestHub": "삼성역",
+      "location": {
+        "lat": 37.509779,
+        "lng": 127.059921
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.32,
+      "reviewCount": 101,
+      "monthlyJobBudget": 4317646,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-182",
+      "name": "오피스 청소",
+      "category": "cleaning",
+      "dong": "대치2동",
+      "nearestHub": "한티역",
+      "location": {
+        "lat": 37.494403,
+        "lng": 127.057969
+      },
+      "persona": "강남 오피스/원룸 정기 청소. 시간당 일감.",
+      "avgRating": 4.64,
+      "reviewCount": 231,
+      "monthlyJobBudget": 1704133,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-183",
+      "name": "산 강남 식당",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.495893,
+        "lng": 127.027764
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.63,
+      "reviewCount": 28,
+      "monthlyJobBudget": 2939930,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-184",
+      "name": "강남 이벤트",
+      "category": "event",
+      "dong": "청담동",
+      "nearestHub": "청담역",
+      "location": {
+        "lat": 37.520524,
+        "lng": 127.045677
+      },
+      "persona": "강남 코엑스/팝업 이벤트 운영. 단기 부스 운영 인력 필요.",
+      "avgRating": 4.31,
+      "reviewCount": 80,
+      "monthlyJobBudget": 1176923,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-185",
+      "name": "미니스톱 스토어",
+      "category": "retail",
+      "dong": "일원본동",
+      "nearestHub": "일원역",
+      "location": {
+        "lat": 37.488617,
+        "lng": 127.080941
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 4.28,
+      "reviewCount": 167,
+      "monthlyJobBudget": 4565048,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-186",
+      "name": "데일리 개포동 브런치",
+      "category": "cafe",
+      "dong": "개포1동",
+      "nearestHub": "개포동역",
+      "location": {
+        "lat": 37.483973,
+        "lng": 127.061801
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.84,
+      "reviewCount": 238,
+      "monthlyJobBudget": 5266786,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-187",
+      "name": "한가람 일원 식당",
+      "category": "restaurant",
+      "dong": "일원본동",
+      "nearestHub": "일원역",
+      "location": {
+        "lat": 37.482463,
+        "lng": 127.08737
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 3.85,
+      "reviewCount": 198,
+      "monthlyJobBudget": 5374710,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-188",
+      "name": "오늘 한식당",
+      "category": "restaurant",
+      "dong": "삼성1동",
+      "nearestHub": "삼성역",
+      "location": {
+        "lat": 37.508489,
+        "lng": 127.065611
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 3.9,
+      "reviewCount": 15,
+      "monthlyJobBudget": 5640557,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-189",
+      "name": "에이트 삼성 카페",
+      "category": "cafe",
+      "dong": "삼성1동",
+      "nearestHub": "삼성역",
+      "location": {
+        "lat": 37.504612,
+        "lng": 127.057728
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.3,
+      "reviewCount": 127,
+      "monthlyJobBudget": 2380721,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-190",
+      "name": "테라 압구정로데오 커피",
+      "category": "cafe",
+      "dong": "청담동",
+      "nearestHub": "압구정로데오",
+      "location": {
+        "lat": 37.528561,
+        "lng": 127.038757
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.45,
+      "reviewCount": 60,
+      "monthlyJobBudget": 3261236,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-191",
+      "name": "블루보틀 신사 커피",
+      "category": "cafe",
+      "dong": "신사동",
+      "nearestHub": "신사역",
+      "location": {
+        "lat": 37.516478,
+        "lng": 127.018507
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.25,
+      "reviewCount": 46,
+      "monthlyJobBudget": 5396054,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-192",
+      "name": "미니스톱 마트",
+      "category": "retail",
+      "dong": "청담동",
+      "nearestHub": "청담역",
+      "location": {
+        "lat": 37.52067,
+        "lng": 127.044637
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 4.86,
+      "reviewCount": 23,
+      "monthlyJobBudget": 1217477,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-193",
+      "name": "바로 라이더센터",
+      "category": "delivery",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.496154,
+        "lng": 127.031252
+      },
+      "persona": "강남 도심 배달/퀵. 자가 오토바이 또는 도보 배달.",
+      "avgRating": 4.41,
+      "reviewCount": 188,
+      "monthlyJobBudget": 1977778,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-194",
+      "name": "장터 신논현 이자카야",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "신논현역",
+      "location": {
+        "lat": 37.504036,
+        "lng": 127.022556
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.85,
+      "reviewCount": 27,
+      "monthlyJobBudget": 1194640,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-195",
+      "name": "스피드 클리닝",
+      "category": "cleaning",
+      "dong": "도곡2동",
+      "nearestHub": "양재역",
+      "location": {
+        "lat": 37.484843,
+        "lng": 127.03803
+      },
+      "persona": "강남 오피스/원룸 정기 청소. 시간당 일감.",
+      "avgRating": 4.85,
+      "reviewCount": 212,
+      "monthlyJobBudget": 1550354,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-196",
+      "name": "이마트24 강남 굿즈",
+      "category": "retail",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.501708,
+        "lng": 127.023155
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 4.33,
+      "reviewCount": 117,
+      "monthlyJobBudget": 5365858,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-197",
+      "name": "에이트 브런치",
+      "category": "cafe",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.496377,
+        "lng": 127.029763
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.19,
+      "reviewCount": 79,
+      "monthlyJobBudget": 5319752,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-198",
+      "name": "원룸 압구정로데오 클리닝",
+      "category": "cleaning",
+      "dong": "청담동",
+      "nearestHub": "압구정로데오",
+      "location": {
+        "lat": 37.52576,
+        "lng": 127.044125
+      },
+      "persona": "강남 오피스/원룸 정기 청소. 시간당 일감.",
+      "avgRating": 4.87,
+      "reviewCount": 38,
+      "monthlyJobBudget": 5741761,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-199",
+      "name": "GS25 편의점",
+      "category": "retail",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.499794,
+        "lng": 127.026914
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 4.16,
+      "reviewCount": 105,
+      "monthlyJobBudget": 2567986,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-200",
+      "name": "고깃집 식당",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.501627,
+        "lng": 127.025681
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.3,
+      "reviewCount": 49,
+      "monthlyJobBudget": 3329348,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-201",
+      "name": "옛맛 삼역 분식",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "역삼역",
+      "location": {
+        "lat": 37.501037,
+        "lng": 127.040705
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.52,
+      "reviewCount": 248,
+      "monthlyJobBudget": 981708,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-202",
+      "name": "이마트24 신논현 스토어",
+      "category": "retail",
+      "dong": "역삼1동",
+      "nearestHub": "신논현역",
+      "location": {
+        "lat": 37.504996,
+        "lng": 127.026853
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 3.89,
+      "reviewCount": 97,
+      "monthlyJobBudget": 5630758,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-203",
+      "name": "강남 이벤트",
+      "category": "event",
+      "dong": "역삼1동",
+      "nearestHub": "신논현역",
+      "location": {
+        "lat": 37.5035,
+        "lng": 127.02494
+      },
+      "persona": "강남 코엑스/팝업 이벤트 운영. 단기 부스 운영 인력 필요.",
+      "avgRating": 3.92,
+      "reviewCount": 3,
+      "monthlyJobBudget": 3468655,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-204",
+      "name": "한가람 이자카야",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.493856,
+        "lng": 127.030217
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.88,
+      "reviewCount": 160,
+      "monthlyJobBudget": 2603698,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-205",
+      "name": "어반 신사 에스프레소바",
+      "category": "cafe",
+      "dong": "신사동",
+      "nearestHub": "신사역",
+      "location": {
+        "lat": 37.51703,
+        "lng": 127.020495
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.7,
+      "reviewCount": 207,
+      "monthlyJobBudget": 3019941,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-206",
+      "name": "삼성 프로모션",
+      "category": "event",
+      "dong": "개포4동",
+      "nearestHub": "구룡역",
+      "location": {
+        "lat": 37.483777,
+        "lng": 127.05886
+      },
+      "persona": "강남 코엑스/팝업 이벤트 운영. 단기 부스 운영 인력 필요.",
+      "avgRating": 4.81,
+      "reviewCount": 18,
+      "monthlyJobBudget": 1640358,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-207",
+      "name": "역삼 라이더센터",
+      "category": "delivery",
+      "dong": "청담동",
+      "nearestHub": "청담역",
+      "location": {
+        "lat": 37.517602,
+        "lng": 127.0489
+      },
+      "persona": "강남 도심 배달/퀵. 자가 오토바이 또는 도보 배달.",
+      "avgRating": 3.9,
+      "reviewCount": 234,
+      "monthlyJobBudget": 4582769,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-208",
+      "name": "오사카 한식당",
+      "category": "restaurant",
+      "dong": "삼성1동",
+      "nearestHub": "삼성역",
+      "location": {
+        "lat": 37.509372,
+        "lng": 127.057697
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.45,
+      "reviewCount": 123,
+      "monthlyJobBudget": 1074662,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-209",
+      "name": "이마트24 삼역 편의점",
+      "category": "retail",
+      "dong": "역삼1동",
+      "nearestHub": "역삼역",
+      "location": {
+        "lat": 37.498156,
+        "lng": 127.038634
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 4.15,
+      "reviewCount": 246,
+      "monthlyJobBudget": 2187863,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-210",
+      "name": "참숯 비스트로",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.498653,
+        "lng": 127.027704
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.63,
+      "reviewCount": 189,
+      "monthlyJobBudget": 2380842,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-211",
+      "name": "강남 배달",
+      "category": "delivery",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.500572,
+        "lng": 127.024181
+      },
+      "persona": "강남 도심 배달/퀵. 자가 오토바이 또는 도보 배달.",
+      "avgRating": 4.85,
+      "reviewCount": 80,
+      "monthlyJobBudget": 2366272,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-212",
+      "name": "그란데 카페",
+      "category": "cafe",
+      "dong": "개포2동",
+      "nearestHub": "대모산입구",
+      "location": {
+        "lat": 37.479508,
+        "lng": 127.074189
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.54,
+      "reviewCount": 36,
+      "monthlyJobBudget": 2715406,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-213",
+      "name": "한방 배달",
+      "category": "delivery",
+      "dong": "논현1동",
+      "nearestHub": "논현역",
+      "location": {
+        "lat": 37.51314,
+        "lng": 127.019012
+      },
+      "persona": "강남 도심 배달/퀵. 자가 오토바이 또는 도보 배달.",
+      "avgRating": 3.86,
+      "reviewCount": 29,
+      "monthlyJobBudget": 3518589,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-214",
+      "name": "선릉 샵",
+      "category": "other",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.50073,
+        "lng": 127.032041
+      },
+      "persona": "강남 매장 임시 인력 — 카테고리 외 단기 일감.",
+      "avgRating": 4.74,
+      "reviewCount": 43,
+      "monthlyJobBudget": 2136523,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-215",
+      "name": "이마트24 샵",
+      "category": "retail",
+      "dong": "수서동",
+      "nearestHub": "수서역",
+      "location": {
+        "lat": 37.482769,
+        "lng": 127.103729
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 4.64,
+      "reviewCount": 228,
+      "monthlyJobBudget": 4026603,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-216",
+      "name": "참숯 포차",
+      "category": "restaurant",
+      "dong": "신사동",
+      "nearestHub": "신사역",
+      "location": {
+        "lat": 37.520817,
+        "lng": 127.023119
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.76,
+      "reviewCount": 163,
+      "monthlyJobBudget": 3117126,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-217",
+      "name": "에이트 베이크앤커피",
+      "category": "cafe",
+      "dong": "일원본동",
+      "nearestHub": "일원역",
+      "location": {
+        "lat": 37.487271,
+        "lng": 127.082716
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.48,
+      "reviewCount": 176,
+      "monthlyJobBudget": 5628695,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-218",
+      "name": "이마트24 편의점",
+      "category": "retail",
+      "dong": "수서동",
+      "nearestHub": "수서역",
+      "location": {
+        "lat": 37.483689,
+        "lng": 127.105363
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 3.92,
+      "reviewCount": 151,
+      "monthlyJobBudget": 2085683,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-219",
+      "name": "오사카 한식당",
+      "category": "restaurant",
+      "dong": "삼성2동",
+      "nearestHub": "선정릉",
+      "location": {
+        "lat": 37.508507,
+        "lng": 127.04031
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.38,
+      "reviewCount": 160,
+      "monthlyJobBudget": 3430707,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-220",
+      "name": "세븐일레븐 마트",
+      "category": "retail",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.500773,
+        "lng": 127.025773
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 4.43,
+      "reviewCount": 155,
+      "monthlyJobBudget": 1253866,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-221",
+      "name": "노블 로스터스",
+      "category": "cafe",
+      "dong": "대치1동",
+      "nearestHub": "대치역",
+      "location": {
+        "lat": 37.497421,
+        "lng": 127.060307
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.86,
+      "reviewCount": 220,
+      "monthlyJobBudget": 3060109,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-222",
+      "name": "블루보틀 베이크앤커피",
+      "category": "cafe",
+      "dong": "개포2동",
+      "nearestHub": "대모산입구",
+      "location": {
+        "lat": 37.482269,
+        "lng": 127.075892
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.65,
+      "reviewCount": 249,
+      "monthlyJobBudget": 4382644,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-223",
+      "name": "노블 로스터스",
+      "category": "cafe",
+      "dong": "논현1동",
+      "nearestHub": "논현역",
+      "location": {
+        "lat": 37.513348,
+        "lng": 127.025741
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.85,
+      "reviewCount": 62,
+      "monthlyJobBudget": 842134,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-224",
+      "name": "그란데 커피",
+      "category": "cafe",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.49607,
+        "lng": 127.029326
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 3.94,
+      "reviewCount": 5,
+      "monthlyJobBudget": 4697994,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-225",
+      "name": "GS25 개포동 편의점",
+      "category": "retail",
+      "dong": "개포1동",
+      "nearestHub": "개포동역",
+      "location": {
+        "lat": 37.479469,
+        "lng": 127.068923
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 4.57,
+      "reviewCount": 106,
+      "monthlyJobBudget": 5889260,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-226",
+      "name": "한가람 키친",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "신논현역",
+      "location": {
+        "lat": 37.506771,
+        "lng": 127.020986
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.6,
+      "reviewCount": 36,
+      "monthlyJobBudget": 5111098,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-227",
+      "name": "오늘 이자카야",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.501085,
+        "lng": 127.028351
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.52,
+      "reviewCount": 145,
+      "monthlyJobBudget": 3234206,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-228",
+      "name": "산 스시바",
+      "category": "restaurant",
+      "dong": "논현1동",
+      "nearestHub": "논현역",
+      "location": {
+        "lat": 37.515674,
+        "lng": 127.0216
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 3.81,
+      "reviewCount": 40,
+      "monthlyJobBudget": 4645461,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-229",
+      "name": "노블 커피",
+      "category": "cafe",
+      "dong": "일원본동",
+      "nearestHub": "일원역",
+      "location": {
+        "lat": 37.486712,
+        "lng": 127.08839
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.35,
+      "reviewCount": 245,
+      "monthlyJobBudget": 4799496,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-230",
+      "name": "CU 신논현 편의점",
+      "category": "retail",
+      "dong": "역삼1동",
+      "nearestHub": "신논현역",
+      "location": {
+        "lat": 37.503464,
+        "lng": 127.020452
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 3.98,
+      "reviewCount": 227,
+      "monthlyJobBudget": 829531,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-231",
+      "name": "노블 에스프레소바",
+      "category": "cafe",
+      "dong": "청담동",
+      "nearestHub": "압구정로데오",
+      "location": {
+        "lat": 37.52392,
+        "lng": 127.045528
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 3.92,
+      "reviewCount": 224,
+      "monthlyJobBudget": 4621118,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-232",
+      "name": "GS25 편의점",
+      "category": "retail",
+      "dong": "일원본동",
+      "nearestHub": "일원역",
+      "location": {
+        "lat": 37.485192,
+        "lng": 127.082648
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 4.16,
+      "reviewCount": 200,
+      "monthlyJobBudget": 5097310,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-233",
+      "name": "참숯 한식당",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "역삼역",
+      "location": {
+        "lat": 37.504627,
+        "lng": 127.038374
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.64,
+      "reviewCount": 53,
+      "monthlyJobBudget": 2625334,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-234",
+      "name": "깔끔 케어서비스",
+      "category": "cleaning",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.496872,
+        "lng": 127.030729
+      },
+      "persona": "강남 오피스/원룸 정기 청소. 시간당 일감.",
+      "avgRating": 4.79,
+      "reviewCount": 62,
+      "monthlyJobBudget": 3759655,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-235",
+      "name": "깔끔 청소",
+      "category": "cleaning",
+      "dong": "청담동",
+      "nearestHub": "청담역",
+      "location": {
+        "lat": 37.515484,
+        "lng": 127.046246
+      },
+      "persona": "강남 오피스/원룸 정기 청소. 시간당 일감.",
+      "avgRating": 3.87,
+      "reviewCount": 243,
+      "monthlyJobBudget": 4812453,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-236",
+      "name": "이마트24 스토어",
+      "category": "retail",
+      "dong": "청담동",
+      "nearestHub": "청담역",
+      "location": {
+        "lat": 37.515153,
+        "lng": 127.048714
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 3.89,
+      "reviewCount": 108,
+      "monthlyJobBudget": 4896262,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-237",
+      "name": "CU 스토어",
+      "category": "retail",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.49711,
+        "lng": 127.029441
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 3.81,
+      "reviewCount": 191,
+      "monthlyJobBudget": 2189855,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-238",
+      "name": "GS25 신논현 스토어",
+      "category": "retail",
+      "dong": "역삼1동",
+      "nearestHub": "신논현역",
+      "location": {
+        "lat": 37.504749,
+        "lng": 127.022747
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 4.35,
+      "reviewCount": 72,
+      "monthlyJobBudget": 2513902,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-239",
+      "name": "에이트 로스터스",
+      "category": "cafe",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.499787,
+        "lng": 127.028863
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 3.95,
+      "reviewCount": 215,
+      "monthlyJobBudget": 3817870,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-240",
+      "name": "선릉 샵",
+      "category": "other",
+      "dong": "역삼2동",
+      "nearestHub": "선릉역",
+      "location": {
+        "lat": 37.503785,
+        "lng": 127.045527
+      },
+      "persona": "강남 매장 임시 인력 — 카테고리 외 단기 일감.",
+      "avgRating": 4.13,
+      "reviewCount": 231,
+      "monthlyJobBudget": 3569151,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-241",
+      "name": "바로 라이더센터",
+      "category": "delivery",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.49561,
+        "lng": 127.030006
+      },
+      "persona": "강남 도심 배달/퀵. 자가 오토바이 또는 도보 배달.",
+      "avgRating": 4.53,
+      "reviewCount": 165,
+      "monthlyJobBudget": 4166840,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-242",
+      "name": "도쿄 비스트로",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "신논현역",
+      "location": {
+        "lat": 37.508652,
+        "lng": 127.020361
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.88,
+      "reviewCount": 42,
+      "monthlyJobBudget": 5943359,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-243",
+      "name": "고깃집 다이닝",
+      "category": "restaurant",
+      "dong": "논현1동",
+      "nearestHub": "논현역",
+      "location": {
+        "lat": 37.508412,
+        "lng": 127.021589
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.86,
+      "reviewCount": 164,
+      "monthlyJobBudget": 4631853,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-244",
+      "name": "오사카 식당",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "역삼역",
+      "location": {
+        "lat": 37.499408,
+        "lng": 127.037574
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.69,
+      "reviewCount": 195,
+      "monthlyJobBudget": 1496583,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-245",
+      "name": "오늘 포차",
+      "category": "restaurant",
+      "dong": "신사동",
+      "nearestHub": "강남구청",
+      "location": {
+        "lat": 37.515762,
+        "lng": 127.035599
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.31,
+      "reviewCount": 136,
+      "monthlyJobBudget": 1718091,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-246",
+      "name": "참숯 이자카야",
+      "category": "restaurant",
+      "dong": "도곡2동",
+      "nearestHub": "양재역",
+      "location": {
+        "lat": 37.483474,
+        "lng": 127.033398
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.84,
+      "reviewCount": 83,
+      "monthlyJobBudget": 3685819,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-247",
+      "name": "참숯 비스트로",
+      "category": "restaurant",
+      "dong": "대치1동",
+      "nearestHub": "대치역",
+      "location": {
+        "lat": 37.499389,
+        "lng": 127.053523
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.3,
+      "reviewCount": 131,
+      "monthlyJobBudget": 5695150,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-248",
+      "name": "데일리 베이크앤커피",
+      "category": "cafe",
+      "dong": "압구정동",
+      "nearestHub": "압구정역",
+      "location": {
+        "lat": 37.524345,
+        "lng": 127.029325
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.81,
+      "reviewCount": 83,
+      "monthlyJobBudget": 3837756,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-249",
+      "name": "강남 프로모션",
+      "category": "event",
+      "dong": "역삼1동",
+      "nearestHub": "신논현역",
+      "location": {
+        "lat": 37.503187,
+        "lng": 127.026329
+      },
+      "persona": "강남 코엑스/팝업 이벤트 운영. 단기 부스 운영 인력 필요.",
+      "avgRating": 4.3,
+      "reviewCount": 196,
+      "monthlyJobBudget": 3868644,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-250",
+      "name": "바로 학동 퀵",
+      "category": "delivery",
+      "dong": "논현2동",
+      "nearestHub": "학동역",
+      "location": {
+        "lat": 37.511735,
+        "lng": 127.034888
+      },
+      "persona": "강남 도심 배달/퀵. 자가 오토바이 또는 도보 배달.",
+      "avgRating": 4.3,
+      "reviewCount": 204,
+      "monthlyJobBudget": 4334593,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-251",
+      "name": "장터 삼성 포차",
+      "category": "restaurant",
+      "dong": "삼성1동",
+      "nearestHub": "삼성역",
+      "location": {
+        "lat": 37.508901,
+        "lng": 127.059443
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4,
+      "reviewCount": 73,
+      "monthlyJobBudget": 1220046,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-252",
+      "name": "모먼트 브런치",
+      "category": "cafe",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.498742,
+        "lng": 127.030256
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 3.9,
+      "reviewCount": 104,
+      "monthlyJobBudget": 891142,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-253",
+      "name": "한가람 비스트로",
+      "category": "restaurant",
+      "dong": "삼성2동",
+      "nearestHub": "선정릉",
+      "location": {
+        "lat": 37.512489,
+        "lng": 127.048428
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.29,
+      "reviewCount": 56,
+      "monthlyJobBudget": 2406603,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-254",
+      "name": "데일리 에스프레소바",
+      "category": "cafe",
+      "dong": "일원본동",
+      "nearestHub": "일원역",
+      "location": {
+        "lat": 37.487963,
+        "lng": 127.089782
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.41,
+      "reviewCount": 77,
+      "monthlyJobBudget": 5151727,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-255",
+      "name": "강남 런칭",
+      "category": "event",
+      "dong": "도곡2동",
+      "nearestHub": "양재역",
+      "location": {
+        "lat": 37.484492,
+        "lng": 127.03793
+      },
+      "persona": "강남 코엑스/팝업 이벤트 운영. 단기 부스 운영 인력 필요.",
+      "avgRating": 3.86,
+      "reviewCount": 145,
+      "monthlyJobBudget": 2917957,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-256",
+      "name": "이마트24 굿즈",
+      "category": "retail",
+      "dong": "역삼1동",
+      "nearestHub": "신논현역",
+      "location": {
+        "lat": 37.506766,
+        "lng": 127.027582
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 4.86,
+      "reviewCount": 45,
+      "monthlyJobBudget": 1882815,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-257",
+      "name": "도곡 라이더센터",
+      "category": "delivery",
+      "dong": "대치1동",
+      "nearestHub": "대치역",
+      "location": {
+        "lat": 37.495633,
+        "lng": 127.057099
+      },
+      "persona": "강남 도심 배달/퀵. 자가 오토바이 또는 도보 배달.",
+      "avgRating": 4.55,
+      "reviewCount": 163,
+      "monthlyJobBudget": 3840520,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-258",
+      "name": "골목 비스트로",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "신논현역",
+      "location": {
+        "lat": 37.506898,
+        "lng": 127.023332
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.16,
+      "reviewCount": 122,
+      "monthlyJobBudget": 5852799,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-259",
+      "name": "오사카 한식당",
+      "category": "restaurant",
+      "dong": "역삼2동",
+      "nearestHub": "선릉역",
+      "location": {
+        "lat": 37.500484,
+        "lng": 127.047308
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.54,
+      "reviewCount": 88,
+      "monthlyJobBudget": 1329692,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-260",
+      "name": "오사카 키친",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.495578,
+        "lng": 127.022564
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 3.87,
+      "reviewCount": 236,
+      "monthlyJobBudget": 5738286,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-261",
+      "name": "바로 퀵",
+      "category": "delivery",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.499537,
+        "lng": 127.025308
+      },
+      "persona": "강남 도심 배달/퀵. 자가 오토바이 또는 도보 배달.",
+      "avgRating": 4.76,
+      "reviewCount": 22,
+      "monthlyJobBudget": 5968061,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-262",
+      "name": "어반 베이크앤커피",
+      "category": "cafe",
+      "dong": "청담동",
+      "nearestHub": "압구정로데오",
+      "location": {
+        "lat": 37.527084,
+        "lng": 127.044087
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.15,
+      "reviewCount": 113,
+      "monthlyJobBudget": 5558575,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-263",
+      "name": "골목 선릉 키친",
+      "category": "restaurant",
+      "dong": "역삼2동",
+      "nearestHub": "선릉역",
+      "location": {
+        "lat": 37.506892,
+        "lng": 127.046073
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.12,
+      "reviewCount": 119,
+      "monthlyJobBudget": 3669081,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-264",
+      "name": "데일리 로스터스",
+      "category": "cafe",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.501633,
+        "lng": 127.027514
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.31,
+      "reviewCount": 236,
+      "monthlyJobBudget": 3314053,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-265",
+      "name": "에이트 커피",
+      "category": "cafe",
+      "dong": "삼성1동",
+      "nearestHub": "삼성역",
+      "location": {
+        "lat": 37.507628,
+        "lng": 127.061847
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.62,
+      "reviewCount": 48,
+      "monthlyJobBudget": 3510464,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-266",
+      "name": "CU 마트",
+      "category": "retail",
+      "dong": "역삼1동",
+      "nearestHub": "신논현역",
+      "location": {
+        "lat": 37.504199,
+        "lng": 127.023353
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 4.54,
+      "reviewCount": 32,
+      "monthlyJobBudget": 2403015,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-267",
+      "name": "도쿄 신사 스시바",
+      "category": "restaurant",
+      "dong": "신사동",
+      "nearestHub": "신사역",
+      "location": {
+        "lat": 37.517589,
+        "lng": 127.024507
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.02,
+      "reviewCount": 138,
+      "monthlyJobBudget": 1499214,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-268",
+      "name": "그란데 커피",
+      "category": "cafe",
+      "dong": "압구정동",
+      "nearestHub": "압구정역",
+      "location": {
+        "lat": 37.529888,
+        "lng": 127.023759
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.35,
+      "reviewCount": 108,
+      "monthlyJobBudget": 971030,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-269",
+      "name": "참숯 포차",
+      "category": "restaurant",
+      "dong": "개포4동",
+      "nearestHub": "구룡역",
+      "location": {
+        "lat": 37.48762,
+        "lng": 127.055179
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.65,
+      "reviewCount": 16,
+      "monthlyJobBudget": 1302957,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-270",
+      "name": "이마트24 샵",
+      "category": "retail",
+      "dong": "대치2동",
+      "nearestHub": "한티역",
+      "location": {
+        "lat": 37.497967,
+        "lng": 127.052372
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 3.86,
+      "reviewCount": 45,
+      "monthlyJobBudget": 4420595,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-271",
+      "name": "오피스 클리닝",
+      "category": "cleaning",
+      "dong": "논현2동",
+      "nearestHub": "학동역",
+      "location": {
+        "lat": 37.513618,
+        "lng": 127.033264
+      },
+      "persona": "강남 오피스/원룸 정기 청소. 시간당 일감.",
+      "avgRating": 4.05,
+      "reviewCount": 102,
+      "monthlyJobBudget": 4614823,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-272",
+      "name": "도곡 퀵",
+      "category": "delivery",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.496212,
+        "lng": 127.022706
+      },
+      "persona": "강남 도심 배달/퀵. 자가 오토바이 또는 도보 배달.",
+      "avgRating": 4.13,
+      "reviewCount": 5,
+      "monthlyJobBudget": 5986572,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-273",
+      "name": "옛맛 식당",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "신논현역",
+      "location": {
+        "lat": 37.503141,
+        "lng": 127.021955
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.36,
+      "reviewCount": 134,
+      "monthlyJobBudget": 1022549,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-274",
+      "name": "강남 서비스",
+      "category": "other",
+      "dong": "역삼1동",
+      "nearestHub": "신논현역",
+      "location": {
+        "lat": 37.503886,
+        "lng": 127.023913
+      },
+      "persona": "강남 매장 임시 인력 — 카테고리 외 단기 일감.",
+      "avgRating": 4.24,
+      "reviewCount": 95,
+      "monthlyJobBudget": 3934414,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-275",
+      "name": "그란데 에스프레소바",
+      "category": "cafe",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.497464,
+        "lng": 127.029342
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4,
+      "reviewCount": 187,
+      "monthlyJobBudget": 5577300,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-276",
+      "name": "오늘 다이닝",
+      "category": "restaurant",
+      "dong": "청담동",
+      "nearestHub": "압구정로데오",
+      "location": {
+        "lat": 37.523158,
+        "lng": 127.045637
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.67,
+      "reviewCount": 151,
+      "monthlyJobBudget": 849164,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-277",
+      "name": "어반 일원 에스프레소바",
+      "category": "cafe",
+      "dong": "일원본동",
+      "nearestHub": "일원역",
+      "location": {
+        "lat": 37.488572,
+        "lng": 127.090244
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.89,
+      "reviewCount": 180,
+      "monthlyJobBudget": 2303481,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-278",
+      "name": "고깃집 한식당",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "신논현역",
+      "location": {
+        "lat": 37.504491,
+        "lng": 127.028485
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.65,
+      "reviewCount": 176,
+      "monthlyJobBudget": 5988176,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-279",
+      "name": "역삼 배달",
+      "category": "delivery",
+      "dong": "신사동",
+      "nearestHub": "신사역",
+      "location": {
+        "lat": 37.514839,
+        "lng": 127.019429
+      },
+      "persona": "강남 도심 배달/퀵. 자가 오토바이 또는 도보 배달.",
+      "avgRating": 4.81,
+      "reviewCount": 140,
+      "monthlyJobBudget": 5074447,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-280",
+      "name": "고깃집 비스트로",
+      "category": "restaurant",
+      "dong": "도곡2동",
+      "nearestHub": "양재역",
+      "location": {
+        "lat": 37.482914,
+        "lng": 127.029167
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 3.87,
+      "reviewCount": 141,
+      "monthlyJobBudget": 3068809,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-281",
+      "name": "바로 삼역 배달",
+      "category": "delivery",
+      "dong": "역삼1동",
+      "nearestHub": "역삼역",
+      "location": {
+        "lat": 37.501439,
+        "lng": 127.038087
+      },
+      "persona": "강남 도심 배달/퀵. 자가 오토바이 또는 도보 배달.",
+      "avgRating": 4.36,
+      "reviewCount": 102,
+      "monthlyJobBudget": 3796857,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-282",
+      "name": "GS25 강남 굿즈",
+      "category": "retail",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.495537,
+        "lng": 127.024586
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 3.9,
+      "reviewCount": 39,
+      "monthlyJobBudget": 3862437,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-283",
+      "name": "어반 로스터스",
+      "category": "cafe",
+      "dong": "도곡2동",
+      "nearestHub": "양재역",
+      "location": {
+        "lat": 37.487303,
+        "lng": 127.036669
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.78,
+      "reviewCount": 179,
+      "monthlyJobBudget": 3487283,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-284",
+      "name": "도곡 라이더센터",
+      "category": "delivery",
+      "dong": "삼성2동",
+      "nearestHub": "선정릉",
+      "location": {
+        "lat": 37.509217,
+        "lng": 127.04368
+      },
+      "persona": "강남 도심 배달/퀵. 자가 오토바이 또는 도보 배달.",
+      "avgRating": 4.01,
+      "reviewCount": 205,
+      "monthlyJobBudget": 4120176,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-285",
+      "name": "골목 스시바",
+      "category": "restaurant",
+      "dong": "청담동",
+      "nearestHub": "청담역",
+      "location": {
+        "lat": 37.51651,
+        "lng": 127.048441
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 3.85,
+      "reviewCount": 69,
+      "monthlyJobBudget": 5229223,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-286",
+      "name": "오피스 청담 케어서비스",
+      "category": "cleaning",
+      "dong": "청담동",
+      "nearestHub": "청담역",
+      "location": {
+        "lat": 37.518053,
+        "lng": 127.047269
+      },
+      "persona": "강남 오피스/원룸 정기 청소. 시간당 일감.",
+      "avgRating": 4.79,
+      "reviewCount": 92,
+      "monthlyJobBudget": 4213568,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-287",
+      "name": "강남 샵",
+      "category": "other",
+      "dong": "도곡1동",
+      "nearestHub": "도곡역",
+      "location": {
+        "lat": 37.491424,
+        "lng": 127.041684
+      },
+      "persona": "강남 매장 임시 인력 — 카테고리 외 단기 일감.",
+      "avgRating": 4.05,
+      "reviewCount": 17,
+      "monthlyJobBudget": 1591232,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-288",
+      "name": "장터 스시바",
+      "category": "restaurant",
+      "dong": "역삼2동",
+      "nearestHub": "선릉역",
+      "location": {
+        "lat": 37.503867,
+        "lng": 127.04576
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.21,
+      "reviewCount": 79,
+      "monthlyJobBudget": 3305405,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-289",
+      "name": "미니스톱 굿즈",
+      "category": "retail",
+      "dong": "논현2동",
+      "nearestHub": "학동역",
+      "location": {
+        "lat": 37.515624,
+        "lng": 127.03366
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 4.47,
+      "reviewCount": 57,
+      "monthlyJobBudget": 4673368,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-290",
+      "name": "리얼 강남구청 로스터스",
+      "category": "cafe",
+      "dong": "신사동",
+      "nearestHub": "강남구청",
+      "location": {
+        "lat": 37.514508,
+        "lng": 127.037692
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.48,
+      "reviewCount": 68,
+      "monthlyJobBudget": 5154822,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-291",
+      "name": "CU 편의점",
+      "category": "retail",
+      "dong": "청담동",
+      "nearestHub": "압구정로데오",
+      "location": {
+        "lat": 37.531772,
+        "lng": 127.039584
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 3.81,
+      "reviewCount": 136,
+      "monthlyJobBudget": 4311494,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-292",
+      "name": "오늘 포차",
+      "category": "restaurant",
+      "dong": "신사동",
+      "nearestHub": "강남구청",
+      "location": {
+        "lat": 37.52074,
+        "lng": 127.045531
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 3.99,
+      "reviewCount": 32,
+      "monthlyJobBudget": 5126306,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-293",
+      "name": "CU 신논현 굿즈",
+      "category": "retail",
+      "dong": "역삼1동",
+      "nearestHub": "신논현역",
+      "location": {
+        "lat": 37.508933,
+        "lng": 127.025486
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 4.65,
+      "reviewCount": 196,
+      "monthlyJobBudget": 5543822,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-294",
+      "name": "어반 커피",
+      "category": "cafe",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.500782,
+        "lng": 127.027675
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.13,
+      "reviewCount": 247,
+      "monthlyJobBudget": 4801394,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-295",
+      "name": "도쿄 압구정 분식",
+      "category": "restaurant",
+      "dong": "압구정동",
+      "nearestHub": "압구정역",
+      "location": {
+        "lat": 37.526422,
+        "lng": 127.030893
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 3.99,
+      "reviewCount": 33,
+      "monthlyJobBudget": 1204594,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-296",
+      "name": "CU 굿즈",
+      "category": "retail",
+      "dong": "청담동",
+      "nearestHub": "청담역",
+      "location": {
+        "lat": 37.516087,
+        "lng": 127.048831
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 4.78,
+      "reviewCount": 127,
+      "monthlyJobBudget": 3908601,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-297",
+      "name": "강남 선정릉 배달",
+      "category": "delivery",
+      "dong": "삼성2동",
+      "nearestHub": "선정릉",
+      "location": {
+        "lat": 37.514206,
+        "lng": 127.047416
+      },
+      "persona": "강남 도심 배달/퀵. 자가 오토바이 또는 도보 배달.",
+      "avgRating": 3.87,
+      "reviewCount": 218,
+      "monthlyJobBudget": 5878055,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-298",
+      "name": "테라 카페",
+      "category": "cafe",
+      "dong": "청담동",
+      "nearestHub": "청담역",
+      "location": {
+        "lat": 37.522118,
+        "lng": 127.050086
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 3.87,
+      "reviewCount": 194,
+      "monthlyJobBudget": 3908354,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-299",
+      "name": "미니스톱 삼역 샵",
+      "category": "retail",
+      "dong": "역삼1동",
+      "nearestHub": "역삼역",
+      "location": {
+        "lat": 37.505118,
+        "lng": 127.037943
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 3.91,
+      "reviewCount": 67,
+      "monthlyJobBudget": 1944485,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-300",
+      "name": "한가람 한식당",
+      "category": "restaurant",
+      "dong": "청담동",
+      "nearestHub": "압구정로데오",
+      "location": {
+        "lat": 37.525023,
+        "lng": 127.04043
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.51,
+      "reviewCount": 247,
+      "monthlyJobBudget": 2784620,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-301",
+      "name": "도쿄 다이닝",
+      "category": "restaurant",
+      "dong": "삼성1동",
+      "nearestHub": "삼성역",
+      "location": {
+        "lat": 37.509884,
+        "lng": 127.06288
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.37,
+      "reviewCount": 128,
+      "monthlyJobBudget": 1648845,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-302",
+      "name": "오늘 이자카야",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "신논현역",
+      "location": {
+        "lat": 37.505315,
+        "lng": 127.027108
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.27,
+      "reviewCount": 128,
+      "monthlyJobBudget": 2290435,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-303",
+      "name": "이마트24 샵",
+      "category": "retail",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.498833,
+        "lng": 127.026448
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 4.09,
+      "reviewCount": 32,
+      "monthlyJobBudget": 5390126,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-304",
+      "name": "도곡 센터",
+      "category": "other",
+      "dong": "대치1동",
+      "nearestHub": "대치역",
+      "location": {
+        "lat": 37.50329,
+        "lng": 127.061747
+      },
+      "persona": "강남 매장 임시 인력 — 카테고리 외 단기 일감.",
+      "avgRating": 4.54,
+      "reviewCount": 1,
+      "monthlyJobBudget": 4147823,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-305",
+      "name": "데일리 압구정 로스터스",
+      "category": "cafe",
+      "dong": "압구정동",
+      "nearestHub": "압구정역",
+      "location": {
+        "lat": 37.527226,
+        "lng": 127.029914
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.64,
+      "reviewCount": 227,
+      "monthlyJobBudget": 1586303,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-306",
+      "name": "에이트 신사 베이크앤커피",
+      "category": "cafe",
+      "dong": "신사동",
+      "nearestHub": "신사역",
+      "location": {
+        "lat": 37.519498,
+        "lng": 127.022228
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.45,
+      "reviewCount": 50,
+      "monthlyJobBudget": 1674752,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-307",
+      "name": "원룸 케어서비스",
+      "category": "cleaning",
+      "dong": "대치1동",
+      "nearestHub": "대치역",
+      "location": {
+        "lat": 37.496508,
+        "lng": 127.055924
+      },
+      "persona": "강남 오피스/원룸 정기 청소. 시간당 일감.",
+      "avgRating": 4.2,
+      "reviewCount": 77,
+      "monthlyJobBudget": 3192657,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-308",
+      "name": "포레 카페",
+      "category": "cafe",
+      "dong": "일원본동",
+      "nearestHub": "일원역",
+      "location": {
+        "lat": 37.481868,
+        "lng": 127.080565
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 4.56,
+      "reviewCount": 67,
+      "monthlyJobBudget": 3469275,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-309",
+      "name": "모먼트 로스터스",
+      "category": "cafe",
+      "dong": "역삼1동",
+      "nearestHub": "신논현역",
+      "location": {
+        "lat": 37.506385,
+        "lng": 127.029451
+      },
+      "persona": "강남 스페셜티 카페. 피크타임 음료 제조 + 손님 응대. 노쇼 시 매출 직격타.",
+      "avgRating": 3.83,
+      "reviewCount": 11,
+      "monthlyJobBudget": 4893023,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-310",
+      "name": "참숯 삼역 다이닝",
+      "category": "restaurant",
+      "dong": "역삼1동",
+      "nearestHub": "역삼역",
+      "location": {
+        "lat": 37.503474,
+        "lng": 127.038229
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 3.8,
+      "reviewCount": 156,
+      "monthlyJobBudget": 3215629,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-311",
+      "name": "참숯 한식당",
+      "category": "restaurant",
+      "dong": "역삼2동",
+      "nearestHub": "선릉역",
+      "location": {
+        "lat": 37.506664,
+        "lng": 127.046972
+      },
+      "persona": "강남 식당/이자카야. 홀서빙 또는 주방보조. 회식 시즌 단체 예약 잦음.",
+      "avgRating": 4.18,
+      "reviewCount": 211,
+      "monthlyJobBudget": 1073421,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    },
+    {
+      "id": "emp-312",
+      "name": "GS25 강남 굿즈",
+      "category": "retail",
+      "dong": "역삼1동",
+      "nearestHub": "강남역",
+      "location": {
+        "lat": 37.50064,
+        "lng": 127.024422
+      },
+      "persona": "강남 편의점. 야간 카운터 + 정리 + 발주. 24시 교대.",
+      "avgRating": 4.34,
+      "reviewCount": 198,
+      "monthlyJobBudget": 5733704,
+      "createdAt": "2026-05-15T00:00:00+09:00"
+    }
+  ]
+}

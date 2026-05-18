@@ -1,0 +1,36 @@
+{
+  "extractedAt": "2026-05-15",
+  "source": "rdb_mongi.mon_guin_db + rdb_mongg.mon_resume_db (Athena, ldp-viewer)",
+  "scope": "강남구 (work_local_addr_gugun = '강남구')",
+  "metrics": {
+    "uniqueEmployersGangnam": 18740,
+    "activePostingsGangnam": 33568,
+    "totalPostingsGangnamLifetime": 454687,
+    "deletedPostingsGangnamLifetime": 421119,
+    "avgPostingsPerEmployerActive": 1.79,
+    "monthlyActivePostingsNationwide": 53163,
+    "totalActiveResumesNationwide": 11857771,
+    "comment_areaCodeMatching": "알바몬 자체 area code 체계가 city/county/dong 합산 형식이라 강남구 한정 이력서 수는 추가 매핑 필요. 추정: 전체 활성 이력서의 5-10% = 60만~120만명"
+  },
+  "simScales": {
+    "scaleFactor_01pct": 0.0001,
+    "scaleFactor_05pct": 0.0005,
+    "scaleFactor_1pct": 0.001,
+    "recommended": {
+      "factor": 0.0053,
+      "comment": "100개 사업장 / 18740 = 0.0053 (사업장 기준)",
+      "employers": 100,
+      "postings": 178,
+      "workersOptions": {
+        "lowConfidence_estimate": "강남구 희망 워커 약 60만명 추정 → 시뮬 1만명 (×0.017) 또는 1000명 (×0.0017)",
+        "recommended": 1000,
+        "alternative": 10000
+      }
+    }
+  },
+  "next": [
+    "공고 수: 사업장 100개 × 평균 1.79 = 178건 (또는 풀 1만은 너무 큼, 100건으로 데모)",
+    "워커 수: 1000명으로 시작 (haiku 호출 ~30분)",
+    "필요 시 10000명 풀스케일은 별도 batch"
+  ]
+}

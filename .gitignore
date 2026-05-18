@@ -6,3 +6,8 @@ dist/
 *.log
 .DS_Store
 .turbo/
+.omc/
+.claude/
+test-results/
+playwright-report/
+*.tsbuildinfo

@@ -1,0 +1,2166 @@
+{
+  "generatedAt": "2026-05-18T09:09:48.653Z",
+  "count": 120,
+  "requests": [
+    {
+      "id": "svc-001",
+      "requesterName": "한승현",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "errand",
+      "title": "서류 수령 대신 해주세요",
+      "description": "지정 장소에서 서류 수령 후 전달해 주세요.",
+      "location": {
+        "lat": 37.482562,
+        "lng": 127.066149
+      },
+      "hubName": "개포동역",
+      "fee": 9000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-002",
+      "requesterName": "배태양",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "homecleaning",
+      "title": "주방·화장실 집중 청소",
+      "description": "주방과 화장실 집중 청소, 2시간 예상.",
+      "location": {
+        "lat": 37.519742,
+        "lng": 127.019854
+      },
+      "hubName": "신사역",
+      "fee": 34000,
+      "estimatedHours": 2,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-003",
+      "requesterName": "박지호",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "assembly",
+      "title": "책장 조립 도와주세요",
+      "description": "5단 책장 조립, 설명서 있음. 드라이버 지참 부탁드려요.",
+      "location": {
+        "lat": 37.495741,
+        "lng": 127.032598
+      },
+      "hubName": "강남역",
+      "fee": 24000,
+      "estimatedHours": 1.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-004",
+      "requesterName": "최수아",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "moving",
+      "title": "이삿짐 거들기 1시간",
+      "description": "원룸 이사, 엘리베이터 있음. 무거운 짐 위주 1시간.",
+      "location": {
+        "lat": 37.494857,
+        "lng": 127.031975
+      },
+      "hubName": "강남역",
+      "fee": 19000,
+      "estimatedHours": 1,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-005",
+      "requesterName": "강예린",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "pet",
+      "title": "강아지 산책 30분",
+      "description": "중형견 1마리 산책 30분, 리드줄·배변봉투 제공.",
+      "location": {
+        "lat": 37.502356,
+        "lng": 127.026041
+      },
+      "hubName": "신논현역",
+      "fee": 13000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-006",
+      "requesterName": "오지우",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "queue",
+      "title": "한정판 스니커즈 줄서기 2시간",
+      "description": "강남 스토어 한정판 릴리즈 당일 오픈 2시간 전부터 대기.",
+      "location": {
+        "lat": 37.516186,
+        "lng": 127.049219
+      },
+      "hubName": "청담역",
+      "fee": 24000,
+      "estimatedHours": 2,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-007",
+      "requesterName": "노아름",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "walkdelivery",
+      "title": "소포 도보 배달 부탁드려요",
+      "description": "근거리 소포(2kg 이하) 도보·대중교통 배달.",
+      "location": {
+        "lat": 37.500929,
+        "lng": 127.033143
+      },
+      "hubName": "역삼역",
+      "fee": 12000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-008",
+      "requesterName": "한승현",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "errand",
+      "title": "약국 심부름 부탁드려요",
+      "description": "처방전 지참 후 약국 방문, 약 수령 부탁드립니다.",
+      "location": {
+        "lat": 37.49647,
+        "lng": 127.055355
+      },
+      "hubName": "대치역",
+      "fee": 9000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-009",
+      "requesterName": "정도현",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "homecleaning",
+      "title": "원룸 청소 2시간",
+      "description": "원룸 전체 청소, 청소도구 지참 불필요(비치돼 있음).",
+      "location": {
+        "lat": 37.502405,
+        "lng": 127.041693
+      },
+      "hubName": "역삼역",
+      "fee": 34000,
+      "estimatedHours": 2,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-010",
+      "requesterName": "윤재원",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "assembly",
+      "title": "침대 프레임 조립 부탁",
+      "description": "퀸 사이즈 침대 프레임 조립, 약 1.5시간 예상.",
+      "location": {
+        "lat": 37.510664,
+        "lng": 127.021597
+      },
+      "hubName": "논현역",
+      "fee": 27000,
+      "estimatedHours": 1.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-011",
+      "requesterName": "정도현",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "moving",
+      "title": "짐 차에서 집까지 옮겨주세요",
+      "description": "차에서 4층(엘리베이터 없음)까지 짐 옮기기.",
+      "location": {
+        "lat": 37.488984,
+        "lng": 127.046573
+      },
+      "hubName": "도곡역",
+      "fee": 23000,
+      "estimatedHours": 1,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-012",
+      "requesterName": "문서윤",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "pet",
+      "title": "고양이 밥·화장실 관리",
+      "description": "출장 중 하루 2회 방문, 밥 주기+화장실 청소.",
+      "location": {
+        "lat": 37.501509,
+        "lng": 127.022284
+      },
+      "hubName": "신논현역",
+      "fee": 17000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-013",
+      "requesterName": "고민재",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "queue",
+      "title": "음식점 오픈런 줄서기",
+      "description": "유명 맛집 오픈 전 대기, 연락 후 교대 가능.",
+      "location": {
+        "lat": 37.501038,
+        "lng": 127.039576
+      },
+      "hubName": "역삼역",
+      "fee": 27000,
+      "estimatedHours": 2,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-014",
+      "requesterName": "정도현",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "walkdelivery",
+      "title": "같은 건물 내 물건 전달",
+      "description": "같은 빌딩 다른 층 물품 전달, 10분 내외.",
+      "location": {
+        "lat": 37.505555,
+        "lng": 127.022932
+      },
+      "hubName": "신논현역",
+      "fee": 12000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-015",
+      "requesterName": "김민준",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "errand",
+      "title": "서류 수령 대신 해주세요",
+      "description": "지정 장소에서 서류 수령 후 전달해 주세요.",
+      "location": {
+        "lat": 37.505964,
+        "lng": 127.058528
+      },
+      "hubName": "삼성역",
+      "fee": 7000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-016",
+      "requesterName": "안유진",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "homecleaning",
+      "title": "이사 후 입주 청소 부탁해요",
+      "description": "이사 후 새로 입주 전 전체 청소입니다.",
+      "location": {
+        "lat": 37.498377,
+        "lng": 127.029189
+      },
+      "hubName": "강남역",
+      "fee": 27000,
+      "estimatedHours": 2,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-017",
+      "requesterName": "노아름",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "assembly",
+      "title": "책장 조립 도와주세요",
+      "description": "5단 책장 조립, 설명서 있음. 드라이버 지참 부탁드려요.",
+      "location": {
+        "lat": 37.501181,
+        "lng": 127.029134
+      },
+      "hubName": "강남역",
+      "fee": 25000,
+      "estimatedHours": 1.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-018",
+      "requesterName": "문서윤",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "moving",
+      "title": "이삿짐 거들기 1시간",
+      "description": "원룸 이사, 엘리베이터 있음. 무거운 짐 위주 1시간.",
+      "location": {
+        "lat": 37.495883,
+        "lng": 127.057009
+      },
+      "hubName": "대치역",
+      "fee": 24000,
+      "estimatedHours": 1,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-019",
+      "requesterName": "전다희",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "pet",
+      "title": "고양이 밥·화장실 관리",
+      "description": "출장 중 하루 2회 방문, 밥 주기+화장실 청소.",
+      "location": {
+        "lat": 37.506412,
+        "lng": 127.067524
+      },
+      "hubName": "삼성역",
+      "fee": 17000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-020",
+      "requesterName": "황성민",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "queue",
+      "title": "팝업 입장 대기 부탁드려요",
+      "description": "팝업 스토어 입장권 선착순 배포 대기.",
+      "location": {
+        "lat": 37.509231,
+        "lng": 127.022882
+      },
+      "hubName": "논현역",
+      "fee": 31000,
+      "estimatedHours": 2,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-021",
+      "requesterName": "남도영",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "walkdelivery",
+      "title": "같은 건물 내 물건 전달",
+      "description": "같은 빌딩 다른 층 물품 전달, 10분 내외.",
+      "location": {
+        "lat": 37.495731,
+        "lng": 127.024812
+      },
+      "hubName": "강남역",
+      "fee": 13000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-022",
+      "requesterName": "윤재원",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "errand",
+      "title": "약국 심부름 부탁드려요",
+      "description": "처방전 지참 후 약국 방문, 약 수령 부탁드립니다.",
+      "location": {
+        "lat": 37.498638,
+        "lng": 127.061348
+      },
+      "hubName": "대치역",
+      "fee": 7000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-023",
+      "requesterName": "강예린",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "homecleaning",
+      "title": "원룸 청소 2시간",
+      "description": "원룸 전체 청소, 청소도구 지참 불필요(비치돼 있음).",
+      "location": {
+        "lat": 37.523209,
+        "lng": 127.034204
+      },
+      "hubName": "압구정역",
+      "fee": 28000,
+      "estimatedHours": 2,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-024",
+      "requesterName": "류준혁",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "assembly",
+      "title": "침대 프레임 조립 부탁",
+      "description": "퀸 사이즈 침대 프레임 조립, 약 1.5시간 예상.",
+      "location": {
+        "lat": 37.503327,
+        "lng": 127.028063
+      },
+      "hubName": "신논현역",
+      "fee": 29000,
+      "estimatedHours": 1.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-025",
+      "requesterName": "문서윤",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "moving",
+      "title": "짐 차에서 집까지 옮겨주세요",
+      "description": "차에서 4층(엘리베이터 없음)까지 짐 옮기기.",
+      "location": {
+        "lat": 37.486075,
+        "lng": 127.038271
+      },
+      "hubName": "양재역",
+      "fee": 21000,
+      "estimatedHours": 1,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-026",
+      "requesterName": "임나영",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "pet",
+      "title": "강아지 산책 30분",
+      "description": "중형견 1마리 산책 30분, 리드줄·배변봉투 제공.",
+      "location": {
+        "lat": 37.525097,
+        "lng": 127.025828
+      },
+      "hubName": "압구정역",
+      "fee": 15000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-027",
+      "requesterName": "안유진",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "queue",
+      "title": "음식점 오픈런 줄서기",
+      "description": "유명 맛집 오픈 전 대기, 연락 후 교대 가능.",
+      "location": {
+        "lat": 37.484495,
+        "lng": 127.036427
+      },
+      "hubName": "양재역",
+      "fee": 32000,
+      "estimatedHours": 2,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-028",
+      "requesterName": "류준혁",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "walkdelivery",
+      "title": "소포 도보 배달 부탁드려요",
+      "description": "근거리 소포(2kg 이하) 도보·대중교통 배달.",
+      "location": {
+        "lat": 37.520959,
+        "lng": 127.014927
+      },
+      "hubName": "신사역",
+      "fee": 14000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-029",
+      "requesterName": "이서연",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "errand",
+      "title": "편의점 다녀와 주세요",
+      "description": "근처 편의점에서 지정 상품 구매 후 전달해 주세요.",
+      "location": {
+        "lat": 37.497175,
+        "lng": 127.053326
+      },
+      "hubName": "한티역",
+      "fee": 8000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-030",
+      "requesterName": "전다희",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "homecleaning",
+      "title": "주방·화장실 집중 청소",
+      "description": "주방과 화장실 집중 청소, 2시간 예상.",
+      "location": {
+        "lat": 37.517924,
+        "lng": 127.040421
+      },
+      "hubName": "강남구청",
+      "fee": 32000,
+      "estimatedHours": 2,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-031",
+      "requesterName": "노아름",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "assembly",
+      "title": "책장 조립 도와주세요",
+      "description": "5단 책장 조립, 설명서 있음. 드라이버 지참 부탁드려요.",
+      "location": {
+        "lat": 37.504407,
+        "lng": 127.049569
+      },
+      "hubName": "선릉역",
+      "fee": 26000,
+      "estimatedHours": 1.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-032",
+      "requesterName": "고민재",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "moving",
+      "title": "원룸 짐 나르기 도움",
+      "description": "원룸 짐 3층 → 1층 이동 후 용달 싣기 보조.",
+      "location": {
+        "lat": 37.500846,
+        "lng": 127.02385
+      },
+      "hubName": "강남역",
+      "fee": 21000,
+      "estimatedHours": 1,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-033",
+      "requesterName": "안유진",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "pet",
+      "title": "고양이 밥·화장실 관리",
+      "description": "출장 중 하루 2회 방문, 밥 주기+화장실 청소.",
+      "location": {
+        "lat": 37.509564,
+        "lng": 127.066993
+      },
+      "hubName": "삼성역",
+      "fee": 12000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-034",
+      "requesterName": "전다희",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "queue",
+      "title": "팝업 입장 대기 부탁드려요",
+      "description": "팝업 스토어 입장권 선착순 배포 대기.",
+      "location": {
+        "lat": 37.508579,
+        "lng": 127.05165
+      },
+      "hubName": "선릉역",
+      "fee": 33000,
+      "estimatedHours": 2,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-035",
+      "requesterName": "남도영",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "walkdelivery",
+      "title": "같은 건물 내 물건 전달",
+      "description": "같은 빌딩 다른 층 물품 전달, 10분 내외.",
+      "location": {
+        "lat": 37.495633,
+        "lng": 127.029206
+      },
+      "hubName": "강남역",
+      "fee": 14000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-036",
+      "requesterName": "문서윤",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "errand",
+      "title": "약국 심부름 부탁드려요",
+      "description": "처방전 지참 후 약국 방문, 약 수령 부탁드립니다.",
+      "location": {
+        "lat": 37.512011,
+        "lng": 127.01673
+      },
+      "hubName": "논현역",
+      "fee": 9000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-037",
+      "requesterName": "전다희",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "homecleaning",
+      "title": "주방·화장실 집중 청소",
+      "description": "주방과 화장실 집중 청소, 2시간 예상.",
+      "location": {
+        "lat": 37.498574,
+        "lng": 127.063259
+      },
+      "hubName": "대치역",
+      "fee": 25000,
+      "estimatedHours": 2,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-038",
+      "requesterName": "전다희",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "assembly",
+      "title": "책상·의자 조립 2세트",
+      "description": "일반 사무용 책상+의자 2세트 조립.",
+      "location": {
+        "lat": 37.482917,
+        "lng": 127.091159
+      },
+      "hubName": "일원역",
+      "fee": 27000,
+      "estimatedHours": 1.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-039",
+      "requesterName": "오지우",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "moving",
+      "title": "짐 차에서 집까지 옮겨주세요",
+      "description": "차에서 4층(엘리베이터 없음)까지 짐 옮기기.",
+      "location": {
+        "lat": 37.508907,
+        "lng": 127.062757
+      },
+      "hubName": "삼성역",
+      "fee": 19000,
+      "estimatedHours": 1,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-040",
+      "requesterName": "윤재원",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "pet",
+      "title": "고양이 밥·화장실 관리",
+      "description": "출장 중 하루 2회 방문, 밥 주기+화장실 청소.",
+      "location": {
+        "lat": 37.515841,
+        "lng": 127.017415
+      },
+      "hubName": "신사역",
+      "fee": 15000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-041",
+      "requesterName": "이서연",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "queue",
+      "title": "한정판 스니커즈 줄서기 2시간",
+      "description": "강남 스토어 한정판 릴리즈 당일 오픈 2시간 전부터 대기.",
+      "location": {
+        "lat": 37.486438,
+        "lng": 127.08396
+      },
+      "hubName": "일원역",
+      "fee": 34000,
+      "estimatedHours": 2,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-042",
+      "requesterName": "남도영",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "walkdelivery",
+      "title": "서류 지하철로 전달해 주세요",
+      "description": "강남역 → 역삼역 서류 봉투 1개 지하철 이동 전달.",
+      "location": {
+        "lat": 37.497328,
+        "lng": 127.030783
+      },
+      "hubName": "강남역",
+      "fee": 11000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-043",
+      "requesterName": "임나영",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "errand",
+      "title": "편의점 다녀와 주세요",
+      "description": "근처 편의점에서 지정 상품 구매 후 전달해 주세요.",
+      "location": {
+        "lat": 37.497881,
+        "lng": 127.028152
+      },
+      "hubName": "강남역",
+      "fee": 8000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-044",
+      "requesterName": "김민준",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "homecleaning",
+      "title": "원룸 청소 2시간",
+      "description": "원룸 전체 청소, 청소도구 지참 불필요(비치돼 있음).",
+      "location": {
+        "lat": 37.494894,
+        "lng": 127.05631
+      },
+      "hubName": "한티역",
+      "fee": 30000,
+      "estimatedHours": 2,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-045",
+      "requesterName": "임나영",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "assembly",
+      "title": "책장 조립 도와주세요",
+      "description": "5단 책장 조립, 설명서 있음. 드라이버 지참 부탁드려요.",
+      "location": {
+        "lat": 37.493535,
+        "lng": 127.031432
+      },
+      "hubName": "강남역",
+      "fee": 22000,
+      "estimatedHours": 1.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-046",
+      "requesterName": "강예린",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "moving",
+      "title": "이삿짐 거들기 1시간",
+      "description": "원룸 이사, 엘리베이터 있음. 무거운 짐 위주 1시간.",
+      "location": {
+        "lat": 37.530115,
+        "lng": 127.04075
+      },
+      "hubName": "압구정로데오",
+      "fee": 19000,
+      "estimatedHours": 1,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-047",
+      "requesterName": "강예린",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "pet",
+      "title": "고양이 밥·화장실 관리",
+      "description": "출장 중 하루 2회 방문, 밥 주기+화장실 청소.",
+      "location": {
+        "lat": 37.498588,
+        "lng": 127.025833
+      },
+      "hubName": "강남역",
+      "fee": 13000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-048",
+      "requesterName": "임나영",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "queue",
+      "title": "한정판 스니커즈 줄서기 2시간",
+      "description": "강남 스토어 한정판 릴리즈 당일 오픈 2시간 전부터 대기.",
+      "location": {
+        "lat": 37.516281,
+        "lng": 127.014965
+      },
+      "hubName": "신사역",
+      "fee": 25000,
+      "estimatedHours": 2,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-049",
+      "requesterName": "고민재",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "walkdelivery",
+      "title": "같은 건물 내 물건 전달",
+      "description": "같은 빌딩 다른 층 물품 전달, 10분 내외.",
+      "location": {
+        "lat": 37.496091,
+        "lng": 127.025048
+      },
+      "hubName": "강남역",
+      "fee": 11000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-050",
+      "requesterName": "류준혁",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "errand",
+      "title": "서류 수령 대신 해주세요",
+      "description": "지정 장소에서 서류 수령 후 전달해 주세요.",
+      "location": {
+        "lat": 37.527055,
+        "lng": 127.028017
+      },
+      "hubName": "압구정역",
+      "fee": 9000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-051",
+      "requesterName": "황성민",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "homecleaning",
+      "title": "원룸 청소 2시간",
+      "description": "원룸 전체 청소, 청소도구 지참 불필요(비치돼 있음).",
+      "location": {
+        "lat": 37.519296,
+        "lng": 127.017451
+      },
+      "hubName": "신사역",
+      "fee": 28000,
+      "estimatedHours": 2,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-052",
+      "requesterName": "전다희",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "assembly",
+      "title": "책상·의자 조립 2세트",
+      "description": "일반 사무용 책상+의자 2세트 조립.",
+      "location": {
+        "lat": 37.518858,
+        "lng": 127.019255
+      },
+      "hubName": "신사역",
+      "fee": 28000,
+      "estimatedHours": 1.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-053",
+      "requesterName": "류준혁",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "moving",
+      "title": "원룸 짐 나르기 도움",
+      "description": "원룸 짐 3층 → 1층 이동 후 용달 싣기 보조.",
+      "location": {
+        "lat": 37.501085,
+        "lng": 127.02993
+      },
+      "hubName": "강남역",
+      "fee": 18000,
+      "estimatedHours": 1,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-054",
+      "requesterName": "배태양",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "pet",
+      "title": "강아지 산책 30분",
+      "description": "중형견 1마리 산책 30분, 리드줄·배변봉투 제공.",
+      "location": {
+        "lat": 37.50861,
+        "lng": 127.052948
+      },
+      "hubName": "선릉역",
+      "fee": 16000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-055",
+      "requesterName": "신하은",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "queue",
+      "title": "팝업 입장 대기 부탁드려요",
+      "description": "팝업 스토어 입장권 선착순 배포 대기.",
+      "location": {
+        "lat": 37.518945,
+        "lng": 127.04622
+      },
+      "hubName": "청담역",
+      "fee": 31000,
+      "estimatedHours": 2,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-056",
+      "requesterName": "노아름",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "walkdelivery",
+      "title": "소포 도보 배달 부탁드려요",
+      "description": "근거리 소포(2kg 이하) 도보·대중교통 배달.",
+      "location": {
+        "lat": 37.498124,
+        "lng": 127.023327
+      },
+      "hubName": "강남역",
+      "fee": 13000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-057",
+      "requesterName": "윤재원",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "errand",
+      "title": "편의점 다녀와 주세요",
+      "description": "근처 편의점에서 지정 상품 구매 후 전달해 주세요.",
+      "location": {
+        "lat": 37.500635,
+        "lng": 127.047372
+      },
+      "hubName": "선릉역",
+      "fee": 9000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-058",
+      "requesterName": "고민재",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "homecleaning",
+      "title": "이사 후 입주 청소 부탁해요",
+      "description": "이사 후 새로 입주 전 전체 청소입니다.",
+      "location": {
+        "lat": 37.49705,
+        "lng": 127.027618
+      },
+      "hubName": "강남역",
+      "fee": 27000,
+      "estimatedHours": 2,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-059",
+      "requesterName": "임나영",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "assembly",
+      "title": "책상·의자 조립 2세트",
+      "description": "일반 사무용 책상+의자 2세트 조립.",
+      "location": {
+        "lat": 37.509119,
+        "lng": 127.0677
+      },
+      "hubName": "삼성역",
+      "fee": 22000,
+      "estimatedHours": 1.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-060",
+      "requesterName": "노아름",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "moving",
+      "title": "원룸 짐 나르기 도움",
+      "description": "원룸 짐 3층 → 1층 이동 후 용달 싣기 보조.",
+      "location": {
+        "lat": 37.488677,
+        "lng": 127.10026
+      },
+      "hubName": "수서역",
+      "fee": 18000,
+      "estimatedHours": 1,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-061",
+      "requesterName": "고민재",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "pet",
+      "title": "반려견 목욕 후 드라이",
+      "description": "소형견 목욕 및 드라이, 샴푸 비치돼 있어요.",
+      "location": {
+        "lat": 37.515846,
+        "lng": 127.015304
+      },
+      "hubName": "신사역",
+      "fee": 13000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-062",
+      "requesterName": "임나영",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "queue",
+      "title": "음식점 오픈런 줄서기",
+      "description": "유명 맛집 오픈 전 대기, 연락 후 교대 가능.",
+      "location": {
+        "lat": 37.497784,
+        "lng": 127.055694
+      },
+      "hubName": "한티역",
+      "fee": 25000,
+      "estimatedHours": 2,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-063",
+      "requesterName": "이서연",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "walkdelivery",
+      "title": "같은 건물 내 물건 전달",
+      "description": "같은 빌딩 다른 층 물품 전달, 10분 내외.",
+      "location": {
+        "lat": 37.504586,
+        "lng": 127.067388
+      },
+      "hubName": "삼성역",
+      "fee": 13000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-064",
+      "requesterName": "박지호",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "errand",
+      "title": "약국 심부름 부탁드려요",
+      "description": "처방전 지참 후 약국 방문, 약 수령 부탁드립니다.",
+      "location": {
+        "lat": 37.49637,
+        "lng": 127.05378
+      },
+      "hubName": "대치역",
+      "fee": 9000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-065",
+      "requesterName": "강예린",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "homecleaning",
+      "title": "주방·화장실 집중 청소",
+      "description": "주방과 화장실 집중 청소, 2시간 예상.",
+      "location": {
+        "lat": 37.508648,
+        "lng": 127.049618
+      },
+      "hubName": "선릉역",
+      "fee": 25000,
+      "estimatedHours": 2,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-066",
+      "requesterName": "고민재",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "assembly",
+      "title": "책상·의자 조립 2세트",
+      "description": "일반 사무용 책상+의자 2세트 조립.",
+      "location": {
+        "lat": 37.51387,
+        "lng": 127.028023
+      },
+      "hubName": "학동역",
+      "fee": 27000,
+      "estimatedHours": 1.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-067",
+      "requesterName": "김민준",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "moving",
+      "title": "원룸 짐 나르기 도움",
+      "description": "원룸 짐 3층 → 1층 이동 후 용달 싣기 보조.",
+      "location": {
+        "lat": 37.503354,
+        "lng": 127.040892
+      },
+      "hubName": "역삼역",
+      "fee": 19000,
+      "estimatedHours": 1,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-068",
+      "requesterName": "최수아",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "pet",
+      "title": "반려견 목욕 후 드라이",
+      "description": "소형견 목욕 및 드라이, 샴푸 비치돼 있어요.",
+      "location": {
+        "lat": 37.500207,
+        "lng": 127.062011
+      },
+      "hubName": "대치역",
+      "fee": 17000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-069",
+      "requesterName": "윤재원",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "queue",
+      "title": "팝업 입장 대기 부탁드려요",
+      "description": "팝업 스토어 입장권 선착순 배포 대기.",
+      "location": {
+        "lat": 37.515383,
+        "lng": 127.035692
+      },
+      "hubName": "학동역",
+      "fee": 25000,
+      "estimatedHours": 2,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-070",
+      "requesterName": "이서연",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "walkdelivery",
+      "title": "소포 도보 배달 부탁드려요",
+      "description": "근거리 소포(2kg 이하) 도보·대중교통 배달.",
+      "location": {
+        "lat": 37.486962,
+        "lng": 127.101625
+      },
+      "hubName": "수서역",
+      "fee": 14000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-071",
+      "requesterName": "안유진",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "errand",
+      "title": "편의점 다녀와 주세요",
+      "description": "근처 편의점에서 지정 상품 구매 후 전달해 주세요.",
+      "location": {
+        "lat": 37.522873,
+        "lng": 127.03235
+      },
+      "hubName": "압구정역",
+      "fee": 9000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-072",
+      "requesterName": "안유진",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "homecleaning",
+      "title": "이사 후 입주 청소 부탁해요",
+      "description": "이사 후 새로 입주 전 전체 청소입니다.",
+      "location": {
+        "lat": 37.496613,
+        "lng": 127.053653
+      },
+      "hubName": "대치역",
+      "fee": 29000,
+      "estimatedHours": 2,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-073",
+      "requesterName": "문서윤",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "assembly",
+      "title": "침대 프레임 조립 부탁",
+      "description": "퀸 사이즈 침대 프레임 조립, 약 1.5시간 예상.",
+      "location": {
+        "lat": 37.506525,
+        "lng": 127.049065
+      },
+      "hubName": "선릉역",
+      "fee": 20000,
+      "estimatedHours": 1.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-074",
+      "requesterName": "강예린",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "moving",
+      "title": "짐 차에서 집까지 옮겨주세요",
+      "description": "차에서 4층(엘리베이터 없음)까지 짐 옮기기.",
+      "location": {
+        "lat": 37.504418,
+        "lng": 127.037321
+      },
+      "hubName": "역삼역",
+      "fee": 21000,
+      "estimatedHours": 1,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-075",
+      "requesterName": "김민준",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "pet",
+      "title": "고양이 밥·화장실 관리",
+      "description": "출장 중 하루 2회 방문, 밥 주기+화장실 청소.",
+      "location": {
+        "lat": 37.531142,
+        "lng": 127.026194
+      },
+      "hubName": "압구정역",
+      "fee": 16000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-076",
+      "requesterName": "최수아",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "queue",
+      "title": "팝업 입장 대기 부탁드려요",
+      "description": "팝업 스토어 입장권 선착순 배포 대기.",
+      "location": {
+        "lat": 37.498322,
+        "lng": 127.027249
+      },
+      "hubName": "강남역",
+      "fee": 25000,
+      "estimatedHours": 2,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-077",
+      "requesterName": "류준혁",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "walkdelivery",
+      "title": "같은 건물 내 물건 전달",
+      "description": "같은 빌딩 다른 층 물품 전달, 10분 내외.",
+      "location": {
+        "lat": 37.530031,
+        "lng": 127.031182
+      },
+      "hubName": "압구정역",
+      "fee": 12000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-078",
+      "requesterName": "한승현",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "errand",
+      "title": "약국 심부름 부탁드려요",
+      "description": "처방전 지참 후 약국 방문, 약 수령 부탁드립니다.",
+      "location": {
+        "lat": 37.514807,
+        "lng": 127.02171
+      },
+      "hubName": "신사역",
+      "fee": 8000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-079",
+      "requesterName": "안유진",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "homecleaning",
+      "title": "원룸 청소 2시간",
+      "description": "원룸 전체 청소, 청소도구 지참 불필요(비치돼 있음).",
+      "location": {
+        "lat": 37.481659,
+        "lng": 127.071841
+      },
+      "hubName": "대모산입구",
+      "fee": 33000,
+      "estimatedHours": 2,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-080",
+      "requesterName": "최수아",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "assembly",
+      "title": "침대 프레임 조립 부탁",
+      "description": "퀸 사이즈 침대 프레임 조립, 약 1.5시간 예상.",
+      "location": {
+        "lat": 37.494667,
+        "lng": 127.052211
+      },
+      "hubName": "한티역",
+      "fee": 22000,
+      "estimatedHours": 1.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-081",
+      "requesterName": "배태양",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "moving",
+      "title": "짐 차에서 집까지 옮겨주세요",
+      "description": "차에서 4층(엘리베이터 없음)까지 짐 옮기기.",
+      "location": {
+        "lat": 37.516668,
+        "lng": 127.016193
+      },
+      "hubName": "신사역",
+      "fee": 19000,
+      "estimatedHours": 1,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-082",
+      "requesterName": "노아름",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "pet",
+      "title": "고양이 밥·화장실 관리",
+      "description": "출장 중 하루 2회 방문, 밥 주기+화장실 청소.",
+      "location": {
+        "lat": 37.496363,
+        "lng": 127.031553
+      },
+      "hubName": "역삼역",
+      "fee": 14000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-083",
+      "requesterName": "남도영",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "queue",
+      "title": "팝업 입장 대기 부탁드려요",
+      "description": "팝업 스토어 입장권 선착순 배포 대기.",
+      "location": {
+        "lat": 37.5074,
+        "lng": 127.050169
+      },
+      "hubName": "선릉역",
+      "fee": 34000,
+      "estimatedHours": 2,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-084",
+      "requesterName": "신하은",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "walkdelivery",
+      "title": "소포 도보 배달 부탁드려요",
+      "description": "근거리 소포(2kg 이하) 도보·대중교통 배달.",
+      "location": {
+        "lat": 37.494923,
+        "lng": 127.023368
+      },
+      "hubName": "강남역",
+      "fee": 12000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-085",
+      "requesterName": "고민재",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "errand",
+      "title": "약국 심부름 부탁드려요",
+      "description": "처방전 지참 후 약국 방문, 약 수령 부탁드립니다.",
+      "location": {
+        "lat": 37.495,
+        "lng": 127.03064
+      },
+      "hubName": "강남역",
+      "fee": 7000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-086",
+      "requesterName": "노아름",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "homecleaning",
+      "title": "원룸 청소 2시간",
+      "description": "원룸 전체 청소, 청소도구 지참 불필요(비치돼 있음).",
+      "location": {
+        "lat": 37.49937,
+        "lng": 127.023111
+      },
+      "hubName": "강남역",
+      "fee": 35000,
+      "estimatedHours": 2,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-087",
+      "requesterName": "류준혁",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "assembly",
+      "title": "침대 프레임 조립 부탁",
+      "description": "퀸 사이즈 침대 프레임 조립, 약 1.5시간 예상.",
+      "location": {
+        "lat": 37.4956,
+        "lng": 127.060476
+      },
+      "hubName": "대치역",
+      "fee": 26000,
+      "estimatedHours": 1.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-088",
+      "requesterName": "박지호",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "moving",
+      "title": "짐 차에서 집까지 옮겨주세요",
+      "description": "차에서 4층(엘리베이터 없음)까지 짐 옮기기.",
+      "location": {
+        "lat": 37.489725,
+        "lng": 127.05661
+      },
+      "hubName": "구룡역",
+      "fee": 20000,
+      "estimatedHours": 1,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-089",
+      "requesterName": "임나영",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "pet",
+      "title": "강아지 산책 30분",
+      "description": "중형견 1마리 산책 30분, 리드줄·배변봉투 제공.",
+      "location": {
+        "lat": 37.505879,
+        "lng": 127.068262
+      },
+      "hubName": "삼성역",
+      "fee": 16000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-090",
+      "requesterName": "황성민",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "queue",
+      "title": "팝업 입장 대기 부탁드려요",
+      "description": "팝업 스토어 입장권 선착순 배포 대기.",
+      "location": {
+        "lat": 37.502292,
+        "lng": 127.024318
+      },
+      "hubName": "신논현역",
+      "fee": 28000,
+      "estimatedHours": 2,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-091",
+      "requesterName": "김민준",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "walkdelivery",
+      "title": "소포 도보 배달 부탁드려요",
+      "description": "근거리 소포(2kg 이하) 도보·대중교통 배달.",
+      "location": {
+        "lat": 37.505227,
+        "lng": 127.066244
+      },
+      "hubName": "삼성역",
+      "fee": 13000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-092",
+      "requesterName": "배태양",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "errand",
+      "title": "약국 심부름 부탁드려요",
+      "description": "처방전 지참 후 약국 방문, 약 수령 부탁드립니다.",
+      "location": {
+        "lat": 37.49768,
+        "lng": 127.063314
+      },
+      "hubName": "대치역",
+      "fee": 7000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-093",
+      "requesterName": "이서연",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "homecleaning",
+      "title": "원룸 청소 2시간",
+      "description": "원룸 전체 청소, 청소도구 지참 불필요(비치돼 있음).",
+      "location": {
+        "lat": 37.499812,
+        "lng": 127.063113
+      },
+      "hubName": "대치역",
+      "fee": 28000,
+      "estimatedHours": 2,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-094",
+      "requesterName": "고민재",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "assembly",
+      "title": "책장 조립 도와주세요",
+      "description": "5단 책장 조립, 설명서 있음. 드라이버 지참 부탁드려요.",
+      "location": {
+        "lat": 37.51463,
+        "lng": 127.016177
+      },
+      "hubName": "신사역",
+      "fee": 20000,
+      "estimatedHours": 1.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-095",
+      "requesterName": "신하은",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "moving",
+      "title": "짐 차에서 집까지 옮겨주세요",
+      "description": "차에서 4층(엘리베이터 없음)까지 짐 옮기기.",
+      "location": {
+        "lat": 37.511655,
+        "lng": 127.060722
+      },
+      "hubName": "삼성역",
+      "fee": 18000,
+      "estimatedHours": 1,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-096",
+      "requesterName": "남도영",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "pet",
+      "title": "반려견 목욕 후 드라이",
+      "description": "소형견 목욕 및 드라이, 샴푸 비치돼 있어요.",
+      "location": {
+        "lat": 37.518938,
+        "lng": 127.045153
+      },
+      "hubName": "청담역",
+      "fee": 13000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-097",
+      "requesterName": "최수아",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "queue",
+      "title": "음식점 오픈런 줄서기",
+      "description": "유명 맛집 오픈 전 대기, 연락 후 교대 가능.",
+      "location": {
+        "lat": 37.531249,
+        "lng": 127.024014
+      },
+      "hubName": "압구정역",
+      "fee": 30000,
+      "estimatedHours": 2,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-098",
+      "requesterName": "윤재원",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "walkdelivery",
+      "title": "서류 지하철로 전달해 주세요",
+      "description": "강남역 → 역삼역 서류 봉투 1개 지하철 이동 전달.",
+      "location": {
+        "lat": 37.497267,
+        "lng": 127.027352
+      },
+      "hubName": "강남역",
+      "fee": 11000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-099",
+      "requesterName": "강예린",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "errand",
+      "title": "약국 심부름 부탁드려요",
+      "description": "처방전 지참 후 약국 방문, 약 수령 부탁드립니다.",
+      "location": {
+        "lat": 37.514945,
+        "lng": 127.024325
+      },
+      "hubName": "논현역",
+      "fee": 7000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-100",
+      "requesterName": "정도현",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "homecleaning",
+      "title": "주방·화장실 집중 청소",
+      "description": "주방과 화장실 집중 청소, 2시간 예상.",
+      "location": {
+        "lat": 37.493394,
+        "lng": 127.047843
+      },
+      "hubName": "한티역",
+      "fee": 30000,
+      "estimatedHours": 2,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-101",
+      "requesterName": "오지우",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "assembly",
+      "title": "책장 조립 도와주세요",
+      "description": "5단 책장 조립, 설명서 있음. 드라이버 지참 부탁드려요.",
+      "location": {
+        "lat": 37.513447,
+        "lng": 127.03526
+      },
+      "hubName": "학동역",
+      "fee": 25000,
+      "estimatedHours": 1.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-102",
+      "requesterName": "신하은",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "moving",
+      "title": "원룸 짐 나르기 도움",
+      "description": "원룸 짐 3층 → 1층 이동 후 용달 싣기 보조.",
+      "location": {
+        "lat": 37.512234,
+        "lng": 127.043545
+      },
+      "hubName": "선정릉",
+      "fee": 17000,
+      "estimatedHours": 1,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-103",
+      "requesterName": "오지우",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "pet",
+      "title": "고양이 밥·화장실 관리",
+      "description": "출장 중 하루 2회 방문, 밥 주기+화장실 청소.",
+      "location": {
+        "lat": 37.507205,
+        "lng": 127.021831
+      },
+      "hubName": "신논현역",
+      "fee": 15000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-104",
+      "requesterName": "노아름",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "queue",
+      "title": "한정판 스니커즈 줄서기 2시간",
+      "description": "강남 스토어 한정판 릴리즈 당일 오픈 2시간 전부터 대기.",
+      "location": {
+        "lat": 37.501892,
+        "lng": 127.054707
+      },
+      "hubName": "대치역",
+      "fee": 31000,
+      "estimatedHours": 2,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-105",
+      "requesterName": "황성민",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "walkdelivery",
+      "title": "소포 도보 배달 부탁드려요",
+      "description": "근거리 소포(2kg 이하) 도보·대중교통 배달.",
+      "location": {
+        "lat": 37.513734,
+        "lng": 127.036775
+      },
+      "hubName": "강남구청",
+      "fee": 14000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-106",
+      "requesterName": "문서윤",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "errand",
+      "title": "서류 수령 대신 해주세요",
+      "description": "지정 장소에서 서류 수령 후 전달해 주세요.",
+      "location": {
+        "lat": 37.506227,
+        "lng": 127.060187
+      },
+      "hubName": "삼성역",
+      "fee": 9000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-107",
+      "requesterName": "신하은",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "homecleaning",
+      "title": "이사 후 입주 청소 부탁해요",
+      "description": "이사 후 새로 입주 전 전체 청소입니다.",
+      "location": {
+        "lat": 37.509767,
+        "lng": 127.024941
+      },
+      "hubName": "논현역",
+      "fee": 35000,
+      "estimatedHours": 2,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-108",
+      "requesterName": "최수아",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "assembly",
+      "title": "침대 프레임 조립 부탁",
+      "description": "퀸 사이즈 침대 프레임 조립, 약 1.5시간 예상.",
+      "location": {
+        "lat": 37.523424,
+        "lng": 127.027518
+      },
+      "hubName": "압구정역",
+      "fee": 25000,
+      "estimatedHours": 1.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-109",
+      "requesterName": "박지호",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "moving",
+      "title": "원룸 짐 나르기 도움",
+      "description": "원룸 짐 3층 → 1층 이동 후 용달 싣기 보조.",
+      "location": {
+        "lat": 37.480819,
+        "lng": 127.030052
+      },
+      "hubName": "양재역",
+      "fee": 17000,
+      "estimatedHours": 1,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-110",
+      "requesterName": "임나영",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "pet",
+      "title": "반려견 목욕 후 드라이",
+      "description": "소형견 목욕 및 드라이, 샴푸 비치돼 있어요.",
+      "location": {
+        "lat": 37.494204,
+        "lng": 127.0255
+      },
+      "hubName": "강남역",
+      "fee": 17000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-111",
+      "requesterName": "안유진",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "queue",
+      "title": "팝업 입장 대기 부탁드려요",
+      "description": "팝업 스토어 입장권 선착순 배포 대기.",
+      "location": {
+        "lat": 37.511222,
+        "lng": 127.026198
+      },
+      "hubName": "논현역",
+      "fee": 34000,
+      "estimatedHours": 2,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-112",
+      "requesterName": "류준혁",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "walkdelivery",
+      "title": "같은 건물 내 물건 전달",
+      "description": "같은 빌딩 다른 층 물품 전달, 10분 내외.",
+      "location": {
+        "lat": 37.500257,
+        "lng": 127.034125
+      },
+      "hubName": "역삼역",
+      "fee": 14000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-113",
+      "requesterName": "윤재원",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "errand",
+      "title": "약국 심부름 부탁드려요",
+      "description": "처방전 지참 후 약국 방문, 약 수령 부탁드립니다.",
+      "location": {
+        "lat": 37.515776,
+        "lng": 127.024569
+      },
+      "hubName": "신사역",
+      "fee": 8000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-114",
+      "requesterName": "한승현",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "homecleaning",
+      "title": "이사 후 입주 청소 부탁해요",
+      "description": "이사 후 새로 입주 전 전체 청소입니다.",
+      "location": {
+        "lat": 37.514243,
+        "lng": 127.036818
+      },
+      "hubName": "학동역",
+      "fee": 34000,
+      "estimatedHours": 2,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-115",
+      "requesterName": "오지우",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "assembly",
+      "title": "책장 조립 도와주세요",
+      "description": "5단 책장 조립, 설명서 있음. 드라이버 지참 부탁드려요.",
+      "location": {
+        "lat": 37.5048,
+        "lng": 127.043735
+      },
+      "hubName": "선릉역",
+      "fee": 27000,
+      "estimatedHours": 1.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-116",
+      "requesterName": "정도현",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "moving",
+      "title": "원룸 짐 나르기 도움",
+      "description": "원룸 짐 3층 → 1층 이동 후 용달 싣기 보조.",
+      "location": {
+        "lat": 37.511491,
+        "lng": 127.024531
+      },
+      "hubName": "논현역",
+      "fee": 19000,
+      "estimatedHours": 1,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-117",
+      "requesterName": "전다희",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "pet",
+      "title": "반려견 목욕 후 드라이",
+      "description": "소형견 목욕 및 드라이, 샴푸 비치돼 있어요.",
+      "location": {
+        "lat": 37.509094,
+        "lng": 127.019427
+      },
+      "hubName": "논현역",
+      "fee": 15000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-118",
+      "requesterName": "강예린",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "queue",
+      "title": "팝업 입장 대기 부탁드려요",
+      "description": "팝업 스토어 입장권 선착순 배포 대기.",
+      "location": {
+        "lat": 37.494796,
+        "lng": 127.032327
+      },
+      "hubName": "강남역",
+      "fee": 33000,
+      "estimatedHours": 2,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-119",
+      "requesterName": "윤재원",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "walkdelivery",
+      "title": "소포 도보 배달 부탁드려요",
+      "description": "근거리 소포(2kg 이하) 도보·대중교통 배달.",
+      "location": {
+        "lat": 37.5028,
+        "lng": 127.053255
+      },
+      "hubName": "선릉역",
+      "fee": 10000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    },
+    {
+      "id": "svc-120",
+      "requesterName": "전다희",
+      "requesterType": "individual",
+      "contractType": "service",
+      "serviceCategory": "errand",
+      "title": "약국 심부름 부탁드려요",
+      "description": "처방전 지참 후 약국 방문, 약 수령 부탁드립니다.",
+      "location": {
+        "lat": 37.486919,
+        "lng": 127.043733
+      },
+      "hubName": "도곡역",
+      "fee": 7000,
+      "estimatedHours": 0.5,
+      "legalGrade": "A",
+      "createdAt": "2026-05-18T00:00:00+09:00"
+    }
+  ]
+}

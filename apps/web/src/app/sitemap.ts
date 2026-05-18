@@ -19,6 +19,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "hourly",
       priority: 0.9,
     },
+    // Marketing landing page — added by Agency Builder (BRIEF-20260514-001)
+    {
+      url: `${SITE_URL}/`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 1.0,
+    },
   ]
 
   // Paginate through all public jobs
