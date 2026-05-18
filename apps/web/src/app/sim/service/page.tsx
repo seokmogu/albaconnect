@@ -4,38 +4,16 @@
  * 용역 트랙: 개인(individual) → 수행자, 도급계약, 건당 보수.
  * 고용 트랙(사업주↔워커)과 별개 — 근로계약 아님.
  *
- * Server Component. data.ts의 loadServiceRequests() 직접 사용.
+ * Server Component. 데이터 로드·필터·위장도급 감지는 서버에서,
+ * 카드 인터랙션(합의서 모달)은 ServiceCardList 클라이언트 컴포넌트로 위임.
  */
-import { loadServiceRequests } from "../_lib/data"
-import { SERVICE_CATEGORY_LABEL } from "../_lib/data"
-import { LEGAL_GRADE_STYLE } from "../_lib/legal"
 import Link from "next/link"
-import {
-  ShoppingBag,
-  Home,
-  Wrench,
-  Package,
-  PawPrint,
-  Clock,
-  Bike,
-  MapPin,
-  ChevronLeft,
-  AlertCircle,
-} from "lucide-react"
-import type { ServiceCategory, ServiceRequest } from "../_lib/data"
+import { ChevronLeft, AlertCircle, RefreshCw } from "lucide-react"
+import { loadServiceRequests, SERVICE_CATEGORY_LABEL, detectRepeatRequesters } from "../_lib/data"
+import type { ServiceCategory } from "../_lib/data"
+import { ServiceCardList } from "./_components/ServiceCardList"
 
 export const dynamic = "force-dynamic"
-
-// ── 카테고리 아이콘 맵 ──────────────────────────────────────────────────────
-const CATEGORY_ICON: Record<ServiceCategory, React.ReactNode> = {
-  errand:       <ShoppingBag size={18} />,
-  homecleaning: <Home size={18} />,
-  assembly:     <Wrench size={18} />,
-  moving:       <Package size={18} />,
-  pet:          <PawPrint size={18} />,
-  queue:        <Clock size={18} />,
-  walkdelivery: <Bike size={18} />,
-}
 
 const ALL_CATEGORIES = Object.keys(SERVICE_CATEGORY_LABEL) as ServiceCategory[]
 
@@ -52,9 +30,12 @@ export default async function ServicePage({
     ? allRequests.filter((r) => r.serviceCategory === selectedCat)
     : allRequests
 
+  // US-15B: 위장도급 감지는 전체 데이터 기준 (필터 무관)
+  const repeatMap = detectRepeatRequesters(allRequests)
+  const repeatRequesters = [...repeatMap.keys()]
+
   return (
     <div className="min-h-screen bg-[#F5F6F8] text-[#1A1A1A]">
-      {/* 헤더 */}
       <header className="bg-[#FF6E0D] text-white">
         <div className="max-w-3xl mx-auto px-6 py-8">
           <Link
@@ -74,7 +55,7 @@ export default async function ServicePage({
 
       <main className="max-w-3xl mx-auto px-6 py-6">
         {/* 용역 트랙 안내 배너 */}
-        <div className="flex items-start gap-3 bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
+        <div className="flex items-start gap-3 bg-blue-50 border border-blue-200 rounded-xl p-4 mb-4">
           <AlertCircle size={18} className="text-blue-500 mt-0.5 shrink-0" />
           <p className="text-sm text-blue-800" style={{ wordBreak: "keep-all" }}>
             <span className="font-bold">용역 트랙 — 개인 간 도급, 근로계약 아님.</span>{" "}
@@ -82,6 +63,18 @@ export default async function ServicePage({
             도급 계약입니다. 최저임금법 및 근로기준법 적용 대상이 아닙니다.
           </p>
         </div>
+
+        {/* US-15B: 위장도급 감지 요약 */}
+        {repeatRequesters.length > 0 && (
+          <div className="flex items-start gap-3 bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6">
+            <RefreshCw size={18} className="text-yellow-600 mt-0.5 shrink-0" />
+            <p className="text-sm text-yellow-800" style={{ wordBreak: "keep-all" }}>
+              <span className="font-bold">반복·정기 의뢰자 {repeatRequesters.length}명 감지.</span>{" "}
+              동일 의뢰자가 3건 이상 의뢰하면 실질 근로(위장도급) 위험이 있어, 해당 카드에
+              고용형(근로계약) 트랙 전환 안내가 표시됩니다.
+            </p>
+          </div>
+        )}
 
         {/* 카테고리 필터 칩 */}
         <div className="flex flex-wrap gap-2 mb-6">
@@ -100,27 +93,14 @@ export default async function ServicePage({
           })}
         </div>
 
-        {/* 의뢰 카드 그리드 */}
-        {requests.length === 0 ? (
-          <p className="text-center text-[#999] py-16 text-sm">해당 카테고리의 의뢰가 없습니다.</p>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {requests.map((req) => (
-              <ServiceCard key={req.id} req={req} />
-            ))}
-          </div>
-        )}
+        <ServiceCardList requests={requests} repeatRequesters={repeatRequesters} />
       </main>
     </div>
   )
 }
 
-// ── 필터 칩 ─────────────────────────────────────────────────────────────────
 function FilterChip({
-  href,
-  label,
-  active,
-  count,
+  href, label, active, count,
 }: {
   href: string
   label: string
@@ -147,58 +127,5 @@ function FilterChip({
         {count}
       </span>
     </Link>
-  )
-}
-
-// ── 의뢰 카드 ────────────────────────────────────────────────────────────────
-function ServiceCard({ req }: { req: ServiceRequest }) {
-  const catLabel = SERVICE_CATEGORY_LABEL[req.serviceCategory]
-  const icon = CATEGORY_ICON[req.serviceCategory]
-  const gradeStyle = LEGAL_GRADE_STYLE[req.legalGrade]
-
-  return (
-    <div className="bg-white border border-[#EEEEEE] rounded-2xl p-5 hover:border-[#FF6E0D] hover:shadow-md transition-all">
-      {/* 카테고리 + 법적등급 */}
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-[#FF6E0D]/10 flex items-center justify-center text-[#FF6E0D]">
-            {icon}
-          </div>
-          <span className="text-xs font-semibold text-[#FF6E0D]">{catLabel}</span>
-        </div>
-        <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${gradeStyle.badge}`}>
-          {gradeStyle.label}
-        </span>
-      </div>
-
-      {/* 제목 */}
-      <h3 className="font-bold text-[#1A1A1A] text-sm leading-snug mb-1" style={{ wordBreak: "keep-all" }}>
-        {req.title}
-      </h3>
-
-      {/* 의뢰자 */}
-      <p className="text-xs text-[#888] mb-3">
-        의뢰자 <span className="text-[#444] font-medium">{req.requesterName}</span> · 개인
-      </p>
-
-      {/* 보수 + 예상시간 */}
-      <div className="flex items-center justify-between">
-        <p className="text-lg font-black text-[#FF4D4D]">
-          {req.fee.toLocaleString()}원
-          <span className="text-xs font-normal text-[#999] ml-1">/ 건</span>
-        </p>
-        <span className="text-xs text-[#888]">
-          약 {req.estimatedHours >= 1
-            ? `${req.estimatedHours}시간`
-            : `${req.estimatedHours * 60}분`}
-        </span>
-      </div>
-
-      {/* 위치 */}
-      <div className="flex items-center gap-1 mt-2 text-xs text-[#999]">
-        <MapPin size={11} />
-        <span>{req.hubName} 인근</span>
-      </div>
-    </div>
   )
 }

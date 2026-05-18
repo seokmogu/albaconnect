@@ -5,6 +5,7 @@
  * dispatch 이벤트를 타임라인으로 재생한다. 영상 녹화용.
  */
 import { loadSnapshot } from "../_lib/data"
+import type { Employer, Posting, Worker } from "../_lib/data"
 import { DemoPlayer, type DemoStep } from "./DemoPlayer"
 
 export const dynamic = "force-dynamic"
@@ -12,9 +13,9 @@ export const dynamic = "force-dynamic"
 export default async function SimDemoPage() {
   const snap = await loadSnapshot()
 
-  const empById = new Map(snap.employers.map((e) => [e.id, e]))
-  const wkById = new Map(snap.workers.map((w) => [w.id, w]))
-  const postById = new Map(snap.postings.map((p) => [p.id, p]))
+  const empById = new Map(snap.employers.map((e): [string, Employer] => [e.id, e]))
+  const wkById = new Map(snap.workers.map((w): [string, Worker] => [w.id, w]))
+  const postById = new Map(snap.postings.map((p): [string, Posting] => [p.id, p]))
 
   // 매칭 성공 dispatch 중 30건을 타임라인 스텝으로 구성
   const steps: DemoStep[] = snap.dispatches
@@ -47,7 +48,7 @@ export default async function SimDemoPage() {
           durationHours: posting.draft.durationHours,
           headcount: posting.draft.headcount,
           category: posting.draft.category,
-          employmentType: posting.employmentType ?? null,
+          employmentType: (posting.employmentType ?? null) as string | null,
         },
         acceptedReason: d.acceptedReason ?? null,
         acceptedSecondsToDecide: d.acceptedSecondsToDecide ?? null,

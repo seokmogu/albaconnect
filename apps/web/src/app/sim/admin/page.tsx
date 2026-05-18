@@ -7,6 +7,7 @@ import Link from "next/link"
 import { loadSnapshot } from "../_lib/data"
 import { getLegal, LEGAL_GRADE_STYLE, CATEGORY_LEGAL, type LegalGrade } from "../_lib/legal"
 import { LayoutDashboard, Store, Users, Zap, TrendingUp, Clock, MapPin, Tag, AlertTriangle, ShieldCheck } from "lucide-react"
+import { DisputeTriagePanel } from "./_components/DisputeTriagePanel"
 
 export const dynamic = "force-dynamic"
 
@@ -334,6 +335,9 @@ export default async function SimAdminPage() {
           )}
         </div>
       </section>
+
+      {/* US-14: 분쟁 트리아지 */}
+      <DisputeTriagePanel />
     </div>
   )
 }

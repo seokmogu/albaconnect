@@ -37,7 +37,7 @@ export function getLegal(category: string): LegalMeta {
 // ── 용역 트랙 법적 상수 (클라이언트 안전) ────────────────────────────────────
 // @MX:NOTE: 용역 카테고리 법적 등급 — Job_Category_Legal_Matrix §4.1 기준
 // walkdelivery 포함 비전문 도보 용역 전부 A등급. 차량배달만 B(이 파일에는 미포함).
-import type { ServiceCategory } from "./data"
+import type { ServiceCategory } from "./service"
 
 export const SERVICE_CATEGORY_LEGAL: Record<ServiceCategory, "A" | "B"> = {
   errand:       "A",

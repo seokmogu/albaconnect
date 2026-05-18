@@ -7,6 +7,12 @@
 
 import { readFile } from "node:fs/promises"
 import { join } from "node:path"
+import type { ServiceRequest } from "./service"
+
+// 용역 트랙 타입·상수는 클라이언트 안전한 service.ts에서 관리. 서버 컴포넌트
+// 호환을 위해 data.ts에서도 re-export 한다.
+export type { ContractType, ServiceCategory, ServiceRequest } from "./service"
+export { SERVICE_CATEGORY_LABEL, detectRepeatRequesters } from "./service"
 
 const SIM_DATA_DIR = join(process.cwd(), "..", "..", "sim", "data")
 
@@ -145,47 +151,7 @@ export async function loadDispatches(): Promise<Dispatch[]> {
   return data.dispatches ?? []
 }
 
-// ── 용역 트랙 (개인 C2C) ──────────────────────────────────────────────────────
-
-export type ContractType = "employment" | "service"
-
-export type ServiceCategory =
-  | "errand"
-  | "homecleaning"
-  | "assembly"
-  | "moving"
-  | "pet"
-  | "queue"
-  | "walkdelivery"
-
-export const SERVICE_CATEGORY_LABEL: Record<ServiceCategory, string> = {
-  errand:       "심부름",
-  homecleaning: "집청소",
-  assembly:     "가구조립",
-  moving:       "짐옮기기",
-  pet:          "반려동물",
-  queue:        "줄서기",
-  walkdelivery: "도보배달",
-}
-
-// @MX:ANCHOR: ServiceRequest — 용역 의뢰 인터페이스, service/page.tsx 및 로더가 참조
-// @MX:REASON: 개인 C2C 용역 트랙의 핵심 데이터 계약 (fan_in >= 2, 향후 확장 예정)
-export interface ServiceRequest {
-  id: string
-  requesterName: string
-  requesterType: "individual"
-  contractType: "service"
-  serviceCategory: ServiceCategory
-  title: string
-  description: string
-  location: { lat: number; lng: number }
-  hubName: string
-  fee: number
-  estimatedHours: number
-  /** Job_Category_Legal_Matrix §4.1 기준 — 비전문 도보 용역 전부 A */
-  legalGrade: "A" | "B"
-  createdAt: string
-}
+// ── 용역 트랙 (개인 C2C) 로더 ─────────────────────────────────────────────────
 
 export async function loadServiceRequests(): Promise<ServiceRequest[]> {
   const data = await loadJson<{ requests?: ServiceRequest[] }>("service-requests.json", {})
