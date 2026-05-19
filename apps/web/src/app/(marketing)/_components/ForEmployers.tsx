@@ -56,7 +56,7 @@ export function ForEmployers() {
 
           {/* Solutions — right */}
           <div className="border-l-4 border-primary pl-6 fade-up" style={{ "--index": 1 } as React.CSSProperties}>
-            <ul aria-label="AlbaConnect 해결책" className="flex flex-col gap-4 mb-8">
+            <ul aria-label="알바몬 커넥트 해결책" className="flex flex-col gap-4 mb-8">
               {solutions.map((sol) => (
                 <li key={sol} className="flex items-start gap-3">
                   <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="text-accent mt-0.5 flex-shrink-0">

@@ -49,7 +49,7 @@ export function Header() {
         <Link
           href="/"
           className="flex items-center gap-1.5 text-white lg:text-secondary font-bold text-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm"
-          aria-label="AlbaConnect 홈으로"
+          aria-label="알바몬 커넥트 홈으로"
         >
           <svg
             width={20}

@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     title: copy.meta.ogTitle,
     description: copy.meta.ogDescription,
     url: "https://albaconnect.kr",
-    siteName: "AlbaConnect",
+    siteName: "알바몬 커넥트",
     images: [{ url: "/og.png", width: 1200, height: 630 }],
     locale: "ko_KR",
     type: "website",
@@ -37,7 +37,7 @@ const jsonLd = {
     {
       "@type": "Organization",
       "@id": "https://albaconnect.kr/#org",
-      name: "AlbaConnect (주)",
+      name: "알바몬 커넥트 (주)",
       url: "https://albaconnect.kr",
       logo: "https://albaconnect.kr/og.png",
       contactPoint: {
@@ -50,7 +50,7 @@ const jsonLd = {
     {
       "@type": "Service",
       "@id": "https://albaconnect.kr/#service",
-      name: "AlbaConnect 위치 기반 초단기 알바 매칭",
+      name: "알바몬 커넥트 위치 기반 초단기 알바 매칭",
       description: copy.meta.metaDescription,
       provider: { "@id": "https://albaconnect.kr/#org" },
       areaServed: { "@type": "Country", name: "South Korea" },

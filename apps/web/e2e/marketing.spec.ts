@@ -34,7 +34,7 @@ test.describe("AlbaConnect marketing landing", () => {
     const pricing = page.locator("#pricing")
     await expect(pricing).toBeVisible()
     await expect(pricing.getByText("매칭 1건당 평균 3,840원")).toBeVisible()
-    await expect(pricing.getByText("AlbaConnect", { exact: true })).toBeVisible()
+    await expect(pricing.getByText("알바몬 커넥트", { exact: true })).toBeVisible()
     await expect(pricing.getByText("알바몬 정액 광고", { exact: true })).toBeVisible()
     await expect(pricing.getByText("당근알바 동네 노출", { exact: true })).toBeVisible()
   })
@@ -94,9 +94,9 @@ test.describe("AlbaConnect marketing landing", () => {
 
   test("meta tags include albaconnect title and og image", async ({ page }) => {
     const title = await page.title()
-    expect(title).toContain("AlbaConnect")
+    expect(title).toContain("알바몬 커넥트")
     const ogTitle = await page.locator('meta[property="og:title"]').getAttribute("content")
-    expect(ogTitle).toContain("AlbaConnect")
+    expect(ogTitle).toContain("알바몬 커넥트")
   })
 
   test("noshow re-dispatch trust badge is visible in hero (L3)", async ({ page }) => {

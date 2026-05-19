@@ -25,7 +25,7 @@ const stepIcons = [
 
 const actorVariant: Record<string, string> = {
   "사장님": "bg-primary/10 text-primary",
-  "AlbaConnect": "bg-secondary/10 text-secondary-light",
+  "알바몬 커넥트": "bg-secondary/10 text-secondary-light",
   "워커": "bg-accent/10 text-accent",
 }
 

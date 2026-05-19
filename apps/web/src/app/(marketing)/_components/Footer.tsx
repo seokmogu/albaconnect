@@ -22,7 +22,7 @@ export function Footer() {
             >
               <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
             </svg>
-            <span className="text-white font-bold text-lg">AlbaConnect</span>
+            <span className="text-white font-bold text-lg">알바몬 커넥트</span>
           </div>
           <p className="text-slate-500 text-sm">{tagline}</p>
         </div>
