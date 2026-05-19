@@ -176,7 +176,25 @@ test.describe("Epic 4 — 워커 가용성", () => {
   test("라이브 매칭 토글 시 위치 선택과 수신 안내가 노출된다 [US-11-TC-1]", async ({ page }) => {
     await page.goto(`/sim/me/worker/${WORKER_ID}`)
     await page.getByRole("button", { name: "라이브 매칭 토글" }).click()
-    await expect(page.getByText(/반경 3km/)).toBeVisible()
+    await expect(page.getByText(/반경 3km/).first()).toBeVisible()
+  })
+
+  test("라이브 매칭 ON 시 위치 반경 공고가 실시간 매칭된다 [US-11-TC-2]", async ({ page }) => {
+    await page.goto(`/sim/me/worker/${WORKER_ID}`)
+    const before = await page.getByRole("button", { name: "수락" }).count()
+    await page.getByRole("button", { name: "라이브 매칭 토글" }).click()
+    // LIVE 매칭 섹션이 나타나고 수락 가능한 공고가 늘어난다
+    await expect(page.getByText(/LIVE 매칭 ·/)).toBeVisible()
+    await expect(page.getByRole("button", { name: "수락" })).not.toHaveCount(before)
+  })
+
+  test("라이브 매칭 토글 OFF 시 라이브 공고가 사라진다 [US-11-TC-3]", async ({ page }) => {
+    await page.goto(`/sim/me/worker/${WORKER_ID}`)
+    const toggle = page.getByRole("button", { name: "라이브 매칭 토글" })
+    await toggle.click()
+    await expect(page.getByText(/LIVE 매칭 ·/)).toBeVisible()
+    await toggle.click()
+    await expect(page.getByText(/LIVE 매칭 ·/)).toHaveCount(0)
   })
 })
 

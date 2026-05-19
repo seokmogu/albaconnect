@@ -23,7 +23,6 @@ export default async function WorkerMyPage({ params }: { params: Promise<{ id: s
   // 본인이 받은 알림 / 수락한 일감
   const myDispatches = dispatches.filter((d) => d.rankedWorkerIds.includes(id))
   const notifications = myDispatches
-    .filter((d) => !d.acceptedBy || d.acceptedBy !== id)
     .filter((d) => !d.acceptedBy) // 미확정 알림만
     .map((d) => ({ dispatch: d, posting: postingById[d.postingId] }))
     .filter((x) => x.posting)
@@ -32,11 +31,19 @@ export default async function WorkerMyPage({ params }: { params: Promise<{ id: s
     .map((d) => ({ dispatch: d, posting: postingById[d.postingId] }))
     .filter((x) => x.posting)
 
+  // US-11 라이브 매칭 후보: 본인이 아직 알림받지 않은 공고.
+  // 클라이언트가 라이브 토글 ON 시 현재 위치 반경으로 즉석 필터링한다.
+  const myPostingIds = new Set(myDispatches.map((d) => d.postingId))
+  const liveCandidates = postings
+    .filter((p) => !myPostingIds.has(p.id) && p.employerLocation)
+    .slice(0, 200)
+
   return (
     <WorkerMyPageClient
       worker={worker}
       notifications={notifications}
       activeJobs={activeJobs}
+      liveCandidates={liveCandidates}
     />
   )
 }

@@ -7,7 +7,7 @@
  * 새로고침 시 서버 스냅샷 기준으로 리셋된다.
  */
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import Link from "next/link"
 import type { Worker, Dispatch, Posting, ScheduleRule } from "../../../_lib/data"
 import { getLegal, LEGAL_GRADE_STYLE } from "../../../_lib/legal"
@@ -48,7 +48,11 @@ interface Props {
   worker: Worker
   notifications: DispatchView[]
   activeJobs: DispatchView[]
+  /** US-11 라이브 매칭 후보 — 본인 미수신 공고. 토글 ON 시 위치 반경 필터. */
+  liveCandidates: Posting[]
 }
+
+const LIVE_RADIUS_M = 3000
 
 const HUBS = [
   { name: "강남역", lat: 37.4979, lng: 127.0276 },
@@ -72,7 +76,7 @@ function hhmmToMin(v: string): number {
 
 type Tab = "알림" | "일감" | "스케줄" | "내정보"
 
-export function WorkerMyPageClient({ worker, notifications: initialNotifs, activeJobs: initialJobs }: Props) {
+export function WorkerMyPageClient({ worker, notifications: initialNotifs, activeJobs: initialJobs, liveCandidates }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>("알림")
   const [notifs, setNotifs] = useState(initialNotifs)
   const [jobs, setJobs] = useState(initialJobs)
@@ -88,6 +92,31 @@ export function WorkerMyPageClient({ worker, notifications: initialNotifs, activ
 
   // US-13: 전자 근로 합의서 모달 상태
   const [agreementTarget, setAgreementTarget] = useState<DispatchView | null>(null)
+
+  // US-11: 라이브 매칭 — 거절한 라이브 후보 추적
+  const [rejectedLive, setRejectedLive] = useState<Set<string>>(new Set())
+
+  // 라이브 토글 ON → 선택 허브 반경 3km 내 미수신 공고를 실시간 매칭한다.
+  const liveMatches = useMemo<DispatchView[]>(() => {
+    if (!liveOn) return []
+    const hub = HUBS.find((h) => h.name === liveHub)
+    if (!hub) return []
+    const jobIds = new Set(jobs.map((j) => j.dispatch.postingId))
+    return liveCandidates
+      .filter((p) => !jobIds.has(p.id) && !rejectedLive.has(p.id))
+      .filter((p) => haversineMeters({ lat: hub.lat, lng: hub.lng }, p.employerLocation) <= LIVE_RADIUS_M)
+      .slice(0, 8)
+      .map((p) => ({
+        dispatch: {
+          postingId: p.id,
+          rankedWorkerIds: [worker.id],
+          scores: {},
+          acceptedBy: null,
+          notifiedAt: p.createdAt,
+        },
+        posting: p,
+      }))
+  }, [liveOn, liveHub, liveCandidates, jobs, rejectedLive, worker.id])
 
   // US-12: 지오펜스 체크인 상태 (postingId 별)
   const [checkins, setCheckins] = useState<Record<string, CheckinState>>({})
@@ -119,9 +148,11 @@ export function WorkerMyPageClient({ worker, notifications: initialNotifs, activ
     setCheckins((prev) => ({ ...prev, [postingId]: { ...st, outAt: Date.now() } }))
   }
 
-  // US-3: 수락 → 합의서 모달 표시
+  // US-3: 수락 → 합의서 모달 표시 (일반 알림 + 라이브 매칭 모두)
   function accept(postingId: string) {
-    const v = notifs.find((n) => n.dispatch.postingId === postingId)
+    const v =
+      notifs.find((n) => n.dispatch.postingId === postingId) ??
+      liveMatches.find((n) => n.dispatch.postingId === postingId)
     if (!v) return
     setAgreementTarget(v)
   }
@@ -139,9 +170,14 @@ export function WorkerMyPageClient({ worker, notifications: initialNotifs, activ
   function cancelAgreement() {
     setAgreementTarget(null)
   }
-  // US-3: 거절
+  // US-3: 거절 — 일반 알림은 목록에서 제거, 라이브 매칭은 거절 집합에 추가
   function reject(postingId: string) {
-    setNotifs((prev) => prev.filter((n) => n.dispatch.postingId !== postingId))
+    const inNotifs = notifs.some((n) => n.dispatch.postingId === postingId)
+    if (inNotifs) {
+      setNotifs((prev) => prev.filter((n) => n.dispatch.postingId !== postingId))
+    } else {
+      setRejectedLive((prev) => new Set(prev).add(postingId))
+    }
   }
 
   // US-10: 스케줄 규칙 추가
@@ -253,60 +289,34 @@ export function WorkerMyPageClient({ worker, notifications: initialNotifs, activ
                 </div>
               ) : (
                 <ul className="space-y-3">
-                  {notifs.slice(0, 10).map(({ dispatch, posting }) => {
-                    const legal = getLegal(posting.draft.category)
-                    const gs = LEGAL_GRADE_STYLE[legal.grade]
-                    return (
-                    <li key={dispatch.postingId} className="bg-white border-2 border-[#FF6E0D]/25 rounded-2xl p-4">
-                      <div className="flex items-start justify-between mb-1">
-                        <h3 className="font-bold text-[#1A1A1A] text-sm leading-tight">{posting.draft.title}</h3>
-                        <span className="shrink-0 ml-2 text-xs px-2 py-0.5 rounded-full bg-[#FF6E0D] text-white font-bold">30초</span>
-                      </div>
-                      <div className="flex items-center gap-1.5 mb-2 flex-wrap">
-                        <p className="text-xs text-[#999999]">{posting.employerName}</p>
-                        {posting.employmentType && (
-                          <span
-                            className="text-[10px] font-bold px-1.5 py-0.5 rounded"
-                            style={{
-                              color: EMPLOYMENT_COLOR[posting.employmentType],
-                              backgroundColor: `${EMPLOYMENT_COLOR[posting.employmentType]}1A`,
-                            }}
-                          >
-                            {EMPLOYMENT_LABEL[posting.employmentType]}
-                          </span>
-                        )}
-                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${gs.badge}`}>{gs.label}</span>
-                        {legal.grade !== "A" && (
-                          <span className="flex items-center gap-0.5 text-[10px] text-yellow-600" title={legal.warning}>
-                            <AlertTriangle size={9} />{legal.warning}
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex gap-3 text-xs text-[#666666] mb-4">
-                        <span className="flex items-center gap-1">
-                          <Banknote size={11} className="text-[#FF4D4D]" />
-                          <span className="text-[#FF4D4D] font-bold">{posting.draft.hourlyRate.toLocaleString()}원</span>
-                        </span>
-                        <span className="flex items-center gap-1"><Clock size={11} />{posting.draft.durationHours}h</span>
-                        <span className="flex items-center gap-1"><Users size={11} />{posting.draft.headcount}명</span>
-                      </div>
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => accept(dispatch.postingId)}
-                          className="flex-1 py-3 bg-[#FF6E0D] text-white rounded-xl font-black text-sm hover:bg-[#E55E00] active:scale-[0.98] transition-all"
-                        >
-                          수락
-                        </button>
-                        <button
-                          onClick={() => reject(dispatch.postingId)}
-                          className="flex-1 py-3 bg-[#F0F0F0] text-[#666666] rounded-xl font-black text-sm hover:bg-[#E5E5E5] active:scale-[0.98] transition-all"
-                        >
-                          거절
-                        </button>
-                      </div>
-                    </li>
-                  )
-                  })}
+                  {notifs.slice(0, 10).map((v) => (
+                    <NotifCard key={v.dispatch.postingId} view={v} onAccept={accept} onReject={reject} />
+                  ))}
+                </ul>
+              )}
+            </section>
+          )}
+
+          {/* US-11: 라이브 매칭 — 현재 위치 반경 실시간 매칭 결과 */}
+          {activeTab === "알림" && liveOn && (
+            <section>
+              <h2 className="text-sm font-bold text-[#1A1A1A] mb-3 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#FF6E0D] animate-pulse" />
+                LIVE 매칭 · {liveHub} 반경 3km
+                <span className="ml-1 px-1.5 py-0.5 rounded-full bg-[#FF6E0D] text-white text-[10px] font-bold leading-none">
+                  {liveMatches.length}
+                </span>
+              </h2>
+              {liveMatches.length === 0 ? (
+                <div className="bg-white border border-[#EEEEEE] rounded-2xl p-8 text-center">
+                  <MapPin size={24} className="text-[#CCCCCC] mx-auto mb-2" />
+                  <p className="text-sm text-[#999999]">{liveHub} 반경에 매칭 가능한 공고가 없습니다</p>
+                </div>
+              ) : (
+                <ul className="space-y-3">
+                  {liveMatches.map((v) => (
+                    <NotifCard key={v.dispatch.postingId} view={v} live onAccept={accept} onReject={reject} />
+                  ))}
                 </ul>
               )}
             </section>
@@ -550,6 +560,74 @@ export function WorkerMyPageClient({ worker, notifications: initialNotifs, activ
         </div>
       </nav>
     </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// 매칭 알림 카드 — 일반 알림(US-3)과 라이브 매칭(US-11) 공용
+// ---------------------------------------------------------------------------
+function NotifCard({
+  view, live, onAccept, onReject,
+}: {
+  view: DispatchView
+  live?: boolean
+  onAccept: (postingId: string) => void
+  onReject: (postingId: string) => void
+}) {
+  const { dispatch, posting } = view
+  const legal = getLegal(posting.draft.category)
+  const gs = LEGAL_GRADE_STYLE[legal.grade]
+  return (
+    <li className="bg-white border-2 border-[#FF6E0D]/25 rounded-2xl p-4">
+      <div className="flex items-start justify-between mb-1">
+        <h3 className="font-bold text-[#1A1A1A] text-sm leading-tight">{posting.draft.title}</h3>
+        <span className="shrink-0 ml-2 text-xs px-2 py-0.5 rounded-full bg-[#FF6E0D] text-white font-bold">
+          {live ? "LIVE" : "30초"}
+        </span>
+      </div>
+      <div className="flex items-center gap-1.5 mb-2 flex-wrap">
+        <p className="text-xs text-[#999999]">{posting.employerName}</p>
+        {posting.employmentType && (
+          <span
+            className="text-[10px] font-bold px-1.5 py-0.5 rounded"
+            style={{
+              color: EMPLOYMENT_COLOR[posting.employmentType],
+              backgroundColor: `${EMPLOYMENT_COLOR[posting.employmentType]}1A`,
+            }}
+          >
+            {EMPLOYMENT_LABEL[posting.employmentType]}
+          </span>
+        )}
+        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${gs.badge}`}>{gs.label}</span>
+        {legal.grade !== "A" && (
+          <span className="flex items-center gap-0.5 text-[10px] text-yellow-600" title={legal.warning}>
+            <AlertTriangle size={9} />{legal.warning}
+          </span>
+        )}
+      </div>
+      <div className="flex gap-3 text-xs text-[#666666] mb-4">
+        <span className="flex items-center gap-1">
+          <Banknote size={11} className="text-[#FF4D4D]" />
+          <span className="text-[#FF4D4D] font-bold">{posting.draft.hourlyRate.toLocaleString()}원</span>
+        </span>
+        <span className="flex items-center gap-1"><Clock size={11} />{posting.draft.durationHours}h</span>
+        <span className="flex items-center gap-1"><Users size={11} />{posting.draft.headcount}명</span>
+      </div>
+      <div className="flex gap-2">
+        <button
+          onClick={() => onAccept(dispatch.postingId)}
+          className="flex-1 py-3 bg-[#FF6E0D] text-white rounded-xl font-black text-sm hover:bg-[#E55E00] active:scale-[0.98] transition-all"
+        >
+          수락
+        </button>
+        <button
+          onClick={() => onReject(dispatch.postingId)}
+          className="flex-1 py-3 bg-[#F0F0F0] text-[#666666] rounded-xl font-black text-sm hover:bg-[#E5E5E5] active:scale-[0.98] transition-all"
+        >
+          거절
+        </button>
+      </div>
+    </li>
   )
 }
 
