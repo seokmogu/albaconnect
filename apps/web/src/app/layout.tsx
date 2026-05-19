@@ -3,7 +3,7 @@ import "./globals.css"
 import OfflineBanner from "@/components/OfflineBanner"
 
 export const metadata: Metadata = {
-  title: "AlbaConnect - 위치 기반 알바 매칭",
+  title: "알바몬 커넥트 - 위치 기반 알바·용역 매칭",
   description: "지금 내 주변의 알바 구직자/구인자를 실시간으로 연결합니다",
   manifest: "/manifest.json",
   icons: { apple: "/icon-192.png" },

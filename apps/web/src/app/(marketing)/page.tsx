@@ -3,6 +3,7 @@ import { HowItWorks } from "./_components/HowItWorks"
 import { MatchingAlgorithm } from "./_components/MatchingAlgorithm"
 import { Pricing } from "./_components/Pricing"
 import { ForEmployers } from "./_components/ForEmployers"
+import { ForGigService } from "./_components/ForGigService"
 import { ForWorkers } from "./_components/ForWorkers"
 import { TrustSafety } from "./_components/TrustSafety"
 import { Stats } from "./_components/Stats"
@@ -17,6 +18,7 @@ export default function LandingPage() {
       <MatchingAlgorithm />
       <Pricing />
       <ForEmployers />
+      <ForGigService />
       <ForWorkers />
       <TrustSafety />
       <Stats />

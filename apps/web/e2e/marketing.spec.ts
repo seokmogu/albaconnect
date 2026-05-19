@@ -14,9 +14,9 @@ test.describe("AlbaConnect marketing landing", () => {
   })
 
   test("renders hero with headline and dual CTAs", async ({ page }) => {
-    // Hero headline split across two lines
-    await expect(page.getByRole("heading", { level: 1 })).toContainText("오늘 빠진 자리")
-    await expect(page.getByRole("heading", { level: 1 })).toContainText("30초 안에 채워요")
+    // Hero headline split across two lines (2트랙 포괄 헤드라인으로 변경됨)
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("알바도 심부름도")
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("30초 안에 사람을 구해요")
 
     // Dual CTAs — employer (primary) and worker (secondary). Multiple occurrences
     // are expected (Hero + ForEmployers + ForWorkers + FinalCTA), so we check first().
@@ -101,5 +101,19 @@ test.describe("AlbaConnect marketing landing", () => {
 
   test("noshow re-dispatch trust badge is visible in hero (L3)", async ({ page }) => {
     await expect(page.getByText("노쇼 시 무료 재디스패치").first()).toBeVisible()
+  })
+
+  test("개인 용역 트랙 섹션이 도급 법적 고지와 함께 렌더된다 [MKT-2]", async ({ page }) => {
+    const gig = page.locator("#for-gig-service")
+    await expect(gig).toBeVisible()
+    // 고용형과 구분되는 법적 고지 — 민법상 도급계약, 근로계약 아님
+    await expect(gig.getByText(/민법상 도급계약/).first()).toBeVisible()
+    await expect(gig.getByText(/근로기준법·최저임금법 적용 대상이 아닙니다/)).toBeVisible()
+  })
+
+  test("개인 용역 섹션 CTA가 신청 폼으로 스크롤된다 [MKT-2]", async ({ page }) => {
+    await page.locator("#for-gig-service")
+      .getByRole("button", { name: "용역 의뢰인으로 사전 신청" }).click()
+    await expect(page.locator("#final-cta")).toBeInViewport({ ratio: 0.3, timeout: 5000 })
   })
 })
