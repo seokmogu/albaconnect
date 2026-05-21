@@ -21,12 +21,13 @@ COPY packages/ packages/
 COPY apps/api/package.json apps/api/package.json
 RUN pnpm install --frozen-lockfile --prod --filter @albaconnect/api...
 
-COPY --from=builder /app/apps/api/dist ./dist
+COPY --from=builder /app/apps/api/dist ./apps/api/dist
 COPY --from=builder /app/packages/shared/dist ./packages/shared/dist
-COPY apps/api/src/db/migrations ./src/db/migrations
-COPY apps/api/entrypoint.sh ./entrypoint.sh
-RUN chmod +x entrypoint.sh
+COPY apps/api/src/db/migrations ./apps/api/src/db/migrations
+COPY apps/api/entrypoint.sh ./apps/api/entrypoint.sh
+RUN chmod +x apps/api/entrypoint.sh
 
+WORKDIR /app/apps/api
 USER node
 EXPOSE 3001
 ENTRYPOINT ["./entrypoint.sh"]
