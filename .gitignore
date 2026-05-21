@@ -3,6 +3,10 @@ node_modules/
 dist/
 .env
 .env.local
+.env.*
+!.env.example
+!.env.poc.example
+!**/.env.example
 *.log
 .DS_Store
 .turbo/

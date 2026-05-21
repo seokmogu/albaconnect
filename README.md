@@ -252,6 +252,24 @@ pnpm e2e
 docker-compose up
 ```
 
+### 사내망 POC 실행
+
+맥미니 같은 내부망 단일 호스트에서 구성원만 접근하는 POC는 production용 외부 공개 인프라 대신
+`docker-compose.poc.yml`을 사용합니다. 기본값은 Toss mock 결제, PostGIS, Redis, API, Web을 함께 올립니다.
+
+```bash
+pnpm poc:setup -- --host macmini.local
+pnpm poc:doctor
+pnpm poc:up
+pnpm poc:health
+```
+
+`.local` 호스트명이 사내망에서 불안정하면 `pnpm poc:setup -- --host <맥미니-내부IP> --force`로
+고정 IP 기반 `.env.poc`을 생성하세요. POC compose는 Web/API만 LAN에 노출하고 Postgres/Redis는
+기본적으로 `127.0.0.1`에만 바인딩합니다.
+
+자세한 절차는 [POC_DEPLOYMENT.md](./POC_DEPLOYMENT.md)를 참고하세요.
+
 ---
 
 ## 🔧 환경변수
@@ -262,14 +280,45 @@ DATABASE_URL=postgresql://postgres:postgres@localhost:5432/albaconnect
 REDIS_URL=redis://localhost:6379
 JWT_SECRET=                     # 32자 이상 랜덤 문자열
 JWT_REFRESH_SECRET=             # 32자 이상 랜덤 문자열
-KAKAO_REST_API_KEY=             # 카카오 REST API 키
+KAKAO_BIZ_API_KEY=              # 카카오 알림톡 API 키
+KAKAO_SENDER_KEY=               # 카카오 알림톡 발신 프로필 키
 TOSS_CLIENT_KEY=                # 토스페이먼츠 클라이언트 키
 TOSS_SECRET_KEY=                # 토스페이먼츠 시크릿 키
 TOSS_WEBHOOK_SECRET=            # 토스 웹훅 HMAC 시크릿
+TOSS_CLIENT_MODE=rest           # rest | mock | mcp-mock
+PAYOUT_RELEASE_MODE=stub        # production: manual 또는 external 필요
 ADMIN_TOKEN=                    # 관리자 API 토큰
 PORT=3001
 
 # apps/web/.env.local
 NEXT_PUBLIC_API_URL=http://localhost:3001
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
 NEXT_PUBLIC_KAKAO_MAP_API_KEY=  # 카카오 지도 JavaScript 키
+```
+
+Production에서는 `JWT_SECRET`, `ADMIN_TOKEN`, `TOSS_SECRET_KEY`, `TOSS_WEBHOOK_SECRET`, `WEB_URL`,
+`PAYOUT_RELEASE_MODE`가 없으면 API가 시작되지 않습니다. 정산 API는 실제 외부 정산 운영 절차가 준비된 경우에만
+`PAYOUT_RELEASE_MODE=manual` 또는 `PAYOUT_RELEASE_MODE=external`로 열어야 합니다.
+운영 환경에서는 `TOSS_SECRET_KEY`가 `live_sk` 또는 `live_gsk`로 시작해야 합니다. 스테이징에서 테스트 키로
+production gate를 확인해야 할 때만 `TOSS_ALLOW_TEST_KEYS=true`를 함께 설정하세요.
+
+Toss MCP는 개발 중 문서 검색을 돕는 MCP 서버입니다. 현재 API 런타임에서는 실제 결제 조회를 REST API로 수행하고,
+로컬/스테이징에서 네트워크 없이 흐름을 검증하려면 `TOSS_CLIENT_MODE=mock` 또는 `TOSS_CLIENT_MODE=mcp-mock`을
+사용합니다. `TOSS_MOCK_PAYMENT_STATUS`, `TOSS_MOCK_ORDER_ID`, `TOSS_MOCK_TOTAL_AMOUNT`,
+`TOSS_MOCK_PAYMENT_JSON`으로 mock 응답을 고정할 수 있습니다. production에서는 mock 모드가 기본 차단되며,
+의도적으로 열어야 하는 테스트 환경에서만 `TOSS_ALLOW_MOCK_CLIENT=true`를 함께 설정하세요.
+
+### Production readiness / smoke check
+
+```bash
+# 필수 운영 환경변수, Toss 웹훅 시크릿 self-test, 선택적 /health 확인
+pnpm --filter @albaconnect/api run readiness:production
+
+# 배포 API 헬스체크까지 포함하려면
+API_BASE_URL=https://api.example.com pnpm --filter @albaconnect/api run readiness:production
+
+# Toss 결제 조회 smoke: 결제창에서 테스트 결제를 만든 뒤 paymentKey를 넣어 실행
+TOSS_SMOKE_PAYMENT_KEY=pay_... \
+TOSS_SMOKE_EXPECTED_STATUS=DONE \
+pnpm --filter @albaconnect/api run smoke:toss
 ```

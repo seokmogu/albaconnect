@@ -616,24 +616,24 @@ export async function workerRoutes(app: FastifyInstance) {
     const [currentRows, prevRows] = await Promise.all([
       db.execute<{ total_jobs: string; total_hours: string; total_pay: string; avg_hourly_rate: string; by_job: any[] }>(sql`
         SELECT COUNT(DISTINCT ja.id)::int as total_jobs,
-          COALESCE(SUM(jp.duration_hours),0)::float as total_hours,
+          COALESCE(SUM(EXTRACT(EPOCH FROM (jp.end_at - jp.start_at)) / 3600.0),0)::float as total_hours,
           COALESCE(SUM(p.amount - p.platform_fee),0)::int as total_pay,
           COALESCE(ROUND(AVG(jp.hourly_rate)),0)::int as avg_hourly_rate,
-          COALESCE(json_agg(json_build_object('jobId',jp.id,'title',jp.title,'hours',jp.duration_hours,'pay',p.amount-p.platform_fee,'completedAt',ja.responded_at)) FILTER (WHERE ja.id IS NOT NULL), '[]') as by_job
+          COALESCE(json_agg(json_build_object('jobId',jp.id,'title',jp.title,'hours',EXTRACT(EPOCH FROM (jp.end_at - jp.start_at)) / 3600.0,'pay',p.amount-p.platform_fee,'completedAt',ja.responded_at)) FILTER (WHERE ja.id IS NOT NULL), '[]') as by_job
         FROM job_applications ja
         JOIN job_postings jp ON jp.id=ja.job_id
-        LEFT JOIN payments p ON p.job_id=ja.job_id AND p.payer_id!=ja.worker_id AND p.payment_type='payout'
+        LEFT JOIN payments p ON p.job_id=ja.job_id AND p.status='completed'
         WHERE ja.worker_id=${workerId} AND ja.status='completed' AND DATE_TRUNC('month',jp.start_at AT TIME ZONE 'Asia/Seoul')=${monthDate}::date
       `),
       db.execute<{ total_jobs: string; total_hours: string; total_pay: string; avg_hourly_rate: string; by_job: any[] }>(sql`
         SELECT COUNT(DISTINCT ja.id)::int as total_jobs,
-          COALESCE(SUM(jp.duration_hours),0)::float as total_hours,
+          COALESCE(SUM(EXTRACT(EPOCH FROM (jp.end_at - jp.start_at)) / 3600.0),0)::float as total_hours,
           COALESCE(SUM(p.amount - p.platform_fee),0)::int as total_pay,
           COALESCE(ROUND(AVG(jp.hourly_rate)),0)::int as avg_hourly_rate,
-          COALESCE(json_agg(json_build_object('jobId',jp.id,'title',jp.title,'hours',jp.duration_hours,'pay',p.amount-p.platform_fee,'completedAt',ja.responded_at)) FILTER (WHERE ja.id IS NOT NULL), '[]') as by_job
+          COALESCE(json_agg(json_build_object('jobId',jp.id,'title',jp.title,'hours',EXTRACT(EPOCH FROM (jp.end_at - jp.start_at)) / 3600.0,'pay',p.amount-p.platform_fee,'completedAt',ja.responded_at)) FILTER (WHERE ja.id IS NOT NULL), '[]') as by_job
         FROM job_applications ja
         JOIN job_postings jp ON jp.id=ja.job_id
-        LEFT JOIN payments p ON p.job_id=ja.job_id AND p.payer_id!=ja.worker_id AND p.payment_type='payout'
+        LEFT JOIN payments p ON p.job_id=ja.job_id AND p.status='completed'
         WHERE ja.worker_id=${workerId} AND ja.status='completed' AND DATE_TRUNC('month',jp.start_at AT TIME ZONE 'Asia/Seoul')=${prevMonthDate}::date
       `),
     ])
@@ -679,11 +679,11 @@ export async function workerRoutes(app: FastifyInstance) {
     const rows = await db.execute<{ month: string; total_jobs: string; total_hours: string; total_pay: string }>(sql`
       SELECT TO_CHAR(DATE_TRUNC('month',jp.start_at AT TIME ZONE 'Asia/Seoul'),'YYYY-MM') as month,
         COUNT(DISTINCT ja.id)::int as total_jobs,
-        COALESCE(SUM(jp.duration_hours),0)::float as total_hours,
+        COALESCE(SUM(EXTRACT(EPOCH FROM (jp.end_at - jp.start_at)) / 3600.0),0)::float as total_hours,
         COALESCE(SUM(p.amount-p.platform_fee),0)::int as total_pay
       FROM job_applications ja
       JOIN job_postings jp ON jp.id=ja.job_id
-      LEFT JOIN payments p ON p.job_id=ja.job_id AND p.payer_id!=ja.worker_id AND p.payment_type='payout'
+      LEFT JOIN payments p ON p.job_id=ja.job_id AND p.status='completed'
       WHERE ja.worker_id=${workerId} AND ja.status='completed'
       GROUP BY DATE_TRUNC('month',jp.start_at AT TIME ZONE 'Asia/Seoul')
       ORDER BY DATE_TRUNC('month',jp.start_at AT TIME ZONE 'Asia/Seoul') DESC

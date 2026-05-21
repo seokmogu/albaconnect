@@ -8,6 +8,7 @@ COPY packages/ packages/
 COPY apps/api/ apps/api/
 
 RUN pnpm install --frozen-lockfile --filter @albaconnect/api...
+RUN pnpm --filter @albaconnect/shared run build
 RUN pnpm --filter @albaconnect/api run build
 
 FROM node:22-alpine AS runner
@@ -21,6 +22,8 @@ COPY apps/api/package.json apps/api/package.json
 RUN pnpm install --frozen-lockfile --prod --filter @albaconnect/api...
 
 COPY --from=builder /app/apps/api/dist ./dist
+COPY --from=builder /app/packages/shared/dist ./packages/shared/dist
+COPY apps/api/src/db/migrations ./src/db/migrations
 COPY apps/api/entrypoint.sh ./entrypoint.sh
 RUN chmod +x entrypoint.sh
 

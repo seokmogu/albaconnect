@@ -165,7 +165,7 @@ export function DemoPlayer({ steps, totalEmployers, totalWorkers, totalDispatche
                   <span className="flex-1 py-1.5 bg-white/10 rounded-lg text-center text-xs font-bold text-slate-400">거절</span>
                 </div>
               ) : (
-                step.acceptedReason && <p className="text-[10px] text-[#22C55E] italic">"{step.acceptedReason}"</p>
+                step.acceptedReason && <p className="text-[10px] text-[#22C55E] italic">&quot;{step.acceptedReason}&quot;</p>
               )}
             </div>
           )}

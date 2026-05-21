@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { useAuthStore } from "@/store/auth"
 import api from "@/lib/api"
+import { getApiErrorMessage } from "@/lib/api-error"
 
 function LoginForm() {
   const router = useRouter()
@@ -32,8 +33,8 @@ function LoginForm() {
         safeRedirect ||
         (data.user.role === "employer" ? "/employer/dashboard" : "/worker/home")
       router.push(destination)
-    } catch (err: any) {
-      setError(err.response?.data?.error ?? "로그인에 실패했습니다")
+    } catch (err: unknown) {
+      setError(getApiErrorMessage(err, "로그인에 실패했습니다"))
     } finally {
       setLoading(false)
     }

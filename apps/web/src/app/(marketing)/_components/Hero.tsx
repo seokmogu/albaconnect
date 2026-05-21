@@ -58,6 +58,7 @@ function MatchingDemoAnimated() {
   const [phase, setPhase] = useState(0)
   // phases: 0=idle, 1=job, 2=radius, 3=workers, 4=bars, 5=match-line, 6=badge, 7=counter, 8=check, 9=hold, 10=out
   const [counter, setCounter] = useState(0)
+  const isIdle = phase === 0
 
   useEffect(() => {
     const timeline: [number, () => void][] = [
@@ -84,7 +85,7 @@ function MatchingDemoAnimated() {
 
     const timers = timeline.map(([ms, fn]) => setTimeout(fn, ms))
     return () => timers.forEach(clearTimeout)
-  }, [phase === 0]) // restart when reset to 0
+  }, [isIdle])
 
   const show = (minPhase: number) => phase >= minPhase && phase < 10
 

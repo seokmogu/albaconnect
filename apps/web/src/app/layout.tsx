@@ -2,7 +2,10 @@ import type { Metadata, Viewport } from "next"
 import "./globals.css"
 import OfflineBanner from "@/components/OfflineBanner"
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://albaconnect.kr"
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: "알바몬 커넥트 - 위치 기반 알바·용역 매칭",
   description: "지금 내 주변의 알바 구직자/구인자를 실시간으로 연결합니다",
   manifest: "/manifest.json",

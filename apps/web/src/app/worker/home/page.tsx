@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { useAuthStore } from "@/store/auth"
 import api from "@/lib/api"
+import { getApiErrorMessage } from "@/lib/api-error"
 import { useJobOfferListener, sendLocationUpdate, useSocket } from "@/hooks/useSocket"
 import JobOfferModal from "@/components/JobOfferModal"
 import NotificationBell from "@/components/NotificationBell"
@@ -34,6 +35,12 @@ interface EarningsSummary {
   avg_hourly_rate: number
 }
 
+declare global {
+  interface Window {
+    __locationInterval?: ReturnType<typeof setInterval>
+  }
+}
+
 export default function WorkerHomePage() {
   const router = useRouter()
   const { user, logout } = useAuthStore()
@@ -46,7 +53,7 @@ export default function WorkerHomePage() {
   const [pushPermission, setPushPermission] = useState<NotificationPermission | "unsupported">("default")
   const [pushLoading, setPushLoading] = useState(false)
   const [earnings, setEarnings] = useState<EarningsSummary | null>(null)
-  const socket = useSocket()
+  useSocket()
 
   useEffect(() => {
     if (!user) { router.push("/login"); return }
@@ -134,19 +141,18 @@ export default function WorkerHomePage() {
         const interval = setInterval(() => {
           navigator.geolocation.getCurrentPosition(
             (p) => sendLocationUpdate(p.coords.latitude, p.coords.longitude),
-            () => {}
+            () => undefined
           )
         }, 30000) // every 30s
 
-        // Store interval id to clear later (simplified - in production use a ref)
-        ;(window as any).__locationInterval = interval
-      } catch (err: any) {
-        setError("위치 권한이 필요합니다. 브라우저 설정에서 허용해주세요.")
+        window.__locationInterval = interval
+      } catch (err: unknown) {
+        setError(getApiErrorMessage(err, "위치 권한이 필요합니다. 브라우저 설정에서 허용해주세요."))
       }
     } else {
       await api.put("/workers/availability", { isAvailable: false })
       setIsAvailable(false)
-      clearInterval((window as any).__locationInterval)
+      if (window.__locationInterval) clearInterval(window.__locationInterval)
     }
 
     setLoading(false)

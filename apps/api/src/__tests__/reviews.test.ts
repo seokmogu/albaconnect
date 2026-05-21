@@ -50,6 +50,7 @@ vi.mock("../services/matching", () => ({
 vi.mock("../routes/notifications", () => ({
   notificationRoutes: vi.fn(),
   createNotification: vi.fn(),
+  setNotificationEmitter: vi.fn(),
   notifications: {},
 }))
 

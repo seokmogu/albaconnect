@@ -6,12 +6,16 @@
 
 import { Server } from "socket.io"
 import { db } from "../db/index.js"
-import { notifications, notificationTypeEnum, users } from "../db/schema.js"
 import { sql } from "drizzle-orm"
 import { sendAlimTalk } from "./kakaoAlimTalk.js"
 
-// Notification type alias
-export type NotificationType = (typeof notificationTypeEnum.enumValues)[number]
+export type NotificationType =
+  | "application_submitted"
+  | "application_accepted"
+  | "application_completed"
+  | "noshow"
+  | "payment_completed"
+  | "noshow_penalty"
 
 // In-memory map: userId -> socket.id (employers)
 export const employerSockets = new Map<string, string>()
@@ -43,13 +47,14 @@ export async function createNotification(params: {
 
   // 1. Persist to DB
   await db.execute(sql`
-    INSERT INTO notifications (id, user_id, type, job_id, message, is_read, created_at)
+    INSERT INTO notifications (id, user_id, type, title, body, data, read, created_at)
     VALUES (
       gen_random_uuid(),
       ${userId},
-      ${type}::notification_type,
-      ${jobId ?? null},
+      ${type},
+      ${notificationTitle(type)},
       ${message},
+      ${jobId ? JSON.stringify({ jobId }) : null},
       false,
       now()
     )
@@ -59,8 +64,9 @@ export async function createNotification(params: {
   if (_io) {
     const socketId = employerSockets.get(userId)
     if (socketId) {
-      _io.to(socketId).emit("notification", {
+    _io.to(socketId).emit("notification", {
         type,
+        title: notificationTitle(type),
         message,
         jobId: jobId ?? null,
         createdAt: new Date().toISOString(),
@@ -96,7 +102,24 @@ export async function countUnreadNotifications(userId: string): Promise<number> 
   const rows = await db.execute<{ count: string }>(sql`
     SELECT COUNT(*) AS count
     FROM notifications
-    WHERE user_id = ${userId} AND is_read = false
+    WHERE user_id = ${userId} AND read = false
   `)
   return parseInt(rows.rows?.[0]?.count ?? "0", 10)
+}
+
+function notificationTitle(type: NotificationType): string {
+  switch (type) {
+    case "application_submitted":
+      return "새 지원"
+    case "application_accepted":
+      return "지원 수락"
+    case "application_completed":
+      return "근무 완료"
+    case "noshow":
+      return "노쇼 발생"
+    case "payment_completed":
+      return "결제 완료"
+    case "noshow_penalty":
+      return "노쇼 패널티"
+  }
 }

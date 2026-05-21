@@ -5,7 +5,7 @@
 
 import Link from "next/link"
 import { loadSnapshot } from "../_lib/data"
-import { getLegal, LEGAL_GRADE_STYLE, CATEGORY_LEGAL, type LegalGrade } from "../_lib/legal"
+import { getLegal, LEGAL_GRADE_STYLE, type LegalGrade } from "../_lib/legal"
 import { LayoutDashboard, Store, Users, Zap, TrendingUp, Clock, MapPin, Tag, AlertTriangle, ShieldCheck } from "lucide-react"
 import { DisputeTriagePanel } from "./_components/DisputeTriagePanel"
 

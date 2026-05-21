@@ -26,6 +26,7 @@ export async function reviewRoutes(app: FastifyInstance) {
 
     const { jobId, revieweeId, rating, comment } = body.data
     const reviewerId = request.user.id
+    const reviewerRole = request.user.role
 
     if (reviewerId === revieweeId) {
       return reply.status(400).send({ error: "Cannot review yourself" })
@@ -39,6 +40,34 @@ export async function reviewRoutes(app: FastifyInstance) {
       return reply.status(400).send({ error: "Can only review completed jobs" })
     }
 
+    if (reviewerRole === "employer") {
+      if (job.employerId !== reviewerId) {
+        return reply.status(403).send({ error: "You are not the employer for this job" })
+      }
+      const appResult = await db.execute<{ worker_id: string }>(sql`
+        SELECT worker_id FROM job_applications
+        WHERE job_id = ${jobId} AND worker_id = ${revieweeId} AND status = 'completed'
+        LIMIT 1
+      `)
+      if (!appResult.rows[0]) {
+        return reply.status(403).send({ error: "Reviewee was not assigned to this job" })
+      }
+    } else if (reviewerRole === "worker") {
+      if (revieweeId !== job.employerId) {
+        return reply.status(403).send({ error: "Workers can only review the job employer" })
+      }
+      const appResult = await db.execute<{ worker_id: string }>(sql`
+        SELECT worker_id FROM job_applications
+        WHERE job_id = ${jobId} AND worker_id = ${reviewerId} AND status = 'completed'
+        LIMIT 1
+      `)
+      if (!appResult.rows[0]) {
+        return reply.status(403).send({ error: "You were not assigned to this job" })
+      }
+    } else {
+      return reply.status(403).send({ error: "Only employers and workers can submit reviews" })
+    }
+
     const [existing] = await db
       .select()
       .from(reviews)
@@ -49,10 +78,7 @@ export async function reviewRoutes(app: FastifyInstance) {
       return reply.status(409).send({ error: "Already reviewed this job" })
     }
 
-    // Determine reviewerRole from authenticated user
-    const [reviewerUserForRole] = await db.select({ role: users.role }).from(users).where(eq(users.id, reviewerId)).limit(1)
-    const reviewerRoleValue = (reviewerUserForRole?.role ?? "worker") as "employer" | "worker"
-    const [review] = await db.insert(reviews).values({ jobId, reviewerId, revieweeId, rating, comment, reviewerRole: reviewerRoleValue }).returning()
+    const [review] = await db.insert(reviews).values({ jobId, reviewerId, revieweeId, rating, comment, reviewerRole }).returning()
 
     // Update reviewee rating average (role-specific)
     const [revieweeUser] = await db.select({ role: users.role }).from(users).where(eq(users.id, revieweeId)).limit(1)
@@ -121,6 +147,9 @@ export async function reviewRoutes(app: FastifyInstance) {
     // Determine reviewee based on caller's role
     let revieweeId: string
     if (reviewerRole === "employer") {
+      if (job.employerId !== reviewerId) {
+        return reply.status(403).send({ error: { code: "FORBIDDEN", message: "You are not the employer for this job" } })
+      }
       // Employer rates the assigned worker — find accepted application
       const appResult = await db.execute<{ worker_id: string }>(sql`
         SELECT worker_id FROM job_applications 
@@ -131,6 +160,14 @@ export async function reviewRoutes(app: FastifyInstance) {
       if (!appRow) return reply.status(400).send({ error: { code: "NO_WORKER", message: "No completed worker found for this job" } })
       revieweeId = appRow.worker_id
     } else if (reviewerRole === "worker") {
+      const appResult = await db.execute<{ worker_id: string }>(sql`
+        SELECT worker_id FROM job_applications
+        WHERE job_id = ${jobId} AND worker_id = ${reviewerId} AND status = 'completed'
+        LIMIT 1
+      `)
+      if (!appResult.rows[0]) {
+        return reply.status(403).send({ error: { code: "FORBIDDEN", message: "You were not the assigned worker for this job" } })
+      }
       // Worker rates the employer
       revieweeId = job.employerId
     } else {

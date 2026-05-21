@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import type { JobOfferEvent } from "@albaconnect/shared"
 import { OFFER_TIMEOUT_SECONDS } from "@albaconnect/shared"
 import api from "@/lib/api"
+import { getApiErrorMessage } from "@/lib/api-error"
 
 interface Props {
   offer: JobOfferEvent
@@ -34,8 +35,8 @@ export default function JobOfferModal({ offer, onClose }: Props) {
       await api.post(`/applications/${offer.applicationId}/accept`)
       setResponded(true)
       setTimeout(onClose, 1500)
-    } catch (err: any) {
-      alert(err.response?.data?.error ?? "수락에 실패했습니다")
+    } catch (err: unknown) {
+      alert(getApiErrorMessage(err, "수락에 실패했습니다"))
       onClose()
     }
     setLoading(false)

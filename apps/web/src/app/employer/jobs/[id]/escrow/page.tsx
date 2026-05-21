@@ -3,12 +3,20 @@
 import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
 import api from "@/lib/api"
+import { getApiErrorMessage } from "@/lib/api-error"
 import { PLATFORM_FEE_RATE } from "@albaconnect/shared"
 
+interface JobDetail {
+  id: string
+  title: string
+  total_amount: number
+  escrow_status: string
+}
+
 export default function EscrowPage() {
-  const { id: jobId } = useParams()
+  const { id: jobId } = useParams<{ id: string }>()
   const router = useRouter()
-  const [job, setJob] = useState<any>(null)
+  const [job, setJob] = useState<JobDetail | null>(null)
   const [loading, setLoading] = useState(true)
   const [paying, setPaying] = useState(false)
 
@@ -23,8 +31,8 @@ export default function EscrowPage() {
       // For MVP: direct stub escrow
       await api.post("/payments/escrow", { jobId })
       router.push(`/employer/jobs/${jobId}?escrowed=1`)
-    } catch (err: any) {
-      alert(err.response?.data?.error ?? "결제에 실패했습니다")
+    } catch (err: unknown) {
+      alert(getApiErrorMessage(err, "결제에 실패했습니다"))
     } finally {
       setPaying(false)
     }

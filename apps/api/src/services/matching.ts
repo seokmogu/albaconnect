@@ -55,6 +55,19 @@ export async function invalidateNearbyWorkersCache(jobId: string): Promise<void>
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type TTLCache<T> = import("./cache").TTLCache<T>
 
+interface AcceptedOfferRow extends Record<string, unknown> {
+  application_id: string
+  job_id: string
+  employer_id: string
+  title: string
+  address: string
+  start_at: Date
+  headcount: number
+  matched_count: number
+  worker_name: string | null
+  worker_phone: string | null
+}
+
 export async function findNearbyWorkers(jobId: string): Promise<WorkerCandidate[]> {
   const cacheKey = `nearby_workers:${jobId}`
 
@@ -366,61 +379,103 @@ export async function handleAcceptOffer(applicationId: string, workerId: string)
     return { success: false, message: "Job is already fully matched" }
   }
 
-  // Accept the offer
-  await db
-    .update(jobApplications)
-    .set({ status: "accepted", respondedAt: new Date() })
-    .where(eq(jobApplications.id, applicationId))
+  const accepted = await db.execute<AcceptedOfferRow>(sql`
+    WITH application_candidate AS (
+      SELECT id, job_id, worker_id
+      FROM job_applications
+      WHERE id = ${applicationId}
+        AND worker_id = ${workerId}
+        AND status = 'offered'
+        AND expires_at >= now()
+    ),
+    updated_job AS (
+      UPDATE job_postings jp
+      SET
+        matched_count = jp.matched_count + 1,
+        status = CASE
+          WHEN jp.matched_count + 1 >= jp.headcount THEN 'matched'::job_status
+          ELSE 'open'::job_status
+        END,
+        updated_at = now()
+      FROM application_candidate ac
+      WHERE jp.id = ac.job_id
+        AND jp.status = 'open'
+        AND jp.matched_count < jp.headcount
+      RETURNING
+        jp.id,
+        jp.employer_id,
+        jp.title,
+        jp.address,
+        jp.start_at,
+        jp.headcount,
+        jp.matched_count
+    ),
+    updated_application AS (
+      UPDATE job_applications ja
+      SET status = 'accepted'::application_status, responded_at = now()
+      FROM application_candidate ac, updated_job uj
+      WHERE ja.id = ac.id
+        AND ja.job_id = uj.id
+      RETURNING ja.id, ja.job_id, ja.worker_id
+    )
+    SELECT
+      ua.id AS application_id,
+      uj.id AS job_id,
+      uj.employer_id,
+      uj.title,
+      uj.address,
+      uj.start_at,
+      uj.headcount,
+      uj.matched_count,
+      u.name AS worker_name,
+      u.phone AS worker_phone
+    FROM updated_application ua
+    JOIN updated_job uj ON uj.id = ua.job_id
+    LEFT JOIN users u ON u.id = ua.worker_id
+  `)
 
-  const newMatchedCount = job.matchedCount + 1
-  const newStatus = newMatchedCount >= job.headcount ? "matched" : "open"
+  const [acceptedOffer] = accepted.rows
+  if (!acceptedOffer) {
+    return { success: false, message: "Job is already fully matched" }
+  }
 
-  await db
-    .update(jobPostings)
-    .set({ matchedCount: newMatchedCount, status: newStatus, updatedAt: new Date() })
-    .where(eq(jobPostings.id, job.id))
-
-  // Notify employer
-  const [employer] = await db.select().from(users).where(eq(users.id, job.employerId)).limit(1)
-  const [worker] = await db.select().from(users).where(eq(users.id, workerId)).limit(1)
-
-  const employerSocketId = workerSockets.get(job.employerId)
-  if (employerSocketId && worker) {
+  const employerSocketId = workerSockets.get(acceptedOffer.employer_id)
+  if (employerSocketId && acceptedOffer.worker_name) {
     io.to(employerSocketId).emit("job_matched", {
-      jobId: job.id,
-      workerName: worker.name,
-      matchedCount: newMatchedCount,
-      headcount: job.headcount,
+      jobId: acceptedOffer.job_id,
+      workerName: acceptedOffer.worker_name,
+      matchedCount: acceptedOffer.matched_count,
+      headcount: acceptedOffer.headcount,
     })
   }
 
   // Persist notifications
-  if (worker) {
+  if (acceptedOffer.worker_name) {
     await createNotification(
-      job.employerId,
+      acceptedOffer.employer_id,
       "job_matched",
       "매칭 완료!",
-      `${worker.name}님이 "${job.title}" 공고를 수락했습니다.`,
-      { jobId: job.id }
+      `${acceptedOffer.worker_name}님이 "${acceptedOffer.title}" 공고를 수락했습니다.`,
+      { jobId: acceptedOffer.job_id }
     )
     await createNotification(
       workerId,
       "job_matched",
       "알바 확정!",
-      `"${job.title}" 공고가 확정되었습니다. 근무 시작 시간을 확인하세요.`,
-      { jobId: job.id }
+      `"${acceptedOffer.title}" 공고가 확정되었습니다. 근무 시작 시간을 확인하세요.`,
+      { jobId: acceptedOffer.job_id }
     )
   }
 
   // Fire-and-forget KakaoTalk Alim Talk for job confirmation
-  if (worker?.phone) {
+  if (acceptedOffer.worker_phone) {
     void (async () => {
       try {
         await jobConfirmedAlimTalk({
-          phone: worker.phone!,
-          jobTitle: job.title,
-          startAt: job.startAt.toISOString(),
-          address: job.address,
+          phone: acceptedOffer.worker_phone!,
+          jobTitle: acceptedOffer.title,
+          startAt: acceptedOffer.start_at.toISOString(),
+          address: acceptedOffer.address,
         })
       } catch (err: unknown) {
         console.warn("[KakaoAlimTalk] Job confirmed notification failed:", (err as Error).message)
@@ -428,7 +483,7 @@ export async function handleAcceptOffer(applicationId: string, workerId: string)
     })()
   }
 
-  console.log(`[Matching] Worker ${workerId} accepted job ${job.id}`)
+  console.log(`[Matching] Worker ${workerId} accepted job ${acceptedOffer.job_id}`)
   return { success: true, message: "Job accepted successfully" }
 }
 

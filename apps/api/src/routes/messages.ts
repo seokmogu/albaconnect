@@ -8,10 +8,10 @@
  */
 
 import { FastifyInstance } from "fastify"
-import { and, asc, desc, eq, isNull, lt, ne } from "drizzle-orm"
+import { and, desc, eq, inArray, isNull, lt, or } from "drizzle-orm"
 import { z } from "zod"
 import { db, messages, jobPostings, jobApplications, users } from "../db"
-import { authenticate, requireWorker, requireEmployer } from "../middleware/auth"
+import { authenticate } from "../middleware/auth"
 import { workerSockets } from "../services/matching"
 import { sendAlimTalk, normalizePhone } from "../services/kakaoAlimTalk"
 
@@ -24,6 +24,8 @@ const cursorSchema = z.object({
   limit: z.coerce.number().int().min(1).max(30).default(30),
 })
 
+const MESSAGE_THREAD_STATUSES: Array<"accepted" | "completed"> = ["accepted", "completed"]
+
 export async function messageRoutes(app: FastifyInstance) {
   // POST /api/jobs/:id/messages — send a message
   app.post<{ Params: { id: string } }>(
@@ -33,6 +35,9 @@ export async function messageRoutes(app: FastifyInstance) {
       const jobId = request.params.id
       const senderId = request.user.id
       const senderRole = request.user.role // 'employer' | 'worker'
+      if (senderRole !== "employer" && senderRole !== "worker") {
+        return reply.status(403).send({ error: "Access denied" })
+      }
 
       const body = sendMessageSchema.safeParse(request.body)
       if (!body.success) {
@@ -57,30 +62,39 @@ export async function messageRoutes(app: FastifyInstance) {
         if (job.employerId !== senderId) {
           return reply.status(403).send({ error: "You are not the employer for this job" })
         }
-        // Find the accepted/completed worker application to determine recipient
-        const [app_] = await db
+        const recipientParam = (request.query as any).recipientId
+        if (!recipientParam) {
+          return reply.status(400).send({ error: "recipientId query parameter required for employer messages" })
+        }
+
+        const [application] = await db
           .select({ workerId: jobApplications.workerId })
           .from(jobApplications)
           .where(
             and(
               eq(jobApplications.jobId, jobId),
-              // accepted or completed
+              eq(jobApplications.workerId, recipientParam),
+              inArray(jobApplications.status, MESSAGE_THREAD_STATUSES),
             ),
           )
           .limit(1)
 
-        // Allow employer to specify recipient via query
-        const recipientParam = (request.query as any).recipientId
-        if (!recipientParam) {
-          return reply.status(400).send({ error: "recipientId query parameter required for employer messages" })
+        if (!application) {
+          return reply.status(403).send({ error: "Recipient is not assigned to this job" })
         }
         recipientId = recipientParam
       } else {
-        // Worker must have an application on this job
+        // Worker must have an accepted/completed application on this job.
         const [application] = await db
           .select({ workerId: jobApplications.workerId })
           .from(jobApplications)
-          .where(and(eq(jobApplications.jobId, jobId), eq(jobApplications.workerId, senderId)))
+          .where(
+            and(
+              eq(jobApplications.jobId, jobId),
+              eq(jobApplications.workerId, senderId),
+              inArray(jobApplications.status, MESSAGE_THREAD_STATUSES),
+            ),
+          )
           .limit(1)
 
         if (!application) {
@@ -149,6 +163,10 @@ export async function messageRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const jobId = request.params.id
       const userId = request.user.id
+      const userRole = request.user.role
+      if (userRole !== "employer" && userRole !== "worker") {
+        return reply.status(403).send({ error: "Access denied" })
+      }
       const query = cursorSchema.safeParse(request.query)
       if (!query.success) {
         return reply.status(400).send({ error: "Invalid query params" })
@@ -165,13 +183,18 @@ export async function messageRoutes(app: FastifyInstance) {
 
       if (!job) return reply.status(404).send({ error: "Job not found" })
 
-      const isEmployer = job.employerId === userId
+      const isEmployer = userRole === "employer" && job.employerId === userId
       if (!isEmployer) {
-        // Check worker has application
         const [app_] = await db
           .select({ workerId: jobApplications.workerId })
           .from(jobApplications)
-          .where(and(eq(jobApplications.jobId, jobId), eq(jobApplications.workerId, userId)))
+          .where(
+            and(
+              eq(jobApplications.jobId, jobId),
+              eq(jobApplications.workerId, userId),
+              inArray(jobApplications.status, MESSAGE_THREAD_STATUSES),
+            ),
+          )
           .limit(1)
         if (!app_) return reply.status(403).send({ error: "Access denied" })
       }
@@ -183,8 +206,15 @@ export async function messageRoutes(app: FastifyInstance) {
         .from(messages)
         .where(
           cursorDate
-            ? and(eq(messages.jobId, jobId), lt(messages.createdAt, cursorDate))
-            : eq(messages.jobId, jobId),
+            ? and(
+                eq(messages.jobId, jobId),
+                or(eq(messages.senderId, userId), eq(messages.recipientId, userId)),
+                lt(messages.createdAt, cursorDate),
+              )
+            : and(
+                eq(messages.jobId, jobId),
+                or(eq(messages.senderId, userId), eq(messages.recipientId, userId)),
+              ),
         )
         .orderBy(desc(messages.createdAt))
         .limit(limit + 1)
@@ -204,6 +234,34 @@ export async function messageRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const jobId = request.params.id
       const userId = request.user.id
+      const userRole = request.user.role
+      if (userRole !== "employer" && userRole !== "worker") {
+        return reply.status(403).send({ error: "Access denied" })
+      }
+
+      const [job] = await db
+        .select({ employerId: jobPostings.employerId })
+        .from(jobPostings)
+        .where(eq(jobPostings.id, jobId))
+        .limit(1)
+
+      if (!job) return reply.status(404).send({ error: "Job not found" })
+
+      const isEmployer = userRole === "employer" && job.employerId === userId
+      if (!isEmployer) {
+        const [application] = await db
+          .select({ workerId: jobApplications.workerId })
+          .from(jobApplications)
+          .where(
+            and(
+              eq(jobApplications.jobId, jobId),
+              eq(jobApplications.workerId, userId),
+              inArray(jobApplications.status, MESSAGE_THREAD_STATUSES),
+            ),
+          )
+          .limit(1)
+        if (!application) return reply.status(403).send({ error: "Access denied" })
+      }
 
       await db
         .update(messages)

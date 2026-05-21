@@ -6,9 +6,16 @@ import api from "@/lib/api"
 import { useAuthStore } from "@/store/auth"
 import { JOB_CATEGORIES } from "@albaconnect/shared"
 
+interface WorkerProfile {
+  bio?: string
+  categories?: string[]
+  ratingAvg: string | number
+  ratingCount: number
+}
+
 export default function WorkerProfilePage() {
   const { user } = useAuthStore()
-  const [profile, setProfile] = useState<any>(null)
+  const [profile, setProfile] = useState<WorkerProfile | null>(null)
   const [editing, setEditing] = useState(false)
   const [form, setForm] = useState({ bio: "", categories: [] as string[] })
   const [saving, setSaving] = useState(false)
@@ -33,7 +40,7 @@ export default function WorkerProfilePage() {
     setSaving(true)
     try {
       await api.put("/workers/profile", form)
-      setProfile((p: any) => ({ ...p, ...form }))
+      setProfile((p) => p ? { ...p, ...form } : p)
       setEditing(false)
     } catch {}
     setSaving(false)

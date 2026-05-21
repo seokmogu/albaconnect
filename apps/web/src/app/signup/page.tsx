@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import axios from "axios"
 import { useAuthStore } from "@/store/auth"
 import api from "@/lib/api"
 import { JOB_CATEGORIES } from "@albaconnect/shared"
@@ -39,11 +40,14 @@ export default function SignupPage() {
         companyName: role === "employer" ? form.companyName : undefined,
         categories: role === "worker" ? form.categories : undefined,
       }
-      const { data } = await api.post("/auth/signup", payload)
+      const { data } = await api.post("/auth/register", payload)
       setAuth(data.user, data.accessToken, data.refreshToken)
       router.push(role === "employer" ? "/employer/dashboard" : "/worker/home")
-    } catch (err: any) {
-      setError(err.response?.data?.error ?? "회원가입에 실패했습니다")
+    } catch (err: unknown) {
+      const message = axios.isAxiosError(err)
+        ? err.response?.data?.error
+        : undefined
+      setError(typeof message === "string" ? message : "회원가입에 실패했습니다")
     } finally {
       setLoading(false)
     }

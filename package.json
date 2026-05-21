@@ -3,11 +3,23 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "turbo run dev",
+    "dev": "pnpm --filter @albaconnect/shared build && turbo run dev",
     "build": "turbo run build",
     "start": "turbo run start",
     "lint": "turbo run lint",
-    "typecheck": "turbo run typecheck"
+    "typecheck": "turbo run typecheck",
+    "test": "pnpm --filter @albaconnect/shared build && pnpm --filter @albaconnect/api test && pnpm --filter @albaconnect/web test",
+    "poc:setup": "sh scripts/poc/macmini.sh setup",
+    "poc:doctor": "sh scripts/poc/macmini.sh doctor",
+    "poc:up": "sh scripts/poc/macmini.sh up",
+    "poc:down": "sh scripts/poc/macmini.sh down",
+    "poc:restart": "sh scripts/poc/macmini.sh restart",
+    "poc:ps": "sh scripts/poc/macmini.sh ps",
+    "poc:health": "sh scripts/poc/macmini.sh health",
+    "poc:logs": "sh scripts/poc/macmini.sh logs",
+    "poc:backup": "sh scripts/poc/macmini.sh backup",
+    "poc:restore": "sh scripts/poc/macmini.sh restore",
+    "poc:reset-data": "sh scripts/poc/macmini.sh reset-data"
   },
   "devDependencies": {
     "turbo": "^2.3.3",

@@ -14,8 +14,20 @@
  */
 
 import crypto from "node:crypto"
-import Anthropic from "@anthropic-ai/sdk"
-import type { ZodSchema } from "zod"
+import {
+  ZodArray,
+  ZodBoolean,
+  ZodDefault,
+  ZodEnum,
+  ZodNullable,
+  ZodNumber,
+  ZodObject,
+  ZodOptional,
+  ZodString,
+  type ZodRawShape,
+  type ZodSchema,
+  type ZodTypeAny,
+} from "zod"
 import { db } from "../db"
 import { sql } from "drizzle-orm"
 import { getRedisClient } from "../lib/redis"
@@ -26,10 +38,6 @@ function redisClient() {
 }
 
 // ── Provider config ──────────────────────────────────────────────────────────
-
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY ?? "",
-})
 
 export type ModelTier = "haiku" | "sonnet" | "opus"
 
@@ -163,20 +171,18 @@ export async function runAgent<I, O>(
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), def.timeoutMs ?? 3_000)
 
-  let response: Anthropic.Message
+  let response: AnthropicMessage
   try {
-    response = await anthropic.messages.create(
-      {
-        model: MODEL_IDS[def.model],
-        max_tokens: def.maxTokens ?? 1500,
-        temperature: def.temperature ?? 0.1,
-        system: def.systemPrompt,
-        messages: [{ role: "user", content: userPrompt }],
-        tools: [tool],
-        tool_choice: { type: "tool", name: def.outputName },
-      },
-      { signal: controller.signal },
-    )
+    response = await createAnthropicMessage({
+      model: MODEL_IDS[def.model],
+      max_tokens: def.maxTokens ?? 1500,
+      temperature: def.temperature ?? 0.1,
+      system: def.systemPrompt,
+      messages: [{ role: "user", content: userPrompt }],
+      tools: [tool],
+      tool_choice: { type: "tool", name: def.outputName },
+      signal: controller.signal,
+    })
   } finally {
     clearTimeout(timeout)
   }
@@ -300,8 +306,90 @@ async function persistDecision(row: DecisionRow): Promise<void> {
 // ── Zod → JSON Schema (subset sufficient for tool_use) ───────────────────────
 // Avoid extra dep; cover the shapes used by our agents.
 function zodToJsonSchema(schema: ZodSchema<unknown>): Record<string, unknown> {
-  // Lazy import to avoid circular type issues
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { zodToJsonSchema: convert } = require("zod-to-json-schema")
-  return convert(schema, { target: "openApi3" }) as Record<string, unknown>
+  return zodTypeToJsonSchema(schema as ZodTypeAny)
+}
+
+function zodTypeToJsonSchema(schema: ZodTypeAny): Record<string, unknown> {
+  if (schema instanceof ZodObject) {
+    const shape = schema.shape as ZodRawShape
+    const properties: Record<string, unknown> = {}
+    const required: string[] = []
+
+    for (const [key, childSchema] of Object.entries(shape)) {
+      properties[key] = zodTypeToJsonSchema(childSchema)
+      if (!(childSchema instanceof ZodOptional) && !(childSchema instanceof ZodDefault)) {
+        required.push(key)
+      }
+    }
+
+    return {
+      type: "object",
+      properties,
+      required,
+      additionalProperties: false,
+    }
+  }
+
+  if (schema instanceof ZodString) return { type: "string" }
+  if (schema instanceof ZodNumber) return { type: "number" }
+  if (schema instanceof ZodBoolean) return { type: "boolean" }
+  if (schema instanceof ZodEnum) return { type: "string", enum: schema.options }
+
+  if (schema instanceof ZodArray) {
+    return { type: "array", items: zodTypeToJsonSchema(schema.element) }
+  }
+
+  if (schema instanceof ZodNullable) {
+    return { anyOf: [zodTypeToJsonSchema(schema.unwrap()), { type: "null" }] }
+  }
+
+  if (schema instanceof ZodOptional) return zodTypeToJsonSchema(schema.unwrap())
+  if (schema instanceof ZodDefault) return zodTypeToJsonSchema(schema.removeDefault())
+
+  return {}
+}
+
+interface AnthropicMessage {
+  content: Array<{ type: string; input?: unknown }>
+  usage: {
+    input_tokens: number
+    output_tokens: number
+  }
+}
+
+interface AnthropicMessageRequest {
+  model: string
+  max_tokens: number
+  temperature: number
+  system: string
+  messages: Array<{ role: "user"; content: string }>
+  tools: Array<Record<string, unknown>>
+  tool_choice: { type: "tool"; name: string }
+  signal: AbortSignal
+}
+
+async function createAnthropicMessage(request: AnthropicMessageRequest): Promise<AnthropicMessage> {
+  const apiKey = process.env.ANTHROPIC_API_KEY
+  if (!apiKey) {
+    throw new Error("ANTHROPIC_API_KEY is required to run AlbaConnect agents")
+  }
+
+  const { signal, ...body } = request
+  const response = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "x-api-key": apiKey,
+      "anthropic-version": "2023-06-01",
+    },
+    body: JSON.stringify(body),
+    signal,
+  })
+
+  if (!response.ok) {
+    const errorBody = await response.text()
+    throw new Error(`Anthropic Messages API failed with ${response.status}: ${errorBody}`)
+  }
+
+  return await response.json() as AnthropicMessage
 }

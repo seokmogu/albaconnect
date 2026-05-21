@@ -23,6 +23,7 @@
 import { and, eq, lt, sql } from 'drizzle-orm'
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres'
 import { jobPostings, jobApplications } from '../db/schema'
+import { canReleaseEscrowPayments } from './payoutSafety'
 
 export const RELEASE_WINDOW_HOURS = Number(process.env['ESCROW_RELEASE_HOURS'] ?? 24)
 export const SCAN_INTERVAL_MS = Number(process.env['ESCROW_SCAN_INTERVAL_MS'] ?? 5 * 60 * 1000)
@@ -38,6 +39,11 @@ export async function runEscrowAutoRelease(
   db: NodePgDatabase<Record<string, never>>,
   counters?: ReleaseCounters,
 ): Promise<{ released: number; errors: number }> {
+  if (!canReleaseEscrowPayments()) {
+    counters?.incErrors()
+    return { released: 0, errors: 1 }
+  }
+
   const cutoff = new Date(Date.now() - RELEASE_WINDOW_HOURS * 60 * 60 * 1000)
 
   let released = 0

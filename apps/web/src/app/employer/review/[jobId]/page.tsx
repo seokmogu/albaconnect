@@ -1,11 +1,12 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
 import api from "@/lib/api"
+import { getApiErrorMessage } from "@/lib/api-error"
 
 export default function EmployerWriteReviewPage() {
-  const { jobId } = useParams()
+  const { jobId } = useParams<{ jobId: string }>()
   const searchParams = useSearchParams()
   const router = useRouter()
   const workerId = searchParams.get("workerId") ?? ""
@@ -23,8 +24,8 @@ export default function EmployerWriteReviewPage() {
       await api.post("/reviews", { jobId, revieweeId: workerId, rating, comment })
       setSubmitted(true)
       setTimeout(() => router.back(), 1500)
-    } catch (err: any) {
-      alert(err.response?.data?.error ?? "리뷰 등록 실패")
+    } catch (err: unknown) {
+      alert(getApiErrorMessage(err, "리뷰 등록 실패"))
     } finally {
       setLoading(false)
     }

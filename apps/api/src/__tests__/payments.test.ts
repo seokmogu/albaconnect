@@ -10,6 +10,8 @@ vi.mock('../services/kakaoAlimTalk.js', () => kakaoMocks)
 // Mock tossWebhook service — prevents real HMAC/idempotency logic from running in payment route tests
 vi.mock('../services/tossWebhook', () => ({
   verifyTossSignature: vi.fn().mockReturnValue(true),
+  requiresTossSignature: vi.fn((eventType: string) => eventType === 'payout.changed' || eventType === 'seller.changed'),
+  verifyPaymentWebhookData: vi.fn(async (_eventType: string, data: Record<string, unknown>) => data),
   recordWebhookEvent: vi.fn().mockResolvedValue(true),
   handlePaymentStatusChanged: vi.fn().mockResolvedValue(undefined),
   handleVirtualAccountDeposit: vi.fn().mockResolvedValue(undefined),
@@ -104,6 +106,7 @@ describe('payment routes', () => {
   it('POST /payments/escrow with TOSS_SECRET_KEY verifies payment and returns 201', async () => {
     process.env.TOSS_SECRET_KEY = 'test_sk_abc'
     const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
+      ok: true,
       json: async () => ({ status: 'DONE', orderId: 'order-123' }),
     } as Response)
 
@@ -126,6 +129,33 @@ describe('payment routes', () => {
       expect.objectContaining({ headers: expect.objectContaining({ Authorization: expect.stringContaining('Basic ') }) })
     )
     delete process.env.TOSS_SECRET_KEY
+    await app.close()
+  })
+
+  it('POST /payments/escrow can verify through the mock Toss client', async () => {
+    process.env.TOSS_CLIENT_MODE = 'mock'
+    process.env.TOSS_MOCK_PAYMENT_STATUS = 'DONE'
+    process.env.TOSS_MOCK_ORDER_ID = 'mock-order-123'
+    const fetchSpy = vi.spyOn(globalThis, 'fetch')
+
+    mocks.selectLimitMock.mockResolvedValueOnce([{ id: 'job-1', totalAmount: 50000, escrowStatus: 'pending' }])
+    mocks.insertReturningMock.mockResolvedValueOnce([{ id: 'payment-mock', amount: 55000, tossOrderId: 'mock-order-123', tossStatus: 'DONE' }])
+    mocks.updateWhereMock.mockResolvedValueOnce(undefined)
+
+    const app = await buildApp()
+    const token = app.jwt.sign({ id: 'employer-1', email: 'boss@test.com', role: 'employer' })
+    const response = await app.inject({
+      method: 'POST',
+      url: '/payments/escrow',
+      headers: { authorization: `Bearer ${token}` },
+      payload: { jobId: '11111111-1111-1111-1111-111111111111', tossPaymentKey: 'pay_key_mock' },
+    })
+
+    expect(response.statusCode).toBe(201)
+    expect(fetchSpy).not.toHaveBeenCalled()
+    delete process.env.TOSS_CLIENT_MODE
+    delete process.env.TOSS_MOCK_PAYMENT_STATUS
+    delete process.env.TOSS_MOCK_ORDER_ID
     await app.close()
   })
 
@@ -168,6 +198,38 @@ describe('payment routes', () => {
     await app.close()
   })
 
+  it('buildApp rejects production payout release without an explicit release mode', async () => {
+    const saved = {
+      NODE_ENV: process.env.NODE_ENV,
+      JWT_SECRET: process.env.JWT_SECRET,
+      ADMIN_TOKEN: process.env.ADMIN_TOKEN,
+      TOSS_SECRET_KEY: process.env.TOSS_SECRET_KEY,
+      TOSS_WEBHOOK_SECRET: process.env.TOSS_WEBHOOK_SECRET,
+      WEB_URL: process.env.WEB_URL,
+      PAYOUT_RELEASE_MODE: process.env.PAYOUT_RELEASE_MODE,
+    }
+
+    try {
+      process.env.NODE_ENV = 'production'
+      process.env.JWT_SECRET = 'test-jwt-secret-min-32-characters'
+      process.env.ADMIN_TOKEN = 'test-admin-token'
+      process.env.TOSS_SECRET_KEY = 'live_sk_test'
+      process.env.TOSS_WEBHOOK_SECRET = 'test-webhook-secret'
+      process.env.WEB_URL = 'https://albaconnect.example'
+      process.env.PAYOUT_RELEASE_MODE = 'stub'
+
+      await expect(buildApp()).rejects.toThrow(/PAYOUT_RELEASE_MODE/)
+    } finally {
+      for (const [key, value] of Object.entries(saved)) {
+        if (value === undefined) {
+          delete process.env[key]
+        } else {
+          process.env[key] = value
+        }
+      }
+    }
+  })
+
   it('POST /payments/webhook with valid auth returns 200', async () => {
     process.env.TOSS_WEBHOOK_SECRET = 'webhook-secret'
     const expectedAuth = 'Basic ' + Buffer.from('webhook-secret:').toString('base64')
@@ -203,9 +265,12 @@ describe('payment routes', () => {
     const response = await app.inject({
       method: 'POST',
       url: '/payments/webhook',
-      headers: { tosssignature: 'bad-signature-hex' },
+      headers: {
+        'tosspayments-webhook-signature': 'v1:bad-signature',
+        'tosspayments-webhook-transmission-time': '2026-05-20T09:00:00+09:00',
+      },
       payload: {
-        eventType: 'PAYMENT_STATUS_CHANGED',
+        eventType: 'payout.changed',
         data: { paymentKey: 'pay_key_abc', status: 'DONE' },
       },
     })

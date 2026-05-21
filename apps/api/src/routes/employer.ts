@@ -7,6 +7,7 @@ import { authenticate, requireEmployer, requireAdmin } from "../middleware/auth"
 import { sql } from "drizzle-orm"
 import { getRedisClient } from "../lib/redis"
 import { notifications } from "./notifications"
+import { canReleaseEscrowPayments, payoutReleaseUnavailableResponse } from "../services/payoutSafety"
 
 const profileSchema = z.object({
   companyName: z.string().min(1).max(200).optional(),
@@ -520,6 +521,10 @@ export async function employerRoutes(app: FastifyInstance) {
         })
       }
 
+      if (!canReleaseEscrowPayments()) {
+        return reply.status(503).send(payoutReleaseUnavailableResponse())
+      }
+
       // Mark escrow as released + update payment
       await db
         .update(jobPostings)
@@ -671,7 +676,6 @@ export async function employerRoutes(app: FastifyInstance) {
           SELECT SUM(p2.amount - p2.platform_fee)
           FROM payments p2
           WHERE p2.job_id = jp.id
-            AND p2.payment_type = 'payout'
             AND p2.status = 'completed'
         ), 0)                                                     AS total_payout
       FROM job_postings jp

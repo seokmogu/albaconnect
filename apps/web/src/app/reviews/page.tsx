@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react"
 import { useAuthStore } from "@/store/auth"
 import api from "@/lib/api"
-import Link from "next/link"
 
 interface Review {
   id: string

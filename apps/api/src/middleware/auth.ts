@@ -18,22 +18,27 @@ declare module "@fastify/jwt" {
 export async function authenticate(request: FastifyRequest, reply: FastifyReply) {
   try {
     await request.jwtVerify()
+    if (request.user?.type === "refresh") {
+      return reply.status(401).send({ error: "Access token required" })
+    }
   } catch {
-    reply.status(401).send({ error: "Unauthorized" })
+    return reply.status(401).send({ error: "Unauthorized" })
   }
 }
 
 export async function requireEmployer(request: FastifyRequest, reply: FastifyReply) {
   await authenticate(request, reply)
+  if (reply.sent) return
   if (request.user?.role !== "employer") {
-    reply.status(403).send({ error: "Employer access required" })
+    return reply.status(403).send({ error: "Employer access required" })
   }
 }
 
 export async function requireWorker(request: FastifyRequest, reply: FastifyReply) {
   await authenticate(request, reply)
+  if (reply.sent) return
   if (request.user?.role !== "worker") {
-    reply.status(403).send({ error: "Worker access required" })
+    return reply.status(403).send({ error: "Worker access required" })
   }
 }
 

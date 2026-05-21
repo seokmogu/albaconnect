@@ -1,13 +1,13 @@
 import { FastifyInstance } from "fastify"
 import { Server } from "socket.io"
-import { createServer } from "http"
+import type { Server as HttpServer } from "node:http"
 import { db, workerProfiles } from "../db"
 import { eq } from "drizzle-orm"
 import { workerSockets, setSocketServer, handleAcceptOffer, handleRejectOffer } from "../services/matching"
 import { setNotificationEmitter } from "../routes/notifications"
 import { sql } from "drizzle-orm"
 
-export async function setupSocketIO(app: FastifyInstance, httpServer: ReturnType<typeof createServer>) {
+export async function setupSocketIO(app: FastifyInstance, httpServer: HttpServer) {
   const io = new Server(httpServer, {
     cors: {
       origin: process.env.WEB_URL ?? "http://localhost:3000",

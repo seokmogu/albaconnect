@@ -220,6 +220,7 @@ export async function triageDispute(disputeId: string): Promise<void> {
 // ── Context loader ───────────────────────────────────────────────────────────
 
 interface RawDisputeRow {
+  [key: string]: unknown
   id: string
   raised_by_id: string
   raised_by_role: "employer" | "worker"
@@ -237,7 +238,7 @@ interface RawDisputeRow {
 }
 
 async function loadDisputeContext(disputeId: string): Promise<DisputeTriageInput | null> {
-  const result = await db.execute(sql`
+  const result = await db.execute<RawDisputeRow>(sql`
     SELECT
       d.id,
       d.raised_by_id,
@@ -259,7 +260,7 @@ async function loadDisputeContext(disputeId: string): Promise<DisputeTriageInput
     LIMIT 1
   `)
 
-  const row = result.rows[0] as RawDisputeRow | undefined
+  const row = result.rows[0]
   if (!row) return null
 
   return {

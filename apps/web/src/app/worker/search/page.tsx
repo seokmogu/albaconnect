@@ -70,7 +70,7 @@ export default function JobSearchPage() {
     // Get location on mount
     navigator.geolocation.getCurrentPosition(
       (pos) => setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-      () => fetchJobs()
+      () => undefined
     )
   }, [])
 

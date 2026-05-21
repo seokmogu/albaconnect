@@ -3,8 +3,15 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import api from "@/lib/api"
-import { formatDistanceToNow } from "date-fns"
-import { ko } from "date-fns/locale"
+
+interface WorkerApplication {
+  id: string
+  status: string
+  job_title: string
+  address: string
+  start_at: string
+  hourly_rate: number
+}
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
   offered: { label: "수락 대기", color: "bg-yellow-100 text-yellow-700" },
@@ -16,7 +23,7 @@ const STATUS_LABELS: Record<string, { label: string; color: string }> = {
 }
 
 export default function WorkerJobsPage() {
-  const [applications, setApplications] = useState<any[]>([])
+  const [applications, setApplications] = useState<WorkerApplication[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<string>("all")
 
@@ -66,7 +73,7 @@ export default function WorkerJobsPage() {
             <Link href="/worker/home" className="text-blue-600 text-sm mt-2 block">홈에서 매칭받기</Link>
           </div>
         ) : (
-          filtered.map((app: any) => {
+          filtered.map((app) => {
             const statusInfo = STATUS_LABELS[app.status] ?? { label: app.status, color: "bg-gray-100 text-gray-600" }
             return (
               <div key={app.id} className="card">

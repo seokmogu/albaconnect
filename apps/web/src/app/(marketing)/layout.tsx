@@ -4,7 +4,10 @@ import { Header } from "./_components/Header"
 import { Footer } from "./_components/Footer"
 import { copy } from "./_content/copy"
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://albaconnect.kr"
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: copy.meta.siteTitle,
   description: copy.meta.metaDescription,
   openGraph: {

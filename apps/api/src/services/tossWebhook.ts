@@ -2,10 +2,11 @@
  * tossWebhook.ts — Toss Payments webhook handler and payment reconciliation worker
  *
  * Features:
- *   - HMAC-SHA256 signature verification of raw request body
+ *   - Official Toss signature verification for payout/seller webhooks
+ *   - Payment webhook reconciliation via Toss payment query API
  *   - Idempotent event processing via toss_webhook_events table
  *   - PAYMENT_STATUS_CHANGED: DONE → escrow confirm, CANCELED/PARTIAL_CANCELED → refund
- *   - VIRTUAL_ACCOUNT_DEPOSIT → trigger escrow confirmation
+ *   - DEPOSIT_CALLBACK/VIRTUAL_ACCOUNT_DEPOSIT → trigger escrow confirmation
  *   - Reconciliation worker: scan pending payments >30min → verify with Toss API
  *
  * Counters (in-process, reset on restart):
@@ -14,9 +15,10 @@
  */
 
 import crypto from "crypto"
-import { db, sql } from "../db"
+import { db } from "../db"
 import { eq, and, lt, sql as drizzleSql } from "drizzle-orm"
 import { payments, jobPostings, tossWebhookEvents } from "../db/schema"
+import { createTossClient, isTossClientConfigured, type TossPaymentLookup } from "./tossClient"
 
 // ─── In-process counters (Prometheus-compatible labels) ─────────────────────
 const _webhookCounters: Record<string, number> = {}
@@ -33,31 +35,98 @@ export function getPendingReconciliationGauge(): number {
   return _pendingReconciliationGauge
 }
 
-// ─── HMAC-SHA256 Signature Verification ─────────────────────────────────────
+// ─── Toss API and Webhook Verification ───────────────────────────────────────
+
+const SIGNED_WEBHOOK_EVENT_TYPES = new Set(["payout.changed", "seller.changed"])
+const PAYMENT_LOOKUP_WEBHOOK_EVENT_TYPES = new Set([
+  "PAYMENT_STATUS_CHANGED",
+  "DEPOSIT_CALLBACK",
+  "VIRTUAL_ACCOUNT_DEPOSIT",
+  "CANCEL_STATUS_CHANGED",
+  "ORDER_PAYMENT_STATUS_CHANGED",
+])
 
 /**
  * Verify Toss webhook signature.
- * Toss sends: Authorization: Basic base64(secret:)
- * We must verify against the raw request body HMAC-SHA256 with TOSS_WEBHOOK_SECRET.
  *
- * Toss v2 spec: header "TossPayments-Signature" = HMAC-SHA256(rawBody, secret)
- * If TOSS_WEBHOOK_SECRET is unset, skip verification (dev/test).
+ * Toss only sends tosspayments-webhook-signature for payout.changed and
+ * seller.changed. The signed payload is "{raw webhook payload}:{transmission time}",
+ * HMAC-SHA256 with the webhook security key, compared against base64 v1 values.
+ *
+ * If TOSS_WEBHOOK_SECRET is unset, skip verification outside production.
  */
-export function verifyTossSignature(rawBody: Buffer, signature: string | undefined): boolean {
+export function verifyTossSignature(
+  rawBody: Buffer,
+  signature: string | undefined,
+  transmissionTime: string | undefined
+): boolean {
   const secret = process.env.TOSS_WEBHOOK_SECRET
-  if (!secret) return true // dev/test: no secret configured
-  if (!signature) return false
+  if (!secret) return process.env.NODE_ENV !== "production"
+  if (!signature || !transmissionTime) return false
 
   const expected = crypto
     .createHmac("sha256", secret)
-    .update(rawBody)
-    .digest("hex")
+    .update(`${rawBody.toString("utf8")}:${transmissionTime}`)
+    .digest()
 
-  // Constant-time compare to prevent timing attacks
-  try {
-    return crypto.timingSafeEqual(Buffer.from(signature, "hex"), Buffer.from(expected, "hex"))
-  } catch {
-    return false
+  const candidates = signature
+    .split(",")
+    .map((part) => part.trim())
+    .map((part) => (part.startsWith("v1:") ? part.slice(3) : part))
+    .filter(Boolean)
+
+  for (const candidate of candidates) {
+    try {
+      const decoded = Buffer.from(candidate, "base64")
+      if (decoded.length === expected.length && crypto.timingSafeEqual(decoded, expected)) {
+        return true
+      }
+    } catch {
+      // Try the next candidate. Malformed base64 is simply not a match.
+    }
+  }
+
+  return false
+}
+
+export function requiresTossSignature(eventType: string): boolean {
+  return SIGNED_WEBHOOK_EVENT_TYPES.has(eventType)
+}
+
+export type { TossPaymentLookup } from "./tossClient"
+
+export async function retrieveTossPayment(paymentKey: string): Promise<TossPaymentLookup> {
+  return createTossClient().retrievePayment(paymentKey)
+}
+
+export async function retrieveTossPaymentByOrderId(orderId: string): Promise<TossPaymentLookup> {
+  return createTossClient().retrievePaymentByOrderId(orderId)
+}
+
+export async function verifyPaymentWebhookData(
+  eventType: string,
+  data: TossWebhookPayload["data"]
+): Promise<TossWebhookPayload["data"]> {
+  if (!PAYMENT_LOOKUP_WEBHOOK_EVENT_TYPES.has(eventType)) return data
+
+  const shouldLookup = process.env.NODE_ENV === "production" || process.env.TOSS_VERIFY_WEBHOOK_PAYMENT === "true"
+  if (!shouldLookup) return data
+
+  if (!data.paymentKey && !data.orderId) {
+    throw new Error("Toss payment webhook requires paymentKey or orderId")
+  }
+
+  const tossData = data.paymentKey
+    ? await retrieveTossPayment(data.paymentKey)
+    : await retrieveTossPaymentByOrderId(data.orderId!)
+
+  return {
+    ...data,
+    paymentKey: tossData.paymentKey ?? data.paymentKey,
+    orderId: tossData.orderId ?? data.orderId,
+    status: tossData.status ?? data.status,
+    totalAmount: tossData.totalAmount ?? data.totalAmount,
+    cancels: tossData.cancels ?? data.cancels,
   }
 }
 
@@ -89,7 +158,7 @@ export interface TossWebhookPayload {
     paymentKey?: string
     orderId?: string
     status?: string
-    cancels?: Array<{ cancelAmount: number; cancelReason: string }>
+    cancels?: Array<{ cancelAmount?: number; cancelReason?: string }>
     [key: string]: unknown
   }
 }
@@ -119,7 +188,7 @@ export async function handlePaymentStatusChanged(data: TossWebhookPayload["data"
   } else if (status === "CANCELED" || status === "PARTIAL_CANCELED") {
     const field = paymentKey ? payments.tossPaymentKey : payments.tossOrderId
     await db.update(payments)
-      .set({ tossStatus: status, status: "cancelled" })
+      .set({ tossStatus: status, status: "refunded" })
       .where(eq(field, lookupKey))
 
     const [updated] = await db.select({ id: payments.id, jobId: payments.jobId })
@@ -129,20 +198,20 @@ export async function handlePaymentStatusChanged(data: TossWebhookPayload["data"
 
     if (updated) {
       await db.update(jobPostings)
-        .set({ escrowStatus: "released", updatedAt: new Date() })
+        .set({ escrowStatus: "refunded", updatedAt: new Date() })
         .where(eq(jobPostings.id, updated.jobId))
     }
   }
 }
 
 export async function handleVirtualAccountDeposit(data: TossWebhookPayload["data"]): Promise<void> {
-  const { paymentKey, orderId } = data
+  const { paymentKey, orderId, status } = data
   const lookupKey = paymentKey ?? orderId
   if (!lookupKey) return
 
   const field = paymentKey ? payments.tossPaymentKey : payments.tossOrderId
   await db.update(payments)
-    .set({ tossStatus: "VIRTUAL_ACCOUNT_DEPOSIT", status: "pending" })
+    .set({ tossStatus: status ?? "DEPOSIT_CALLBACK", status: status === "DONE" ? "completed" : "pending" })
     .where(eq(field, lookupKey))
 
   // Confirm escrow on deposit
@@ -193,25 +262,20 @@ export async function runPaymentReconciliation(testMode = false): Promise<{ chec
   let updated = 0
   let errors = 0
 
-  const secretKey = process.env.TOSS_SECRET_KEY
-  if (!secretKey || testMode) {
+  if (testMode || !isTossClientConfigured()) {
     return { checked: stalePayments.length, updated: 0, errors: 0 }
   }
 
-  const authHeader = "Basic " + Buffer.from(secretKey + ":").toString("base64")
+  const tossClient = createTossClient()
 
   for (const payment of stalePayments) {
     const lookupId = payment.tossOrderId ?? payment.tossPaymentKey
     if (!lookupId) continue
 
     try {
-      const res = await fetch(
-        `https://api.tosspayments.com/v1/payments/orders/${payment.tossOrderId ?? lookupId}`,
-        { headers: { Authorization: authHeader } }
-      )
-      if (!res.ok) { errors++; continue }
-
-      const tossData = await res.json() as { status?: string }
+      const tossData = payment.tossOrderId
+        ? await tossClient.retrievePaymentByOrderId(payment.tossOrderId)
+        : await tossClient.retrievePayment(lookupId)
       const tossStatus = tossData.status
 
       if (tossStatus === "DONE") {
@@ -221,7 +285,7 @@ export async function runPaymentReconciliation(testMode = false): Promise<{ chec
         updated++
       } else if (tossStatus === "CANCELED" || tossStatus === "PARTIAL_CANCELED") {
         await db.update(payments)
-          .set({ tossStatus, status: "cancelled" })
+          .set({ tossStatus, status: "refunded" })
           .where(eq(payments.id, payment.id))
         updated++
       }

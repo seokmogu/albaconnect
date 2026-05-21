@@ -20,9 +20,36 @@ interface Props {
   className?: string
 }
 
+interface KakaoLatLng {
+  getLat(): number
+  getLng(): number
+}
+
+type KakaoMapInstance = object
+type KakaoMarker = object
+
+interface KakaoMaps {
+  LatLng: new (lat: number, lng: number) => KakaoLatLng
+  Map: new (container: HTMLElement, options: { center: KakaoLatLng; level: number }) => KakaoMapInstance
+  Marker: new (options: { map: KakaoMapInstance; position: KakaoLatLng }) => KakaoMarker
+  InfoWindow: new (options: { content: string; removable?: boolean }) => {
+    open(map: KakaoMapInstance, marker: KakaoMarker): void
+  }
+  event: {
+    addListener(
+      target: KakaoMapInstance | KakaoMarker,
+      eventName: string,
+      handler: (event?: { latLng: KakaoLatLng }) => void
+    ): void
+  }
+  load(callback: () => void): void
+}
+
 declare global {
   interface Window {
-    kakao: any
+    kakao?: {
+      maps: KakaoMaps
+    }
   }
 }
 
@@ -30,7 +57,7 @@ export default function KakaoMap({
   lat, lng, zoom = 14, markers = [], selectable = false, onSelect, className = "w-full h-64 rounded-2xl"
 }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
-  const mapRef = useRef<any>(null)
+  const mapRef = useRef<KakaoMapInstance | null>(null)
   const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
@@ -48,7 +75,7 @@ export default function KakaoMap({
     const script = document.createElement("script")
     script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${apiKey}&autoload=false`
     script.onload = () => {
-      window.kakao.maps.load(() => setLoaded(true))
+      window.kakao?.maps.load(() => setLoaded(true))
     }
     document.head.appendChild(script)
   }, [])
@@ -56,7 +83,8 @@ export default function KakaoMap({
   useEffect(() => {
     if (!loaded || !containerRef.current) return
 
-    const { maps } = window.kakao
+    const maps = window.kakao?.maps
+    if (!maps) return
     const center = new maps.LatLng(lat, lng)
     const options = { center, level: zoom }
 
@@ -81,7 +109,8 @@ export default function KakaoMap({
 
     // Selectable mode — click to set location
     if (selectable && onSelect) {
-      maps.event.addListener(map, "click", (e: any) => {
+      maps.event.addListener(map, "click", (e) => {
+        if (!e) return
         const latlng = e.latLng
         onSelect(latlng.getLat(), latlng.getLng())
 

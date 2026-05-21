@@ -5,7 +5,6 @@ import cors from "@fastify/cors"
 import jwt from "@fastify/jwt"
 import cookie from "@fastify/cookie"
 import helmet from "@fastify/helmet"
-import { createServer } from "http"
 import { sql } from "drizzle-orm"
 import { db } from "./db"
 import { runMigrations, runNotificationsMigration, runInvoiceMigration } from "./db/migrate"
@@ -35,8 +34,22 @@ import { processExpiredJobs, type EmitFn } from "./services/jobExpiry"
 import { workerSockets } from "./services/matching"
 import { checkRedisHealth } from "./lib/redis"
 import { initKakaoAlimTalk } from './services/kakaoAlimTalk.js'
+import { validateProductionConfig } from "./services/productionConfig"
+
+const DEV_JWT_SECRET = "dev-secret-please-change-in-production"
+
+function resolveJwtSecret(): string {
+  const secret = process.env.JWT_SECRET
+  if (secret) return secret
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("JWT_SECRET is required in production")
+  }
+  return DEV_JWT_SECRET
+}
 
 export async function buildApp() {
+  validateProductionConfig()
+
   const logLevel =
     process.env.LOG_LEVEL ??
     (process.env.NODE_ENV === "production" ? "info" : "debug")
@@ -82,7 +95,7 @@ export async function buildApp() {
   })
 
   await app.register(jwt, {
-    secret: process.env.JWT_SECRET ?? "dev-secret-please-change-in-production",
+    secret: resolveJwtSecret(),
   })
 
   await app.register(cookie)
@@ -119,8 +132,10 @@ export async function buildApp() {
 
     const redisStatus = await checkRedisHealth()
 
-    return reply.send({
-      status: "ok",
+    const status = dbStatus === "ok" ? "ok" : "error"
+
+    return reply.status(status === "ok" ? 200 : 503).send({
+      status,
       service: "albaconnect-api",
       version: process.env.npm_package_version ?? "0.1.0",
       uptime: Math.round(process.uptime()),
@@ -130,8 +145,7 @@ export async function buildApp() {
     })
   })
 
-  const httpServer = createServer(app.server)
-  const io = await setupSocketIO(app, httpServer as any)
+  const io = await setupSocketIO(app, app.server)
 
   // Expose io for job expiry emitter
   ;(app as any)._io = io

@@ -6,11 +6,25 @@ import api from "@/lib/api"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 
+interface EmployerProfile {
+  companyName?: string
+  businessNumber?: string
+  ratingAvg: string | number
+  ratingCount: number
+}
+
+interface EmployerStats {
+  total_jobs?: number
+  active_jobs?: number
+  completed_jobs?: number
+  total_workers_hired?: number
+}
+
 export default function EmployerProfilePage() {
   const { user, logout } = useAuthStore()
   const router = useRouter()
-  const [profile, setProfile] = useState<any>(null)
-  const [stats, setStats] = useState<any>(null)
+  const [profile, setProfile] = useState<EmployerProfile | null>(null)
+  const [stats, setStats] = useState<EmployerStats | null>(null)
   const [editing, setEditing] = useState(false)
   const [form, setForm] = useState({ companyName: "", businessNumber: "" })
   const [saving, setSaving] = useState(false)
@@ -31,7 +45,7 @@ export default function EmployerProfilePage() {
     setSaving(true)
     try {
       await api.put("/employers/profile", form)
-      setProfile((p: any) => ({ ...p, ...form }))
+      setProfile((p) => p ? { ...p, ...form } : p)
       setEditing(false)
     } catch {}
     setSaving(false)

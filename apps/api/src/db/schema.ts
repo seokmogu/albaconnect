@@ -187,6 +187,7 @@ export const reviews = pgTable("reviews", {
   jobId: uuid("job_id").references(() => jobPostings.id).notNull(),
   reviewerId: uuid("reviewer_id").references(() => users.id).notNull(),
   revieweeId: uuid("reviewee_id").references(() => users.id).notNull(),
+  reviewerRole: userRoleEnum("reviewer_role").notNull(),
   rating: integer("rating").notNull(), // 1-5
   comment: text("comment"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -204,6 +205,9 @@ export const jobDisputes = pgTable("job_disputes", {
   raisedByRole: disputeRaisedByRoleEnum("raised_by_role").notNull(),
   type: disputeTypeEnum("type").notNull(),
   description: text("description").notNull(),
+  counterpartyResponse: text("counterparty_response"),
+  evidenceUrls: text("evidence_urls").array(),
+  gpsArrivalAt: timestamp("gps_arrival_at", { withTimezone: true }),
   status: disputeStatusEnum("status").default("open").notNull(),
   resolutionNotes: text("resolution_notes"),
   resolvedBy: uuid("resolved_by").references(() => users.id),

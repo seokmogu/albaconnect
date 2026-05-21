@@ -100,7 +100,7 @@ export default async function EmployerDetailPage({ params }: { params: Promise<{
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-[#999999] mb-3 italic">"{p.rawText}"</p>
+                      <p className="text-xs text-[#999999] mb-3 italic">&quot;{p.rawText}&quot;</p>
                       <div className="flex flex-wrap gap-4 text-xs text-[#666666] mb-3">
                         <span className="flex items-center gap-1">
                           <Banknote size={12} className="text-[#FF4D4D]" />
@@ -139,7 +139,7 @@ export default async function EmployerDetailPage({ params }: { params: Promise<{
                             </div>
                           </div>
                           {dispatch?.acceptedReason && (
-                            <p className="text-xs text-[#22C55E] mt-2 italic">"{dispatch.acceptedReason}"</p>
+                            <p className="text-xs text-[#22C55E] mt-2 italic">&quot;{dispatch.acceptedReason}&quot;</p>
                           )}
                           {typeof dispatch?.acceptedSecondsToDecide === "number" && (
                             <p className="text-xs text-[#CCCCCC] mt-0.5">수락까지 {dispatch.acceptedSecondsToDecide}초</p>

@@ -17,7 +17,14 @@ ALTER TABLE reviews
   ALTER COLUMN reviewer_role SET NOT NULL;
 
 -- Ensure unique constraint exists (prevent duplicate reviews per job per reviewer)
-DO $$ BEGIN
-  ALTER TABLE reviews ADD CONSTRAINT reviews_job_id_reviewer_id_unique UNIQUE (job_id, reviewer_id);
-EXCEPTION WHEN duplicate_table THEN null;
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_constraint
+    WHERE conname = 'reviews_job_id_reviewer_id_unique'
+      AND conrelid = 'reviews'::regclass
+  ) THEN
+    ALTER TABLE reviews ADD CONSTRAINT reviews_job_id_reviewer_id_unique UNIQUE (job_id, reviewer_id);
+  END IF;
 END $$;

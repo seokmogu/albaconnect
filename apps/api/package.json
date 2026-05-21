@@ -8,6 +8,8 @@
     "typecheck": "tsc --noEmit",
     "test": "NODE_OPTIONS=--experimental-vm-modules vitest run",
     "test:coverage": "NODE_OPTIONS=--experimental-vm-modules vitest run --coverage",
+    "readiness:production": "tsx src/scripts/checkProductionReadiness.ts",
+    "smoke:toss": "tsx src/scripts/smokeTossPayment.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate"
   },

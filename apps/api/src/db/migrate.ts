@@ -198,16 +198,36 @@ export async function runMigrations() {
 
   await runNotificationsMigration()
 
-  const migrationFiles = [
-    path.join(process.cwd(), 'src/db/migrations/0007_admin_suspension.sql'),
-    path.join(process.cwd(), 'src/db/migrations/0011_phone_verification.sql'),
-    path.join(process.cwd(), 'src/db/migrations/0018_review_reviewer_role.sql'),
+  const migrationDirs = [
+    path.join(process.cwd(), "src/db/migrations"),
+    path.join(process.cwd(), "apps/api/src/db/migrations"),
+    path.join(__dirname, "../../src/db/migrations"),
   ]
-  for (const file of migrationFiles) {
-    if (fs.existsSync(file)) {
-      await db.execute(sql.raw(fs.readFileSync(file, 'utf8')))
+  const migrationFiles = [
+    "0007_admin_suspension.sql",
+    "0011_phone_verification.sql",
+    "0018_review_reviewer_role.sql",
+  ]
+  for (const fileName of migrationFiles) {
+    const file = migrationDirs
+      .map(dir => path.join(dir, fileName))
+      .find(candidate => fs.existsSync(candidate))
+    if (!file) {
+      throw new Error(`Missing migration SQL file ${fileName}. Looked in: ${migrationDirs.join(", ")}`)
     }
+    await db.execute(sql.raw(fs.readFileSync(file, "utf8")))
   }
+
+  await runJobTemplateMigration()
+  await runJobPostingCompatibilityMigration()
+  await runTossPaymentMigration()
+  await runWorkerScheduleConstraintMigration()
+  await runCheckinMigration()
+  await runGeofenceMigration()
+  await runWorkerAlertMigration()
+  await runEmployerFavoritesMigration()
+  await runShiftTemplatesMigration()
+  await runTossWebhookEventsMigration()
 
   // Add push_subscription column for Web Push API (nullable jsonb)
   await db.execute(sql`
@@ -223,8 +243,125 @@ export async function runMigrations() {
   await runFcmMigration()
   await runSurgeMigration()
   await runMessagesMigration()
+  await runAgentDecisionMigration()
+  await runDisputeAiTriageMigration()
 
   console.log('Migrations completed successfully')
+}
+
+export async function runJobTemplateMigration() {
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS job_templates (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      employer_id UUID REFERENCES users(id) NOT NULL,
+      name VARCHAR(200) NOT NULL,
+      description TEXT NOT NULL,
+      category VARCHAR(100) NOT NULL,
+      hourly_rate INTEGER NOT NULL,
+      required_skills TEXT[] DEFAULT ARRAY[]::TEXT[] NOT NULL,
+      duration_hours INTEGER NOT NULL,
+      headcount INTEGER DEFAULT 1 NOT NULL,
+      created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+      updated_at TIMESTAMP DEFAULT NOW() NOT NULL
+    )
+  `)
+  await db.execute(sql`CREATE INDEX IF NOT EXISTS idx_job_templates_employer ON job_templates(employer_id)`)
+}
+
+export async function runJobPostingCompatibilityMigration() {
+  await db.execute(sql`
+    DO $$ BEGIN
+      IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'payment_status_job') THEN
+        CREATE TYPE payment_status_job AS ENUM ('pending', 'triggered', 'completed', 'failed');
+      END IF;
+    END $$
+  `)
+  await db.execute(sql`ALTER TABLE job_postings ADD COLUMN IF NOT EXISTS template_id UUID REFERENCES job_templates(id)`)
+  await db.execute(sql`ALTER TABLE job_postings ADD COLUMN IF NOT EXISTS payment_status_job payment_status_job DEFAULT 'pending' NOT NULL`)
+  await db.execute(sql`ALTER TABLE job_postings ADD COLUMN IF NOT EXISTS status_updated_at TIMESTAMP`)
+  await db.execute(sql`ALTER TABLE job_postings ADD COLUMN IF NOT EXISTS completed_at TIMESTAMP`)
+}
+
+export async function runTossPaymentMigration() {
+  await db.execute(sql`ALTER TABLE payments ADD COLUMN IF NOT EXISTS toss_order_id VARCHAR(100)`)
+  await db.execute(sql`ALTER TABLE payments ADD COLUMN IF NOT EXISTS toss_status VARCHAR(50)`)
+  await db.execute(sql`ALTER TABLE payments ADD COLUMN IF NOT EXISTS payout_at TIMESTAMP`)
+  await db.execute(sql`
+    CREATE UNIQUE INDEX IF NOT EXISTS payments_toss_order_id_unique
+    ON payments(toss_order_id)
+    WHERE toss_order_id IS NOT NULL
+  `)
+}
+
+export async function runWorkerScheduleConstraintMigration() {
+  await db.execute(sql`
+    DO $$ BEGIN
+      IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint
+        WHERE conname = 'worker_availability_worker_day_unique'
+      ) THEN
+        ALTER TABLE worker_availability
+          ADD CONSTRAINT worker_availability_worker_day_unique UNIQUE (worker_id, day_of_week);
+      END IF;
+    END $$
+  `)
+}
+
+export async function runGeofenceMigration() {
+  await db.execute(sql`
+    ALTER TABLE job_postings
+      ADD COLUMN IF NOT EXISTS location_lat NUMERIC(9,6),
+      ADD COLUMN IF NOT EXISTS location_lon NUMERIC(9,6),
+      ADD COLUMN IF NOT EXISTS checkin_radius_meters INTEGER NOT NULL DEFAULT 300,
+      ADD COLUMN IF NOT EXISTS location_enforcement BOOLEAN NOT NULL DEFAULT TRUE
+  `)
+  await db.execute(sql`ALTER TABLE job_applications ADD COLUMN IF NOT EXISTS checkin_distance_meters INTEGER`)
+}
+
+export async function runWorkerAlertMigration() {
+  await db.execute(sql`ALTER TABLE worker_profiles ADD COLUMN IF NOT EXISTS last_alert_sent_at TIMESTAMPTZ`)
+}
+
+export async function runEmployerFavoritesMigration() {
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS employer_favorites (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      employer_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      worker_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      note TEXT,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      CONSTRAINT employer_favorites_employer_worker_uniq UNIQUE (employer_id, worker_id)
+    )
+  `)
+}
+
+export async function runShiftTemplatesMigration() {
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS shift_templates (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      worker_id UUID NOT NULL REFERENCES worker_profiles(user_id) ON DELETE CASCADE,
+      day_of_week SMALLINT NOT NULL CHECK (day_of_week BETWEEN 0 AND 6),
+      start_time TIME NOT NULL,
+      end_time TIME NOT NULL,
+      repeat_until DATE,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+  `)
+  await db.execute(sql`CREATE INDEX IF NOT EXISTS idx_shift_templates_worker ON shift_templates(worker_id, day_of_week)`)
+}
+
+export async function runTossWebhookEventsMigration() {
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS toss_webhook_events (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      order_key VARCHAR(200) NOT NULL,
+      event_type VARCHAR(100) NOT NULL,
+      payload JSONB NOT NULL DEFAULT '{}',
+      processed_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      CONSTRAINT toss_webhook_events_order_key_unique UNIQUE (order_key)
+    )
+  `)
 }
 
 export async function runCheckinMigration() {
@@ -346,6 +483,9 @@ export async function runDisputeMigration() {
   `)
   await db.execute(sql`CREATE INDEX IF NOT EXISTS idx_disputes_job_id ON job_disputes(job_id)`)
   await db.execute(sql`CREATE INDEX IF NOT EXISTS idx_disputes_raised_by ON job_disputes(raised_by_id)`)
+  await db.execute(sql`ALTER TABLE job_disputes ADD COLUMN IF NOT EXISTS counterparty_response TEXT`)
+  await db.execute(sql`ALTER TABLE job_disputes ADD COLUMN IF NOT EXISTS evidence_urls TEXT[]`)
+  await db.execute(sql`ALTER TABLE job_disputes ADD COLUMN IF NOT EXISTS gps_arrival_at TIMESTAMPTZ`)
 }
 
 export async function runPlanTierMigration() {
@@ -401,4 +541,71 @@ export async function runInvoiceMigration() {
     ALTER TABLE job_postings
     ADD COLUMN IF NOT EXISTS invoice_downloaded_at TIMESTAMPTZ
   `)
+}
+
+export async function runAgentDecisionMigration() {
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS agent_decisions (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      agent_name VARCHAR(50) NOT NULL,
+      user_id UUID NOT NULL REFERENCES users(id),
+      model VARCHAR(40) NOT NULL,
+      input_text TEXT NOT NULL,
+      output_json JSONB NOT NULL,
+      tokens_in INTEGER NOT NULL,
+      tokens_out INTEGER NOT NULL,
+      cost_krw NUMERIC(10, 4) NOT NULL,
+      latency_ms INTEGER NOT NULL,
+      trace_id VARCHAR(64),
+      status VARCHAR(20) NOT NULL CHECK (status IN ('success','partial','fallback','error')),
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `)
+  await db.execute(sql`
+    CREATE INDEX IF NOT EXISTS idx_agent_decisions_agent_user
+    ON agent_decisions(agent_name, user_id, created_at DESC)
+  `)
+  await db.execute(sql`
+    CREATE INDEX IF NOT EXISTS idx_agent_decisions_status
+    ON agent_decisions(status)
+    WHERE status != 'success'
+  `)
+  await db.execute(sql`
+    CREATE INDEX IF NOT EXISTS idx_agent_decisions_trace
+    ON agent_decisions(trace_id)
+    WHERE trace_id IS NOT NULL
+  `)
+}
+
+export async function runDisputeAiTriageMigration() {
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS dispute_ai_triage (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      dispute_id UUID NOT NULL UNIQUE REFERENCES job_disputes(id) ON DELETE CASCADE,
+      priority VARCHAR(10) NOT NULL CHECK (priority IN ('low','medium','urgent')),
+      recommended_action VARCHAR(30) NOT NULL CHECK (recommended_action IN (
+        'full_refund',
+        'partial_refund',
+        'release_to_worker',
+        'dismiss',
+        'human_review_required'
+      )),
+      partial_refund_percent INTEGER CHECK (partial_refund_percent BETWEEN 0 AND 100),
+      summary TEXT NOT NULL,
+      extracted_facts JSONB NOT NULL,
+      open_questions JSONB NOT NULL DEFAULT '[]'::jsonb,
+      legal_risk VARCHAR(10) NOT NULL CHECK (legal_risk IN ('none','low','medium','high')),
+      confidence NUMERIC(3, 2) NOT NULL CHECK (confidence BETWEEN 0 AND 1),
+      human_review_required BOOLEAN NOT NULL,
+      agent_decision_id UUID REFERENCES agent_decisions(id),
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `)
+  await db.execute(sql`
+    CREATE INDEX IF NOT EXISTS idx_dispute_triage_priority_pending
+    ON dispute_ai_triage(priority, created_at DESC)
+    WHERE human_review_required = TRUE OR legal_risk IN ('medium', 'high')
+  `)
+  await db.execute(sql`CREATE INDEX IF NOT EXISTS idx_dispute_triage_dispute ON dispute_ai_triage(dispute_id)`)
 }

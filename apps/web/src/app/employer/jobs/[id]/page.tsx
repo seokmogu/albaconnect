@@ -4,6 +4,31 @@ import { useState, useEffect } from "react"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import api from "@/lib/api"
+import { getApiErrorMessage } from "@/lib/api-error"
+
+interface JobDetail {
+  id: string
+  title: string
+  category: string
+  status: string
+  escrow_status: string
+  address: string
+  start_at: string
+  end_at: string
+  hourly_rate: number
+  matched_count?: number
+  headcount: number
+  description: string
+}
+
+interface JobApplication {
+  id: string
+  status: string
+  worker_id: string
+  worker_name: string
+  worker_rating?: number
+  worker_categories?: string[]
+}
 
 const APP_STATUS_LABELS: Record<string, { label: string; color: string }> = {
   offered: { label: "수락 대기중", color: "bg-yellow-100 text-yellow-700" },
@@ -15,11 +40,11 @@ const APP_STATUS_LABELS: Record<string, { label: string; color: string }> = {
 }
 
 export default function JobDetailPage() {
-  const params = useParams()
+  const params = useParams<{ id: string }>()
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [job, setJob] = useState<any>(null)
-  const [applications, setApplications] = useState<any[]>([])
+  const [job, setJob] = useState<JobDetail | null>(null)
+  const [applications, setApplications] = useState<JobApplication[]>([])
   const [loading, setLoading] = useState(true)
   const justEscrowed = searchParams.get("escrowed") === "1"
 
@@ -35,8 +60,8 @@ export default function JobDetailPage() {
     try {
       await api.post(`/applications/${appId}/noshow`)
       setApplications(apps => apps.map(a => a.id === appId ? { ...a, status: "noshow" } : a))
-    } catch (err: any) {
-      alert(err.response?.data?.error ?? "처리 실패")
+    } catch (err: unknown) {
+      alert(getApiErrorMessage(err, "처리 실패"))
     }
   }
 
@@ -100,7 +125,7 @@ export default function JobDetailPage() {
             </div>
           ) : (
             <div className="space-y-3">
-              {applications.map((app: any) => {
+              {applications.map((app) => {
                 const statusInfo = APP_STATUS_LABELS[app.status] ?? { label: app.status, color: "bg-gray-100 text-gray-500" }
                 return (
                   <div key={app.id} className="flex items-center justify-between py-2 border-b last:border-0">

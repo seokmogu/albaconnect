@@ -1,29 +1,30 @@
 "use client"
 
 import { useState } from "react"
-import { useParams, useRouter } from "next/navigation"
+import { useParams, useRouter, useSearchParams } from "next/navigation"
 import api from "@/lib/api"
+import { getApiErrorMessage } from "@/lib/api-error"
 
 export default function WriteReviewPage() {
-  const { jobId } = useParams()
+  const { jobId } = useParams<{ jobId: string }>()
+  const searchParams = useSearchParams()
   const router = useRouter()
-  const [revieweeId, setRevieweeId] = useState("")
+  const revieweeId = searchParams.get("employerId") ?? ""
   const [rating, setRating] = useState(0)
   const [hovered, setHovered] = useState(0)
   const [comment, setComment] = useState("")
   const [loading, setLoading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
 
-  // In real flow, revieweeId would come from router state or query param
   const handleSubmit = async () => {
-    if (rating === 0) return
+    if (rating === 0 || !revieweeId) return
     setLoading(true)
     try {
       await api.post("/reviews", { jobId, revieweeId, rating, comment })
       setSubmitted(true)
       setTimeout(() => router.back(), 1500)
-    } catch (err: any) {
-      alert(err.response?.data?.error ?? "리뷰 등록 실패")
+    } catch (err: unknown) {
+      alert(getApiErrorMessage(err, "리뷰 등록 실패"))
     } finally {
       setLoading(false)
     }

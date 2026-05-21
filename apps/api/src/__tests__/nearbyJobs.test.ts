@@ -77,7 +77,6 @@ vi.mock('../db', () => {
     referrals: { id: 'id', referrerId: 'referrer_id', refereeId: 'referee_id', status: 'status' },
     payments: { id: 'id', jobId: 'job_id', workerId: 'worker_id', amount: 'amount', status: 'status' },
     jobDisputes: { id: 'id', jobId: 'job_id', status: 'status' },
-    workerCertifications: { id: 'id', workerId: 'worker_id', type: 'type', status: 'status' },
     employerFavorites: { id: 'id', employerId: 'employer_id', workerId: 'worker_id' },
   }
 })

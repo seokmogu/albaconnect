@@ -5,8 +5,20 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useAuthStore } from "@/store/auth"
 import api from "@/lib/api"
+import { getApiErrorMessage } from "@/lib/api-error"
 import { JobCardSkeleton } from "@/components/Skeleton"
 import NotificationBell from "@/components/NotificationBell"
+
+interface EmployerJob {
+  id: string
+  title: string
+  status: string
+  address: string
+  start_at: string
+  hourly_rate: number
+  matched_count?: number
+  headcount: number
+}
 
 const STATUS_LABELS: Record<string, { label: string; color: string; emoji: string }> = {
   open: { label: "모집중", color: "bg-green-100 text-green-700", emoji: "🟢" },
@@ -19,7 +31,7 @@ const STATUS_LABELS: Record<string, { label: string; color: string; emoji: strin
 export default function EmployerDashboard() {
   const router = useRouter()
   const { user, logout } = useAuthStore()
-  const [jobs, setJobs] = useState<any[]>([])
+  const [jobs, setJobs] = useState<EmployerJob[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -39,8 +51,8 @@ export default function EmployerDashboard() {
       if (data.penaltiesApplied > 0) {
         alert(`패널티 발생: ${data.totalPenalty.toLocaleString()}원이 구직자에게 지급됩니다.`)
       }
-    } catch (err: any) {
-      alert(err.response?.data?.error ?? "취소에 실패했습니다")
+    } catch (err: unknown) {
+      alert(getApiErrorMessage(err, "취소에 실패했습니다"))
     }
   }
 

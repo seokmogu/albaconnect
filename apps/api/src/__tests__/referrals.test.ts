@@ -67,7 +67,6 @@ vi.mock('../db', () => {
     penalties: { id: 'id' },
     notifications: { id: 'id', userId: 'user_id', type: 'type', title: 'title', body: 'body', read: 'read' },
     jobTemplates: { id: 'id', employerId: 'employer_id' },
-    employerProfiles: { userId: 'user_id' },
     jobDisputes: { id: 'id' },
   }
 })

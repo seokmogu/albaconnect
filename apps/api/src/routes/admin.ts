@@ -3,6 +3,7 @@
  * Protected by a simple admin token header (X-Admin-Token)
  */
 
+import crypto from "node:crypto"
 import { FastifyInstance } from "fastify"
 import { eq } from "drizzle-orm"
 import { sql } from "drizzle-orm"
@@ -16,14 +17,29 @@ import { z } from "zod"
 function requireAdmin(adminToken: string) {
   return async (request: any, reply: any) => {
     const token = request.headers["x-admin-token"]
-    if (!token || token !== adminToken) {
+    if (typeof token !== "string" || !safeEqual(token, adminToken)) {
       return reply.status(401).send({ error: "Admin access required" })
     }
   }
 }
 
+function safeEqual(value: string, expected: string): boolean {
+  const valueBuffer = Buffer.from(value)
+  const expectedBuffer = Buffer.from(expected)
+  return valueBuffer.length === expectedBuffer.length && crypto.timingSafeEqual(valueBuffer, expectedBuffer)
+}
+
+function resolveAdminToken(): string {
+  const token = process.env.ADMIN_TOKEN
+  if (token) return token
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("ADMIN_TOKEN is required in production")
+  }
+  return "dev-admin-token"
+}
+
 export async function adminRoutes(app: FastifyInstance) {
-  const adminToken = process.env.ADMIN_TOKEN ?? "dev-admin-token"
+  const adminToken = resolveAdminToken()
   const preHandler = [requireAdmin(adminToken)]
 
   // GET /admin/stats — platform overview
@@ -316,16 +332,16 @@ export async function adminRoutes(app: FastifyInstance) {
 
     const rows = await db.execute<any>(sql`
       SELECT
-        date_trunc('week', p.paid_at)::date AS week_start,
+        date_trunc('week', p.created_at)::date AS week_start,
         COUNT(CASE WHEN jp.status = 'completed' THEN 1 END) AS jobs_completed,
         COALESCE(SUM(p.amount), 0) AS total_payout_won,
         COALESCE(SUM(p.platform_fee), 0) AS platform_fee_won
       FROM payments p
       JOIN job_postings jp ON jp.id = p.job_id
       WHERE p.status = 'completed'
-        AND p.paid_at >= ${fromDate}::date
-        AND p.paid_at < ${toDate}::date + interval '1 day'
-      GROUP BY date_trunc('week', p.paid_at)
+        AND p.created_at >= ${fromDate}::date
+        AND p.created_at < ${toDate}::date + interval '1 day'
+      GROUP BY date_trunc('week', p.created_at)
       ORDER BY week_start ASC
     `)
 
@@ -361,7 +377,7 @@ export async function adminRoutes(app: FastifyInstance) {
       SELECT COUNT(DISTINCT ja.worker_id) AS count
       FROM job_applications ja
       WHERE ja.status = 'completed'
-        AND ja.updated_at >= now() - ${intervalSql}
+        AND COALESCE(ja.responded_at, ja.created_at) >= now() - ${intervalSql}
     `)
 
     const totalWorkers = await db.execute<any>(sql`

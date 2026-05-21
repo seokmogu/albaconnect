@@ -154,7 +154,7 @@ export default async function EmployerMyPage({ params }: { params: Promise<{ id:
                       </div>
                     )}
                     {dispatch?.acceptedReason && (
-                      <p className="text-xs text-[#22C55E] mt-2 italic">"{dispatch.acceptedReason}"</p>
+                      <p className="text-xs text-[#22C55E] mt-2 italic">&quot;{dispatch.acceptedReason}&quot;</p>
                     )}
                   </li>
                 )

@@ -5,8 +5,12 @@ import { db, payments, jobPostings, users, jobApplications } from "../db"
 import { authenticate, requireEmployer } from "../middleware/auth"
 import { PLATFORM_FEE_RATE } from "@albaconnect/shared"
 import { paymentCompleteAlimTalk } from "../services/kakaoAlimTalk"
+import { canReleaseEscrowPayments, payoutReleaseUnavailableResponse } from "../services/payoutSafety"
+import { createTossClient, isTossClientConfigured } from "../services/tossClient"
 import {
   verifyTossSignature,
+  requiresTossSignature,
+  verifyPaymentWebhookData,
   recordWebhookEvent,
   handlePaymentStatusChanged,
   handleVirtualAccountDeposit,
@@ -25,13 +29,46 @@ const payoutSchema = z.object({
 })
 
 const webhookSchema = z.object({
-  eventType: z.string(),
+  eventType: z.string().optional(),
   data: z.object({
     paymentKey: z.string().optional(),
     orderId: z.string().optional(),
     status: z.string().optional(),
-  }),
-})
+  }).passthrough().optional(),
+  entityBody: z.record(z.string(), z.unknown()).optional(),
+  paymentKey: z.string().optional(),
+  orderId: z.string().optional(),
+  status: z.string().optional(),
+  transactionKey: z.string().optional(),
+  secret: z.string().optional(),
+}).passthrough()
+
+type WebhookData = NonNullable<z.infer<typeof webhookSchema>["data"]>
+
+function headerValue(value: string | string[] | undefined): string | undefined {
+  if (Array.isArray(value)) return value.join(",")
+  return value
+}
+
+function normalizeWebhookPayload(body: unknown): { eventType: string; data: WebhookData } | null {
+  const parsed = webhookSchema.safeParse(body)
+  if (!parsed.success) return null
+
+  const payload = parsed.data
+  const eventType = payload.eventType ?? (payload.orderId && payload.status ? "DEPOSIT_CALLBACK" : undefined)
+  if (!eventType) return null
+
+  const topLevelData: WebhookData = {
+    paymentKey: payload.paymentKey,
+    orderId: payload.orderId,
+    status: payload.status,
+    transactionKey: payload.transactionKey,
+    secret: payload.secret,
+  }
+
+  const data = payload.data ?? payload.entityBody ?? topLevelData
+  return { eventType, data }
+}
 
 export async function paymentRoutes(app: FastifyInstance) {
   // GET /payments - list user's payments
@@ -73,13 +110,18 @@ export async function paymentRoutes(app: FastifyInstance) {
     let tossOrderId: string | undefined
     let tossStatus: string | undefined
 
-    if (process.env.TOSS_SECRET_KEY && tossPaymentKey) {
-      // Verify payment with Toss Payments API
-      const authHeader = "Basic " + Buffer.from(process.env.TOSS_SECRET_KEY + ":").toString("base64")
-      const tossResponse = await fetch(`https://api.tosspayments.com/v1/payments/${tossPaymentKey}`, {
-        headers: { Authorization: authHeader },
-      })
-      const tossData = await tossResponse.json() as { status?: string; orderId?: string }
+    const canVerifyPayment = isTossClientConfigured()
+    if (process.env.NODE_ENV === "production" && (!canVerifyPayment || !tossPaymentKey)) {
+      return reply.status(503).send({ error: "Toss payment verification is required in production" })
+    }
+
+    if (canVerifyPayment && tossPaymentKey) {
+      let tossData: { status?: string; orderId?: string }
+      try {
+        tossData = await createTossClient().retrievePayment(tossPaymentKey)
+      } catch {
+        return reply.status(402).send({ error: "Payment verification failed" })
+      }
 
       if (tossData.status !== "DONE") {
         return reply.status(402).send({ error: "Payment not confirmed by Toss", tossStatus: tossData.status })
@@ -149,6 +191,10 @@ export async function paymentRoutes(app: FastifyInstance) {
       })
     }
 
+    if (!canReleaseEscrowPayments()) {
+      return reply.status(503).send(payoutReleaseUnavailableResponse())
+    }
+
     // TODO: Integrate Toss Payments payout API when bank account setup is available
     return reply.status(202).send({
       message: "Payout queued (bank account setup required)",
@@ -156,32 +202,47 @@ export async function paymentRoutes(app: FastifyInstance) {
     })
   })
 
-  // POST /payments/webhook - Toss Payments webhook handler (HMAC-SHA256 + idempotency)
+  // POST /payments/webhook - Toss Payments webhook handler (verification + idempotency)
   app.post(
     "/payments/webhook",
     { config: { rawBody: true } },
     async (request, reply) => {
-      // 1. HMAC-SHA256 signature verification on raw body
-      const signature = request.headers["tosssignature"] as string | undefined
-        ?? request.headers["toss-signature"] as string | undefined
-      const rawBody = (request as unknown as { rawBody?: Buffer }).rawBody
-        ?? Buffer.from(JSON.stringify(request.body))
-
-      if (!verifyTossSignature(rawBody, signature)) {
-        incrementWebhookCounter("unknown", "error")
-        return reply.status(401).send({ error: "Invalid webhook signature" })
-      }
-
-      // 2. Parse body
-      const parsed = webhookSchema.safeParse(request.body)
-      if (!parsed.success) {
+      // 1. Parse and normalize Toss' wrapped and direct webhook payload shapes.
+      const normalized = normalizeWebhookPayload(request.body)
+      if (!normalized) {
         return reply.status(400).send({ error: "Invalid webhook payload" })
       }
 
-      const { eventType, data } = parsed.data
+      const { eventType } = normalized
+      let data = normalized.data
 
-      // 3. Idempotency: deduplicate by orderKey = eventType + orderId/paymentKey
-      const orderKey = `${eventType}:${data.orderId ?? data.paymentKey ?? Date.now()}`
+      // 2. Signature verification only applies to payout/seller webhooks.
+      if (requiresTossSignature(eventType)) {
+        const signature = headerValue(request.headers["tosspayments-webhook-signature"])
+          ?? headerValue(request.headers["tosssignature"])
+          ?? headerValue(request.headers["toss-signature"])
+        const transmissionTime = headerValue(request.headers["tosspayments-webhook-transmission-time"])
+        const rawBody = (request as unknown as { rawBody?: Buffer }).rawBody
+          ?? Buffer.from(JSON.stringify(request.body))
+
+        if (!verifyTossSignature(rawBody, signature, transmissionTime)) {
+          incrementWebhookCounter(eventType, "error")
+          return reply.status(401).send({ error: "Invalid webhook signature" })
+        }
+      }
+
+      // 3. General payment webhooks have no signature; verify through Toss API in production.
+      try {
+        data = await verifyPaymentWebhookData(eventType, data)
+      } catch (err: unknown) {
+        incrementWebhookCounter(eventType, "error")
+        const message = err instanceof Error ? err.message : String(err)
+        const statusCode = message.includes("requires paymentKey or orderId") ? 400 : 502
+        return reply.status(statusCode).send({ error: "Payment webhook verification failed" })
+      }
+
+      // 4. Idempotency: deduplicate by orderKey = eventType + orderId/paymentKey
+      const orderKey = `${eventType}:${data.orderId ?? data.paymentKey ?? headerValue(request.headers["tosspayments-webhook-transmission-id"]) ?? Date.now()}`
       const isNew = await recordWebhookEvent(orderKey, eventType, { eventType, data })
       if (!isNew) {
         // Duplicate — already processed
@@ -189,12 +250,12 @@ export async function paymentRoutes(app: FastifyInstance) {
         return reply.status(200).send({ received: true, duplicate: true })
       }
 
-      // 4. Process event
+      // 5. Process event
       try {
         if (eventType === "PAYMENT_STATUS_CHANGED") {
           await handlePaymentStatusChanged(data)
           incrementWebhookCounter(eventType, "processed")
-        } else if (eventType === "VIRTUAL_ACCOUNT_DEPOSIT") {
+        } else if (eventType === "VIRTUAL_ACCOUNT_DEPOSIT" || eventType === "DEPOSIT_CALLBACK") {
           await handleVirtualAccountDeposit(data)
           incrementWebhookCounter(eventType, "processed")
         } else if (eventType === "PAYOUT_DONE" && data.paymentKey) {

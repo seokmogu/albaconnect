@@ -3,12 +3,12 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import api from "@/lib/api"
+import { getApiErrorMessage } from "@/lib/api-error"
 import { JOB_CATEGORIES } from "@albaconnect/shared"
 import KakaoMap from "@/components/KakaoMap"
 
 export default function NewJobPage() {
   const router = useRouter()
-  const [step, setStep] = useState<"info" | "location" | "confirm">("info")
   const [form, setForm] = useState({
     title: "",
     category: "",
@@ -81,9 +81,8 @@ export default function NewJobPage() {
         description: form.description,
       })
       router.push(`/employer/jobs/${data.job.id}`)
-    } catch (err: any) {
-      setError(err.response?.data?.error ?? "공고 등록에 실패했습니다")
-      setStep("info")
+    } catch (err: unknown) {
+      setError(getApiErrorMessage(err, "공고 등록에 실패했습니다"))
     } finally {
       setLoading(false)
     }

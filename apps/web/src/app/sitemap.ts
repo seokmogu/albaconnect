@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next"
 
-const SITE_URL = "https://albaconnect.kr"
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://albaconnect.kr"
 const MAX_PAGES = 50
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
