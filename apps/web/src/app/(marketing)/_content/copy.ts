@@ -2,12 +2,12 @@
 // @MX:REASON: Never import copy.json directly; this typed const allows TypeScript to catch missing keys.
 export const copy = {
   meta: {
-    siteTitle: "알바몬 커넥트 — 30초 안에 워커와 사장님·의뢰인을 잇는다",
+    siteTitle: "알바몬 커넥트 베타 — 30초 안에 워커와 사장님·의뢰인을 잇는다",
     metaDescription:
       "알바몬 정액 광고 대비 70% 절감. 매칭 1건당 평균 3,840원으로 위치·평점·가용성 6개 요소 검증된 워커를 30초 안에 연결합니다. 사업장 알바 + 개인 용역 두 트랙 지원.",
     ogTitle: "알바몬 커넥트 — 알바·일상 용역, 30초 안에 사람을 구해요",
     ogDescription:
-      "강남·서초 5개동 베타 운영 중. 평균 매칭 시간 23초, 충원율 87%. 사업장 근로계약 알바와 개인 도급 용역 모두 지원. 토스 에스크로 정산.",
+      "강남·서초 5개동 베타 운영 중. 평균 매칭 시간 23초, 충원율 87%. 사업장 근로계약 알바와 개인 도급 용역 모두 지원. 베타 계정으로 바로 시작.",
   },
   header: {
     logoText: "알바몬 커넥트",
@@ -20,8 +20,8 @@ export const copy = {
       { label: "워커", href: "#for-workers" },
       { label: "FAQ", href: "#faq" },
     ],
-    ctaPrimary: "사전 신청하기",
-    ctaSecondary: "이미 신청한 분들 보기",
+    ctaPrimary: "베타 시작하기",
+    ctaSecondary: "로그인",
   },
   hero: {
     eyebrow: "위치 기반 알바·용역 즉시 매칭",
@@ -29,9 +29,9 @@ export const copy = {
     headline: "알바도 심부름도,\n30초 안에 사람을 구해요",
     subheadline:
       "사업장 알바 공고부터 개인 용역 의뢰까지 — 반경 안에서 평점 검증된 워커가 30초 안에 수락합니다. 노쇼 시에는 차순위 워커에게 무료로 재디스패치돼요.",
-    employerEmphasisBadge: "사장님 우선 — 매칭 알고리즘 무료 사용",
-    ctaEmployer: "사장님으로 사전 신청",
-    ctaWorker: "워커로 사전 신청",
+    employerEmphasisBadge: "사내 베타 운영 중 — 바로 가입 가능",
+    ctaEmployer: "사장님으로 시작하기",
+    ctaWorker: "워커로 시작하기",
     ctaSecondary: "매칭 시연 보기",
     paymentBadge: {
       logoLabel: "토스 페이먼츠 에스크로",
@@ -157,7 +157,7 @@ export const copy = {
       "노쇼 시 차순위 워커에게 자동 무료 재디스패치, 신뢰도 낮은 워커는 알림 제외",
       "정산은 토스 에스크로로 자동 처리, 분쟁은 24시간 내 알바몬 커넥트 운영팀이 검토",
     ],
-    cta: "사장님으로 사전 신청",
+    cta: "사장님으로 시작하기",
   },
   // @MX:NOTE: 용역형(개인 C2C 도급) 트랙 소개 섹션. 근로계약과 혼동 금지 — 민법상 도급계약임을 명시.
   forGigService: {
@@ -182,7 +182,7 @@ export const copy = {
       "워커 평점·이력을 수락 전에 확인할 수 있어요",
       "토스 에스크로로 보수 보호 — 완료 확인 후 정산돼요",
     ],
-    cta: "용역 의뢰인으로 사전 신청",
+    cta: "용역 의뢰인으로 시작하기",
     contractBadge: "민법상 도급계약",
   },
   forWorkers: {
@@ -199,7 +199,7 @@ export const copy = {
       "사장님 평점·매장 정보를 수락 전에 확인할 수 있어요",
       "정산은 그날 또는 익일, 토스 에스크로라 사장님 마음대로 미룰 수 없어요",
     ],
-    cta: "워커로 사전 신청",
+    cta: "워커로 시작하기",
   },
   trustSafety: {
     sectionTitle: "믿고 쓸 수 있는 이유",
@@ -264,28 +264,31 @@ export const copy = {
         a: "알바몬은 정액 광고, 당근알바는 동네 인맥 기반이에요. 알바몬 커넥트는 알고리즘 매칭입니다. 공고가 등록되는 순간 6개 요소를 계산해서 가장 적합한 워커에게 즉시 알림이 가고, 30초 안에 수락 여부가 돌아와요. 사장님이 기다리는 게 아니라 시스템이 먼저 찾아갑니다.",
       },
       {
-        q: "베타 출시는 언제인가요?",
-        a: "2026년 4월부터 강남·서초 5개동에서 베타 운영 중이고, 2026년 하반기 서울 전역 확장을 목표로 준비 중입니다. 지금 사전 신청하시면 정식 오픈 전 우선 초대 링크를 먼저 받으실 수 있어요.",
+        q: "베타는 지금 사용할 수 있나요?",
+        a: "네. 현재 사내망 POC에서 베타 계정으로 바로 가입해 공고 등록, 매칭, 리뷰, 정산 흐름을 확인할 수 있습니다. 운영 지역과 결제·정산 정책은 베타 기준으로 제한되며, 피드백을 반영해 단계적으로 공개 범위를 넓힐 예정입니다.",
       },
     ],
   },
   finalCta: {
-    sectionTitle: "지금 사전 신청하고\n베타 우선 초대 받으세요",
+    sectionTitle: "알바몬 커넥트 베타\n지금 바로 시작하세요",
     subtitle:
-      "사장님은 첫 공고 수수료 면제 혜택을, 워커는 매칭 알림 우선 수신을 받으실 수 있어요. 오픈 전 신청자에게 가장 먼저 초대 링크를 보내드립니다.",
-    formLabels: {
-      role: "역할",
-      roleEmployer: "사장님 (구인)",
-      roleWorker: "워커 (구직)",
-      email: "이메일",
-      phone: "연락처 (선택)",
-      region: "주 활동 지역",
-      businessNumber: "사업자등록번호",
-      businessNumberPlaceholder: "000-00-00000",
-      submit: "사전 신청하기",
-      consent: "개인정보 수집 및 이용에 동의합니다 (필수)",
-    },
-    thankYou: "신청이 완료됐어요. 베타 출시 전 이메일로 먼저 알려드릴게요.",
+      "사내망 베타에서 바로 가입해 구인/구직 흐름을 확인할 수 있습니다. 아직 제한 운영 단계이므로 운영 지역, 결제, 정산은 베타 정책으로 관리됩니다.",
+    cards: [
+      {
+        title: "사장님으로 시작",
+        description: "공고 등록, 즉시 매칭, 노쇼 대응, 리뷰 흐름을 실제 계정으로 확인합니다.",
+        href: "/signup?role=employer",
+        cta: "구인자 회원가입",
+      },
+      {
+        title: "워커로 시작",
+        description: "내 위치 기반 일감 탐색, 매칭 수락, 체크인/리뷰 흐름을 베타 계정으로 확인합니다.",
+        href: "/signup?role=worker",
+        cta: "구직자 회원가입",
+      },
+    ],
+    loginPrompt: "이미 베타 계정이 있나요?",
+    loginCta: "로그인",
   },
   footer: {
     tagline: "30초 안에 워커와 사장님을 잇는다",
@@ -296,7 +299,7 @@ export const copy = {
           { label: "작동 방식", href: "#how-it-works" },
           { label: "매칭 알고리즘", href: "#matching" },
           { label: "수수료", href: "#pricing" },
-          { label: "사전 신청", href: "#final-cta" },
+          { label: "베타 시작", href: "#final-cta" },
         ],
       },
       {
@@ -304,7 +307,7 @@ export const copy = {
         links: [
           { label: "사장님 안내", href: "#for-employers" },
           { label: "수수료 안내", href: "#pricing" },
-          { label: "사장님으로 신청", href: "#final-cta" },
+          { label: "사장님으로 시작", href: "/signup?role=employer" },
         ],
       },
       {
@@ -312,7 +315,7 @@ export const copy = {
         links: [
           { label: "워커 안내", href: "#for-workers" },
           { label: "정산 안내", href: "#faq" },
-          { label: "워커로 신청", href: "#final-cta" },
+          { label: "워커로 시작", href: "/signup?role=worker" },
         ],
       },
       {

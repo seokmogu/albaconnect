@@ -2,10 +2,12 @@
 
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { copy } from "../_content/copy"
 import { Button } from "@/components/ui/Button"
 
 export function Header() {
+  const router = useRouter()
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
@@ -83,14 +85,20 @@ export function Header() {
         </nav>
 
         {/* Desktop CTA */}
-        <div className="hidden lg:block">
+        <div className="hidden lg:flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="rounded-pill"
+            onClick={() => router.push("/login")}
+          >
+            {copy.header.ctaSecondary}
+          </Button>
           <Button
             variant="primary"
             size="sm"
             className="rounded-pill"
-            onClick={() => {
-              document.getElementById("final-cta")?.scrollIntoView({ behavior: "smooth" })
-            }}
+            onClick={() => router.push("/signup")}
           >
             {copy.header.ctaPrimary}
           </Button>
@@ -144,10 +152,21 @@ export function Header() {
             className="w-full rounded-pill mt-4"
             onClick={() => {
               setOpen(false)
-              document.getElementById("final-cta")?.scrollIntoView({ behavior: "smooth" })
+              router.push("/signup")
             }}
           >
             {copy.header.ctaPrimary}
+          </Button>
+          <Button
+            variant="ghost"
+            size="lg"
+            className="w-full rounded-pill"
+            onClick={() => {
+              setOpen(false)
+              router.push("/login")
+            }}
+          >
+            {copy.header.ctaSecondary}
           </Button>
         </div>
       )}

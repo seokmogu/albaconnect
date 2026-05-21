@@ -1,6 +1,7 @@
 "use client"
 
 import { useReducedMotion, motion, AnimatePresence } from "framer-motion"
+import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { copy } from "../_content/copy"
 import { Button } from "@/components/ui/Button"
@@ -232,6 +233,7 @@ function MatchingDemoAnimated() {
 
 // ── Hero section ─────────────────────────────────────────────
 export function Hero() {
+  const router = useRouter()
   const prefersReducedMotion = useReducedMotion()
   const {
     eyebrow,
@@ -309,7 +311,7 @@ export function Hero() {
                 variant="primary"
                 size="lg"
                 className="w-full sm:w-auto shadow-lg shadow-primary/30 ring-2 ring-primary/40 ring-offset-2 ring-offset-secondary"
-                onClick={() => scrollTo("final-cta")}
+                onClick={() => router.push("/signup?role=employer")}
               >
                 {ctaEmployer}
               </Button>
@@ -317,7 +319,7 @@ export function Hero() {
                 variant="ghost"
                 size="md"
                 className="w-full sm:w-auto bg-white/5 border border-white/15 text-white/90 hover:bg-white/10"
-                onClick={() => scrollTo("final-cta")}
+                onClick={() => router.push("/signup?role=worker")}
               >
                 {ctaWorker}
               </Button>

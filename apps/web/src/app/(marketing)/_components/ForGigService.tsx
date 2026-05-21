@@ -3,10 +3,12 @@
 // 용역형(개인 C2C 도급) 트랙 소개 섹션.
 // 고용형(근로계약)과 구분하기 위해 법적 고지(legalNote)를 섹션 하단에 고정 노출.
 import type React from "react"
+import { useRouter } from "next/navigation"
 import { copy } from "../_content/copy"
 import { Button } from "@/components/ui/Button"
 
 export function ForGigService() {
+  const router = useRouter()
   const {
     sectionTitle,
     eyebrow,
@@ -140,10 +142,7 @@ export function ForGigService() {
               variant="primary"
               size="md"
               className="w-full md:w-auto bg-[#FF4D4D] hover:bg-[#e53e3e] ring-[#FF4D4D]/40"
-              onClick={() => {
-                const el = document.getElementById("final-cta")
-                el?.scrollIntoView({ behavior: "smooth" })
-              }}
+              onClick={() => router.push("/signup?role=employer")}
             >
               {cta}
             </Button>

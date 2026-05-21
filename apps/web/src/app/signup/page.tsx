@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import axios from "axios"
@@ -19,6 +19,14 @@ export default function SignupPage() {
   })
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    const roleParam = new URLSearchParams(window.location.search).get("role")
+    if (roleParam === "employer" || roleParam === "worker") {
+      setRole(roleParam)
+      setStep("form")
+    }
+  }, [])
 
   const toggleCategory = (cat: string) => {
     setForm(f => ({

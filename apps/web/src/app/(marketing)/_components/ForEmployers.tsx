@@ -1,10 +1,12 @@
 "use client"
 
 import type React from "react"
+import { useRouter } from "next/navigation"
 import { copy } from "../_content/copy"
 import { Button } from "@/components/ui/Button"
 
 export function ForEmployers() {
+  const router = useRouter()
   const { sectionTitle, headline, painPoints, solutions, cta, positioning } = copy.forEmployers
   const lines = headline.split("\n")
 
@@ -71,10 +73,7 @@ export function ForEmployers() {
               variant="primary"
               size="md"
               className="w-full md:w-auto"
-              onClick={() => {
-                const el = document.getElementById("final-cta")
-                el?.scrollIntoView({ behavior: "smooth" })
-              }}
+              onClick={() => router.push("/signup?role=employer")}
             >
               {cta}
             </Button>
