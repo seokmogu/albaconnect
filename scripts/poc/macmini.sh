@@ -213,7 +213,7 @@ cmd_doctor() {
     check_secret "TOSS_WEBHOOK_SECRET" "${TOSS_WEBHOOK_SECRET:-}" 24
   fi
 
-  for port in "${WEB_PORT:-3000}" "${API_PORT:-3001}" "${POSTGRES_PORT:-5432}" "${REDIS_PORT:-6379}"; do
+  for port in "${WEB_PORT:-3000}" "${API_PORT:-3001}" "${POSTGRES_PORT:-15432}" "${REDIS_PORT:-16379}"; do
     if has_cmd lsof && lsof -nP -iTCP:"$port" -sTCP:LISTEN >/dev/null 2>&1; then
       warn "Port $port already has a listener. If the POC stack is not already running, change the port in $ENV_FILE."
     fi
