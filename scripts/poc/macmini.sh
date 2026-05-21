@@ -119,6 +119,8 @@ cmd_setup() {
 
   while [ "$#" -gt 0 ]; do
     case "$1" in
+      --)
+        ;;
       --host)
         shift
         [ "$#" -gt 0 ] || fail "--host requires a value"
