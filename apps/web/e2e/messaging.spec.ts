@@ -27,7 +27,7 @@ test.describe('Direct messaging — login page', () => {
   test('login page has link to signup', async ({ page }) => {
     await page.goto('/login');
     const signupLink = page.locator('a[href*="/signup"]');
-    await expect(signupLink).toHaveCount({ minimum: 1 } as any);
+    await expect(signupLink.first()).toBeVisible();
     // Softer check — just verify the page is interactive
     await expect(page).toHaveURL(/\/login/);
   });

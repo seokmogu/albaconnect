@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import axios from "axios"
 import { useAuthStore } from "@/store/auth"
 import api from "@/lib/api"
+import { getApiErrorMessage } from "@/lib/api-error"
 import { JOB_CATEGORIES } from "@albaconnect/shared"
 
 export default function SignupPage() {
@@ -52,10 +52,7 @@ export default function SignupPage() {
       setAuth(data.user, data.accessToken, data.refreshToken)
       router.push(role === "employer" ? "/employer/dashboard" : "/worker/home")
     } catch (err: unknown) {
-      const message = axios.isAxiosError(err)
-        ? err.response?.data?.error
-        : undefined
-      setError(typeof message === "string" ? message : "회원가입에 실패했습니다")
+      setError(getApiErrorMessage(err, "회원가입에 실패했습니다"))
     } finally {
       setLoading(false)
     }
@@ -72,7 +69,7 @@ export default function SignupPage() {
         <div className="space-y-4">
           <button
             onClick={() => { setRole("worker"); setStep("form") }}
-            className="card w-full text-left p-5 border-2 hover:border-blue-500 transition-colors"
+            className="card w-full text-left p-5 border-2 hover:border-primary transition-colors"
           >
             <div className="text-3xl mb-2">💼</div>
             <div className="font-bold text-lg">구직자로 시작</div>
@@ -80,7 +77,7 @@ export default function SignupPage() {
           </button>
           <button
             onClick={() => { setRole("employer"); setStep("form") }}
-            className="card w-full text-left p-5 border-2 hover:border-blue-500 transition-colors"
+            className="card w-full text-left p-5 border-2 hover:border-primary transition-colors"
           >
             <div className="text-3xl mb-2">🏢</div>
             <div className="font-bold text-lg">구인자로 시작</div>
@@ -89,7 +86,7 @@ export default function SignupPage() {
         </div>
         <p className="text-center text-sm text-gray-500 mt-8">
           이미 계정이 있으신가요?{" "}
-          <Link href="/login" className="text-blue-600 font-medium">로그인</Link>
+          <Link href="/login" className="text-primary font-medium">로그인</Link>
         </p>
       </div>
     )
@@ -106,29 +103,29 @@ export default function SignupPage() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-600 rounded-xl px-4 py-3 text-sm">{error}</div>
+          <div className="bg-red-50 border border-red-200 text-red-600 rounded-xl px-4 py-3 text-sm" role="alert">{error}</div>
         )}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">이름</label>
-          <input className="input-field" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="홍길동" required />
+          <label htmlFor="signup-name" className="block text-sm font-medium text-gray-700 mb-1">이름</label>
+          <input id="signup-name" name="name" className="input-field" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="홍길동" required />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">이메일</label>
-          <input type="email" className="input-field" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} placeholder="example@email.com" required />
+          <label htmlFor="signup-email" className="block text-sm font-medium text-gray-700 mb-1">이메일</label>
+          <input id="signup-email" name="email" type="email" className="input-field" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} placeholder="example@email.com" required />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">비밀번호</label>
-          <input type="password" className="input-field" value={form.password} onChange={e => setForm(f => ({ ...f, password: e.target.value }))} placeholder="8자 이상" required minLength={8} />
+          <label htmlFor="signup-password" className="block text-sm font-medium text-gray-700 mb-1">비밀번호</label>
+          <input id="signup-password" name="password" type="password" className="input-field" value={form.password} onChange={e => setForm(f => ({ ...f, password: e.target.value }))} placeholder="8자 이상" required minLength={8} />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">전화번호</label>
-          <input type="tel" className="input-field" value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} placeholder="010-1234-5678" required />
+          <label htmlFor="signup-phone" className="block text-sm font-medium text-gray-700 mb-1">전화번호</label>
+          <input id="signup-phone" name="phone" type="tel" className="input-field" value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} placeholder="010-1234-5678" required />
         </div>
 
         {role === "employer" && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">회사/상호명</label>
-            <input className="input-field" value={form.companyName} onChange={e => setForm(f => ({ ...f, companyName: e.target.value }))} placeholder="(주)알바커넥트" required />
+            <label htmlFor="signup-company-name" className="block text-sm font-medium text-gray-700 mb-1">회사/상호명</label>
+            <input id="signup-company-name" name="companyName" className="input-field" value={form.companyName} onChange={e => setForm(f => ({ ...f, companyName: e.target.value }))} placeholder="(주)알바커넥트" required />
           </div>
         )}
 
@@ -142,7 +139,7 @@ export default function SignupPage() {
                   onClick={() => toggleCategory(cat)}
                   className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
                     form.categories.includes(cat)
-                      ? "bg-blue-600 text-white border-blue-600"
+                      ? "bg-primary text-white border-primary"
                       : "bg-white text-gray-600 border-gray-300"
                   }`}
                 >

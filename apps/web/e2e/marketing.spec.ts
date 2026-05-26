@@ -1,8 +1,8 @@
 /**
  * Marketing landing E2E.
  *
- * Covers the new (marketing) route group: hero, pricing comparison, CTA,
- * and conditional businessNumber field when the employer role is selected.
+ * Covers the marketing route group: hero, pricing comparison, CTA,
+ * and signup routing for employer/worker entry points.
  *
  * SPEC: .agency/briefs/BRIEF-001-albaconnect-landing/brief.md §8
  */
@@ -20,11 +20,10 @@ test.describe("AlbaConnect marketing landing", () => {
 
     // Dual CTAs — employer (primary) and worker (secondary). Multiple occurrences
     // are expected (Hero + ForEmployers + ForWorkers + FinalCTA), so we check first().
-    await expect(page.getByRole("button", { name: "사장님으로 사전 신청" }).first()).toBeVisible()
-    await expect(page.getByRole("button", { name: "워커로 사전 신청" }).first()).toBeVisible()
+    await expect(page.getByRole("button", { name: "사장님으로 시작하기" }).first()).toBeVisible()
+    await expect(page.getByRole("button", { name: "워커로 시작하기" }).first()).toBeVisible()
 
-    // Employer emphasis badge (business analysis L1)
-    await expect(page.getByText("사장님 우선")).toBeVisible()
+    await expect(page.getByText("사내 베타 운영 중 — 바로 가입 가능")).toBeVisible()
 
     // Toss payment badge (L6)
     await expect(page.getByText("토스 페이먼츠 에스크로")).toBeVisible()
@@ -65,31 +64,26 @@ test.describe("AlbaConnect marketing landing", () => {
     await expect(summaries.nth(2)).toContainText("기존 알바 직원")
   })
 
-  test("clicking employer CTA scrolls to the final form", async ({ page }) => {
-    await page.getByRole("button", { name: "사장님으로 사전 신청" }).first().click()
-    // Smooth scroll lands on the sign-up form section
-    await expect(page.locator("#final-cta")).toBeInViewport({ ratio: 0.3, timeout: 5000 })
+  test("clicking employer CTA opens employer signup form", async ({ page }) => {
+    await page.getByRole("button", { name: "사장님으로 시작하기" }).first().click()
+    await expect(page).toHaveURL(/\/signup\?role=employer/)
+    await expect(page.getByRole("heading", { name: /구인자 회원가입/ })).toBeVisible()
+    await expect(page.getByLabel("회사/상호명")).toBeVisible()
   })
 
-  test("selecting employer role reveals businessNumber field (L9)", async ({ page }) => {
-    // Scroll to the form
+  test("final CTA employer card opens employer signup form", async ({ page }) => {
     await page.locator("#final-cta").scrollIntoViewIfNeeded()
-
-    // Before selecting role, businessNumber should NOT be visible
-    await expect(page.getByLabel(/사업자등록번호/)).toHaveCount(0)
-
-    // Click employer role segmented control
-    await page.getByRole("button", { name: /사장님 \(구인\)/ }).click()
-
-    // businessNumber field should appear
-    await expect(page.getByLabel(/사업자등록번호/)).toBeVisible()
-    await expect(page.getByPlaceholder("000-00-00000")).toBeVisible()
+    await page.getByRole("link", { name: /구인자 회원가입/ }).click()
+    await expect(page).toHaveURL(/\/signup\?role=employer/)
+    await expect(page.getByLabel("회사/상호명")).toBeVisible()
   })
 
-  test("selecting worker role does NOT show businessNumber field", async ({ page }) => {
+  test("final CTA worker card opens worker signup form", async ({ page }) => {
     await page.locator("#final-cta").scrollIntoViewIfNeeded()
-    await page.getByRole("button", { name: /워커 \(구직\)/ }).click()
-    await expect(page.getByLabel(/사업자등록번호/)).toHaveCount(0)
+    await page.getByRole("link", { name: /구직자 회원가입/ }).click()
+    await expect(page).toHaveURL(/\/signup\?role=worker/)
+    await expect(page.getByRole("heading", { name: /구직자 회원가입/ })).toBeVisible()
+    await expect(page.getByLabel("회사/상호명")).toHaveCount(0)
   })
 
   test("meta tags include albaconnect title and og image", async ({ page }) => {
@@ -111,9 +105,10 @@ test.describe("AlbaConnect marketing landing", () => {
     await expect(gig.getByText(/근로기준법·최저임금법 적용 대상이 아닙니다/)).toBeVisible()
   })
 
-  test("개인 용역 섹션 CTA가 신청 폼으로 스크롤된다 [MKT-2]", async ({ page }) => {
+  test("개인 용역 섹션 CTA가 구인자 회원가입으로 이동한다 [MKT-2]", async ({ page }) => {
     await page.locator("#for-gig-service")
-      .getByRole("button", { name: "용역 의뢰인으로 사전 신청" }).click()
-    await expect(page.locator("#final-cta")).toBeInViewport({ ratio: 0.3, timeout: 5000 })
+      .getByRole("button", { name: "용역 의뢰인으로 시작하기" }).click()
+    await expect(page).toHaveURL(/\/signup\?role=employer/)
+    await expect(page.getByRole("heading", { name: /구인자 회원가입/ })).toBeVisible()
   })
 })

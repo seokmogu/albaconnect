@@ -10,6 +10,7 @@
     "test:coverage": "NODE_OPTIONS=--experimental-vm-modules vitest run --coverage",
     "readiness:production": "tsx src/scripts/checkProductionReadiness.ts",
     "smoke:toss": "tsx src/scripts/smokeTossPayment.ts",
+    "seed:sim": "tsx src/scripts/importSimData.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate"
   },

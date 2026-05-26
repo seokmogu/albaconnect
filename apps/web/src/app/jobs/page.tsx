@@ -16,10 +16,22 @@ export const metadata: Metadata = {
   },
 }
 
-async function getPublicJobs(): Promise<PublicJob[]> {
+type JobsSearchParams = {
+  category?: string
+  min_pay?: string
+  max_pay?: string
+}
+
+async function getPublicJobs(params: JobsSearchParams): Promise<PublicJob[]> {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001"
   try {
-    const res = await fetch(`${apiUrl}/api/v2/jobs/public?limit=100`, {
+    const url = new URL("/api/v2/jobs/public", apiUrl)
+    url.searchParams.set("limit", "100")
+    if (params.category) url.searchParams.set("category", params.category)
+    if (params.min_pay) url.searchParams.set("min_pay", params.min_pay)
+    if (params.max_pay) url.searchParams.set("max_pay", params.max_pay)
+
+    const res = await fetch(url, {
       next: { revalidate: 60 },
     })
     if (!res.ok) return []
@@ -30,17 +42,22 @@ async function getPublicJobs(): Promise<PublicJob[]> {
   }
 }
 
-export default async function JobsPage() {
-  const jobs = await getPublicJobs()
+export default async function JobsPage({
+  searchParams,
+}: {
+  searchParams: Promise<JobsSearchParams>
+}) {
+  const params = await searchParams
+  const jobs = await getPublicJobs(params)
 
   return (
     <main className="min-h-screen bg-gray-50">
       {/* Hero */}
-      <div className="bg-gradient-to-br from-blue-600 to-blue-700 text-white px-6 py-10">
+      <div className="bg-gradient-to-br from-primary to-primary-dark text-white px-6 py-10">
         <div className="max-w-4xl mx-auto">
           <div className="text-3xl mb-2">⚡</div>
           <h1 className="text-2xl font-bold mb-1">오늘의 알바 공고</h1>
-          <p className="text-blue-100 text-sm">
+          <p className="text-white/80 text-sm">
             {jobs.length > 0 ? `현재 ${jobs.length}개의 공고가 있어요` : "새 공고가 곧 등록돼요"}
           </p>
         </div>

@@ -74,3 +74,16 @@ albaconnect/apps/web/src/app/sim/
 ```
 
 UI: `http://localhost:3000/sim/admin`
+
+## 6. API DB 재주입
+
+로컬 API 화면(`/worker/search`, `/jobs`)에서 동일한 시뮬레이션 공고를 보려면 앱 DB에 `sim/data`를 업서트한다.
+
+```bash
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/albaconnect \
+  pnpm --filter @albaconnect/api seed:sim
+```
+
+- 기본 계정 비밀번호: `TestPass123!` (`SIM_SEED_PASSWORD`로 변경 가능)
+- 생성 계정: `sim-employer-emp-001@albaconnect.local`, `sim-worker-w-0001@albaconnect.local` 형식
+- production 환경에서는 `ALLOW_SIM_IMPORT=true` 없이는 실행되지 않는다.

@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
+import { JOB_CATEGORIES } from "@albaconnect/shared"
 
 export interface PublicJob {
   id: string
@@ -17,15 +18,27 @@ export interface PublicJob {
   company_name: string
 }
 
+const CATEGORY_ICONS: Record<string, string> = {
+  "요식업": "🍽️",
+  "카페/음료": "☕",
+  "편의점": "🏪",
+  "물류/배달": "📦",
+  "청소/미화": "🧹",
+  "행사/이벤트": "🎪",
+  "IT/개발": "💻",
+  "디자인": "🎨",
+  "번역/통역": "🌐",
+  "교육/강사": "📚",
+  "의료/간호": "❤️",
+  "기타": "🔧",
+}
+
 const CATEGORIES = [
   { value: "", label: "전체" },
-  { value: "카페", label: "☕ 카페" },
-  { value: "편의점", label: "🏪 편의점" },
-  { value: "배달", label: "🛵 배달" },
-  { value: "청소", label: "🧹 청소" },
-  { value: "물류", label: "📦 물류" },
-  { value: "요양", label: "❤️ 요양" },
-  { value: "기타", label: "🔧 기타" },
+  ...JOB_CATEGORIES.map((category) => ({
+    value: category,
+    label: `${CATEGORY_ICONS[category] ?? "•"} ${category}`,
+  })),
 ]
 
 function formatDate(dateStr: string): string {
@@ -41,9 +54,9 @@ function formatCity(address: string): string {
 function JobCard({ job }: { job: PublicJob }) {
   return (
     <Link href={`/jobs/${job.id}`} className="block">
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 hover:shadow-md hover:border-blue-200 transition-all duration-200 cursor-pointer">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 hover:shadow-md hover:border-primary/20 transition-all duration-200 cursor-pointer">
         <div className="flex items-start justify-between mb-3">
-          <span className="text-xs font-semibold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-full">
+          <span className="text-xs font-semibold text-primary bg-primary/10 px-2.5 py-1 rounded-full">
             {job.category}
           </span>
           <span className="text-xs text-gray-400">{formatDate(job.start_at)}</span>
@@ -52,7 +65,7 @@ function JobCard({ job }: { job: PublicJob }) {
         <p className="text-sm text-gray-500 mb-3">{job.company_name}</p>
         <div className="flex items-center justify-between">
           <div>
-            <span className="text-lg font-bold text-blue-600">
+            <span className="text-lg font-bold text-primary">
               {job.hourly_rate.toLocaleString()}원
             </span>
             <span className="text-xs text-gray-400 ml-1">/시간</span>
@@ -117,7 +130,7 @@ export default function JobBoard({ initialJobs }: JobBoardProps) {
                 onClick={() => setCategory(cat.value)}
                 className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
                   category === cat.value
-                    ? "bg-blue-600 text-white"
+                    ? "bg-primary text-white"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                 }`}
               >
@@ -135,7 +148,7 @@ export default function JobBoard({ initialJobs }: JobBoardProps) {
             placeholder="예: 서울 강남구"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
-            className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
+            className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
           />
         </div>
 
@@ -143,7 +156,7 @@ export default function JobBoard({ initialJobs }: JobBoardProps) {
         <div>
           <p className="text-xs font-medium text-gray-500 mb-2">
             시급 범위:{" "}
-            <span className="text-blue-600 font-semibold">
+            <span className="text-primary font-semibold">
               {minPay.toLocaleString()}원 ~ {maxPay >= 50000 ? "제한없음" : `${maxPay.toLocaleString()}원`}
             </span>
           </p>
@@ -155,7 +168,7 @@ export default function JobBoard({ initialJobs }: JobBoardProps) {
               step={1000}
               value={minPay}
               onChange={(e) => setMinPay(Number(e.target.value))}
-              className="flex-1 accent-blue-600"
+              className="flex-1 accent-primary"
             />
             <input
               type="range"
@@ -164,7 +177,7 @@ export default function JobBoard({ initialJobs }: JobBoardProps) {
               step={1000}
               value={maxPay}
               onChange={(e) => setMaxPay(Number(e.target.value))}
-              className="flex-1 accent-blue-600"
+              className="flex-1 accent-primary"
             />
           </div>
         </div>
