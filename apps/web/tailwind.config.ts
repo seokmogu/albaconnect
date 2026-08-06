@@ -1,54 +1,61 @@
 import type { Config } from "tailwindcss"
+import { createRequire } from "node:module"
+import wxprPreset from "@wxpr/tokens/tailwind"
+
+const require = createRequire(import.meta.url)
+const xdsPreset = require("./src/xds/styles/xds.preset.cjs")
 
 const config: Config = {
+  presets: [wxprPreset, xdsPreset],
   content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
-  darkMode: "media",
+  darkMode: ["selector", ".dark"],
   theme: {
     extend: {
       colors: {
-        // Albamon brand palette
+        // Wxpr-backed app aliases retained for existing screens,
+        // themed to AlbaConnect's Albamon-style orange brand.
         primary: {
           DEFAULT: "#FF6E0D",
           light: "#FF8A3D",
           dark: "#E55E00",
-          // Keep legacy blue shades for existing (marketing) pages
-          50: "#eff6ff",
-          500: "#3b82f6",
-          600: "#2563eb",
-          700: "#1d4ed8",
+          50: "#FFF7ED",
+          100: "#FFE8D6",
+          500: "#FF6E0D",
+          600: "#E55E00",
+          700: "#B94A00",
         },
         secondary: {
-          DEFAULT: "#1A1A1A",
-          light: "#333333",
-          dark: "#000000",
+          DEFAULT: "#182432",
+          light: "#4E5968",
+          dark: "#0A0F16",
         },
         accent: {
-          DEFAULT: "#22C55E",
+          DEFAULT: "#10B981",
         },
         surface: {
-          DEFAULT: "#F5F6F8",
-          dark: "#111827",
+          DEFAULT: "#F8F9FA",
+          dark: "#182432",
         },
-        // Albamon JDS grayscale
+        // Wxpr neutral scale
         gray: {
-          900: "#1A1A1A",
-          800: "#333333",
-          700: "#666666",
-          500: "#999999",
-          300: "#CCCCCC",
-          100: "#F0F0F0",
+          900: "#182432",
+          800: "#1F2937",
+          700: "#333D4B",
+          500: "#6B7684",
+          300: "#D1D6DB",
+          100: "#F1F3F5",
         },
-        success: "#22C55E",
+        success: "#10B981",
         warning: "#F59E0B",
-        error: "#FF4D4D",
-        info: "#3B82F6",
+        error: "#EF4444",
+        info: "#2F80ED",
         // Marketing-route text/border tokens (used by (marketing) components)
         text: {
-          primary: "#1A1A1A",
-          secondary: "#666666",
+          primary: "#182432",
+          secondary: "#4E5968",
         },
         border: {
-          DEFAULT: "#EEEEEE",
+          DEFAULT: "#E5E8EB",
         },
       },
       fontFamily: {

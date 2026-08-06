@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next"
 import "./globals.css"
 import OfflineBanner from "@/components/OfflineBanner"
+import { ThemeProvider } from "@/xds/components/ThemeProvider/ThemeProvider"
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://albaconnect.kr"
 
@@ -16,15 +17,17 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
-  themeColor: "#3b82f6",
+  themeColor: "#ff6d12",
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ko">
-      <body className="bg-gray-50 text-gray-900 max-w-md mx-auto min-h-screen">
-        <OfflineBanner />
-        {children}
+    <html lang="ko" data-brand="am" suppressHydrationWarning>
+      <body className="mx-auto min-h-screen max-w-md bg-background-subtle text-typography-default">
+        <ThemeProvider defaultBrand="am" defaultMode="light">
+          <OfflineBanner />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   )

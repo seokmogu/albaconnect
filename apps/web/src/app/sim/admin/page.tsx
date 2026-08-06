@@ -28,7 +28,7 @@ function projectToSvg(loc: { lat: number; lng: number }): { x: number; y: number
 const CATEGORY_COLOR: Record<string, string> = {
   cafe: "#FF6E0D",
   restaurant: "#FF4D4D",
-  retail: "#3B82F6",
+  retail: "#FF6E0D",
   event: "#A855F7",
   cleaning: "#22C55E",
   delivery: "#F59E0B",
@@ -105,7 +105,7 @@ export default async function SimAdminPage() {
       {/* KPI cards */}
       <section className="grid grid-cols-2 md:grid-cols-6 gap-3 mb-6">
         <Kpi label="사업장" value={snap.employers.length} unit="개" accent="#FF6E0D" icon={<Store size={14} />} />
-        <Kpi label="공고" value={snap.postings.length} unit="건" accent="#3B82F6" icon={<Tag size={14} />} />
+        <Kpi label="공고" value={snap.postings.length} unit="건" accent="#FF6E0D" icon={<Tag size={14} />} />
         <Kpi label="구직자" value={snap.workers.length} unit="명" accent="#22C55E" icon={<Users size={14} />} />
         <Kpi label="Dispatch" value={snap.dispatches.length} unit="회" accent="#A855F7" icon={<Zap size={14} />} />
         <Kpi label="매칭률" value={matchRate} unit="%" accent="#FF4D4D" icon={<TrendingUp size={14} />} />

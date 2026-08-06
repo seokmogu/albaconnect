@@ -57,8 +57,8 @@ export function Header() {
             width={20}
             height={20}
             viewBox="0 0 24 24"
-            fill="#FF6B00"
-            stroke="#FF6B00"
+            fill="#FF6E0D"
+            stroke="#FF6E0D"
             strokeWidth={2}
             strokeLinecap="round"
             strokeLinejoin="round"

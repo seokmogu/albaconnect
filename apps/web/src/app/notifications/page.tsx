@@ -58,7 +58,7 @@ export default function NotificationsPage() {
           </div>
         ) : (
           notifications.map(n => (
-            <div key={n.id} className={`card flex items-start gap-3 ${!n.read ? "bg-blue-50 border border-blue-100" : ""}`}>
+            <div key={n.id} className={`card flex items-start gap-3 ${!n.read ? "bg-primary/10 border border-primary/20" : ""}`}>
               <span className="text-2xl mt-0.5">{TYPE_ICON[n.type] ?? TYPE_ICON.default}</span>
               <div className="flex-1">
                 <div className="font-medium text-gray-900">{n.title}</div>
@@ -69,7 +69,7 @@ export default function NotificationsPage() {
                   })}
                 </div>
               </div>
-              {!n.read && <div className="w-2 h-2 rounded-full bg-blue-500 mt-1.5 flex-shrink-0" />}
+              {!n.read && <div className="w-2 h-2 rounded-full bg-primary/100 mt-1.5 flex-shrink-0" />}
             </div>
           ))
         )}

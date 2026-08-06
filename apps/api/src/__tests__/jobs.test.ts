@@ -87,6 +87,22 @@ describe('job routes', () => {
     await app.close()
   })
 
+  it('GET /jobs accepts status=all for the employer dashboard', async () => {
+    mocks.executeMock.mockResolvedValueOnce({ rows: [{ id: 'job-1', status: 'open' }] })
+
+    const app = await buildApp()
+    const token = app.jwt.sign({ id: 'employer-1', role: 'employer' })
+    const response = await app.inject({
+      method: 'GET',
+      url: '/jobs?status=all&limit=50',
+      headers: { authorization: `Bearer ${token}` },
+    })
+
+    expect(response.statusCode).toBe(200)
+    expect(response.json().jobs).toHaveLength(1)
+    await app.close()
+  })
+
   it('GET /jobs/:id returns 200', async () => {
     mocks.executeMock.mockResolvedValueOnce({ rows: [{ id: 'job-1', employer_id: 'employer-1', title: 'Kitchen Help' }] })
 

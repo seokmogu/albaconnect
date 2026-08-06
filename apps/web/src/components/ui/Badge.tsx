@@ -1,5 +1,6 @@
 import * as React from "react"
 import { clsx } from "clsx"
+import { Badge as WxprBadge, type BadgeProps as WxprBadgeProps } from "@wxpr/react"
 
 export type BadgeVariant = "orange" | "emerald" | "slate" | "white-dim" | "error"
 
@@ -8,25 +9,26 @@ interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   children: React.ReactNode
 }
 
-const variantClasses: Record<BadgeVariant, string> = {
-  orange: "bg-primary/10 text-primary",
-  emerald: "bg-accent/10 text-accent",
-  slate: "bg-secondary/10 text-secondary-light",
+const variantMap: Record<BadgeVariant, WxprBadgeProps["variant"]> = {
+  orange: "brand",
+  emerald: "success",
+  slate: "neutral",
+  "white-dim": "neutral",
+  error: "danger",
+}
+
+const variantClasses: Partial<Record<BadgeVariant, string>> = {
   "white-dim": "bg-white/10 text-white/70",
-  error: "bg-error/10 text-error",
 }
 
 export function Badge({ variant = "orange", className, children, ...props }: BadgeProps) {
   return (
-    <span
-      className={clsx(
-        "inline-flex items-center gap-1 rounded-pill px-3 py-1 text-xs font-semibold",
-        variantClasses[variant],
-        className,
-      )}
+    <WxprBadge
+      className={clsx(variantClasses[variant], className)}
+      variant={variantMap[variant]}
       {...props}
     >
       {children}
-    </span>
+    </WxprBadge>
   )
 }

@@ -1,0 +1,26 @@
+{
+  "name": "@wxpr/tokens",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./build/ts/index.js",
+  "types": "./build/ts/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./build/ts/index.d.ts",
+      "import": "./build/ts/index.js"
+    },
+    "./css": "./build/css/index.css",
+    "./css/light": "./build/css/variables.css",
+    "./css/dark": "./build/css/variables-dark.css",
+    "./tailwind": "./build/tailwind/preset.cjs"
+  },
+  "files": ["build", "tokens"],
+  "scripts": {
+    "build": "node scripts/build.js",
+    "clean": "rm -rf build"
+  },
+  "devDependencies": {
+    "style-dictionary": "^4.2.0"
+  }
+}

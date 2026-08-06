@@ -58,7 +58,7 @@ export default function EmployerProfilePage() {
       <div className="bg-white px-4 py-4 shadow-sm sticky top-0 z-10 flex items-center justify-between">
         <h1 className="font-bold text-xl">내 프로필</h1>
         <div className="flex gap-3">
-          <button onClick={() => setEditing(!editing)} className="text-blue-600 text-sm font-medium">
+          <button onClick={() => setEditing(!editing)} className="text-primary text-sm font-medium">
             {editing ? "취소" : "수정"}
           </button>
           <button onClick={() => { logout(); router.push("/") }} className="text-gray-400 text-sm">로그아웃</button>
@@ -68,7 +68,7 @@ export default function EmployerProfilePage() {
       <div className="px-4 py-6 space-y-4">
         {/* Profile */}
         <div className="card text-center">
-          <div className="w-20 h-20 rounded-full bg-blue-100 flex items-center justify-center text-3xl mx-auto mb-3">🏢</div>
+          <div className="w-20 h-20 rounded-full bg-primary/15 flex items-center justify-center text-3xl mx-auto mb-3">🏢</div>
           <div className="font-bold text-xl">{profile.companyName}</div>
           <div className="text-gray-500 text-sm">{user?.name} · {user?.email}</div>
           <div className="flex items-center justify-center gap-1 mt-2">
@@ -84,7 +84,7 @@ export default function EmployerProfilePage() {
             {[
               { label: "총 공고", value: stats.total_jobs, color: "text-gray-800" },
               { label: "활성 공고", value: stats.active_jobs, color: "text-green-600" },
-              { label: "완료 공고", value: stats.completed_jobs, color: "text-blue-600" },
+              { label: "완료 공고", value: stats.completed_jobs, color: "text-primary" },
               { label: "고용한 인원", value: stats.total_workers_hired, color: "text-purple-600" },
             ].map(s => (
               <div key={s.label} className="card text-center">
@@ -117,7 +117,7 @@ export default function EmployerProfilePage() {
         <Link href="/employer/dashboard" className="flex-1 flex flex-col items-center py-3 text-gray-400">
           <span className="text-xl">📋</span><span className="text-xs mt-0.5">공고</span>
         </Link>
-        <Link href="/employer/profile" className="flex-1 flex flex-col items-center py-3 text-blue-600">
+        <Link href="/employer/profile" className="flex-1 flex flex-col items-center py-3 text-primary">
           <span className="text-xl">👤</span><span className="text-xs mt-0.5">프로필</span>
         </Link>
       </nav>

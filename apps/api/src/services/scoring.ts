@@ -27,7 +27,19 @@ export interface ScoringInput {
   hasScheduleDeclared?: boolean
 }
 
-export function computeMatchScore(input: ScoringInput): number {
+export interface MatchScoreBreakdown {
+  distance: number
+  rating: number
+  skill: number
+  reliability: number
+  activity: number
+  availability: number
+  total: number
+}
+
+const roundScore = (score: number) => Math.round(score * 10) / 10
+
+export function computeMatchScoreBreakdown(input: ScoringInput): MatchScoreBreakdown {
   const {
     distanceMeters,
     ratingAvg,
@@ -86,7 +98,19 @@ export function computeMatchScore(input: ScoringInput): number {
   const availabilityScore = hasScheduleDeclared ? 8 : 4
 
   const total = distanceScore + ratingScore + skillScore + finalReliabilityScore + activityScore + availabilityScore
-  return Math.round(total * 10) / 10
+  return {
+    distance: roundScore(distanceScore),
+    rating: roundScore(ratingScore),
+    skill: roundScore(skillScore),
+    reliability: roundScore(finalReliabilityScore),
+    activity: roundScore(activityScore),
+    availability: roundScore(availabilityScore),
+    total: roundScore(total),
+  }
+}
+
+export function computeMatchScore(input: ScoringInput): number {
+  return computeMatchScoreBreakdown(input).total
 }
 
 /**

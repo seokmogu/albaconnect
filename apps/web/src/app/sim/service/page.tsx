@@ -55,9 +55,9 @@ export default async function ServicePage({
 
       <main className="max-w-3xl mx-auto px-6 py-6">
         {/* 용역 트랙 안내 배너 */}
-        <div className="flex items-start gap-3 bg-blue-50 border border-blue-200 rounded-xl p-4 mb-4">
-          <AlertCircle size={18} className="text-blue-500 mt-0.5 shrink-0" />
-          <p className="text-sm text-blue-800" style={{ wordBreak: "keep-all" }}>
+        <div className="flex items-start gap-3 bg-primary/10 border border-primary/20 rounded-xl p-4 mb-4">
+          <AlertCircle size={18} className="text-primary mt-0.5 shrink-0" />
+          <p className="text-sm text-primary-dark" style={{ wordBreak: "keep-all" }}>
             <span className="font-bold">용역 트랙 — 개인 간 도급, 근로계약 아님.</span>{" "}
             이 의뢰는 사업주와 근로자의 고용 관계가 아닌, 개인이 개인에게 일의 완성을 위탁하는
             도급 계약입니다. 최저임금법 및 근로기준법 적용 대상이 아닙니다.

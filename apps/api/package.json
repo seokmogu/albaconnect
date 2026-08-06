@@ -8,6 +8,7 @@
     "typecheck": "tsc --noEmit",
     "test": "NODE_OPTIONS=--experimental-vm-modules vitest run",
     "test:coverage": "NODE_OPTIONS=--experimental-vm-modules vitest run --coverage",
+    "matching:quality": "tsx src/scripts/checkMatchingQuality.ts",
     "readiness:production": "tsx src/scripts/checkProductionReadiness.ts",
     "smoke:toss": "tsx src/scripts/smokeTossPayment.ts",
     "seed:sim": "tsx src/scripts/importSimData.ts",

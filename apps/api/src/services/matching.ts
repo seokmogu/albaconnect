@@ -8,6 +8,7 @@ import { rankWorkers } from "./scoring"
 import { nearbyWorkersCache, CACHE_TTL, cacheGetL2, cacheSetL2, cacheDelL2 } from "./cache"
 import { sendJobOfferPush } from "./webPush"
 import { jobAvailableAlimTalk, jobConfirmedAlimTalk } from "./kakaoAlimTalk"
+import { MATCH_CANDIDATE_POOL_LIMIT, MATCH_RESULT_LIMIT } from "./matchingConfig"
 
 // Map of userId -> socketId for active workers
 export const workerSockets = new Map<string, string>()
@@ -101,7 +102,8 @@ export async function findNearbyWorkers(jobId: string): Promise<WorkerCandidate[
 
   const excludedWorkerIds = existingApps.map((a) => a.workerId)
 
-  // PostGIS: find available workers within radius, sorted by distance then rating
+  // PostGIS: collect the full bounded pool before composite ranking. Limiting an
+  // unordered query here would rank an arbitrary 50-worker sample.
   const loc = job.location as { lat: number; lng: number }
   const radiusMeters = MATCH_RADIUS_KM * 1000
 
@@ -151,7 +153,8 @@ export async function findNearbyWorkers(jobId: string): Promise<WorkerCandidate[
         ${radiusMeters}
       )
       ${excludedWorkerIds.length > 0 ? sql`AND wp.user_id NOT IN (${sql.join(excludedWorkerIds.map(id => sql`${id}::uuid`), sql`, `)})` : sql``}
-    LIMIT 50
+    ORDER BY (${job.category} = ANY(wp.categories)) DESC, distance ASC, wp.rating_avg DESC
+    LIMIT ${MATCH_CANDIDATE_POOL_LIMIT}
   `)
 
   // Apply composite scoring (distance + rating + skill/category + reliability + activity)
@@ -170,7 +173,7 @@ export async function findNearbyWorkers(jobId: string): Promise<WorkerCandidate[
     })),
     job.category,
     radiusMeters
-  )
+  ).slice(0, MATCH_RESULT_LIMIT)
 
   const result = ranked.map(row => ({
     userId: row.userId,

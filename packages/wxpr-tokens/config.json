@@ -1,0 +1,20 @@
+{
+  "_comment": "Style Dictionary v4 configuration placeholder. The authoritative build is scripts/build.js, which drives darkValue handling, typography splitting, and Tailwind preset generation directly. This file exists so adopters can plug into the standard SD CLI later (style-dictionary build --config config.json) without restructuring the package.",
+  "source": ["tokens/**/*.json"],
+  "platforms": {
+    "css": {
+      "transformGroup": "css",
+      "buildPath": "build/css/",
+      "files": [
+        { "destination": "variables.css", "format": "css/variables" }
+      ]
+    },
+    "ts": {
+      "transformGroup": "js",
+      "buildPath": "build/ts/",
+      "files": [
+        { "destination": "tokens.ts", "format": "javascript/es6" }
+      ]
+    }
+  }
+}

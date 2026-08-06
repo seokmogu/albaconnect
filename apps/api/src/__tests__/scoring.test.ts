@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { computeMatchScore, rankWorkers } from "../services/scoring"
+import { computeMatchScore, computeMatchScoreBreakdown, rankWorkers } from "../services/scoring"
 
 describe("computeMatchScore", () => {
   const baseInput = {
@@ -84,6 +84,18 @@ describe("computeMatchScore", () => {
       distanceMeters: 4999,
     })
     expect(worst).toBeGreaterThanOrEqual(0)
+  })
+
+  it("exposes an auditable score breakdown", () => {
+    const breakdown = computeMatchScoreBreakdown(baseInput)
+
+    expect(breakdown.total).toBe(computeMatchScore(baseInput))
+    expect(breakdown.distance).toBeGreaterThan(0)
+    expect(breakdown.rating).toBeGreaterThan(0)
+    expect(breakdown.skill).toBeGreaterThan(0)
+    expect(breakdown.reliability).toBeGreaterThan(0)
+    expect(breakdown.activity).toBeGreaterThan(0)
+    expect(breakdown.availability).toBe(4)
   })
 })
 

@@ -27,7 +27,7 @@ interface Props {
 }
 
 const EMPLOYMENT_LABEL: Record<string, string> = { gig: "긱", daily: "일일", short: "단기", long: "장기" }
-const EMPLOYMENT_COLOR: Record<string, string> = { gig: "#FF6E0D", daily: "#3B82F6", short: "#A855F7", long: "#22C55E" }
+const EMPLOYMENT_COLOR: Record<string, string> = { gig: "#FF6E0D", daily: "#FF6E0D", short: "#A855F7", long: "#22C55E" }
 
 // 강남구 미니맵 좌표 투영
 const BOUNDS = { minLat: 37.46, maxLat: 37.54, minLng: 126.99, maxLng: 127.12 }
@@ -172,7 +172,7 @@ export function DemoPlayer({ steps, totalEmployers, totalWorkers, totalDispatche
         </Panel>
 
         {/* 우 — 관리자 */}
-        <Panel title="관리자 (관제)" icon={<MapPin size={15} />} accent="#3B82F6">
+        <Panel title="관리자 (관제)" icon={<MapPin size={15} />} accent="#FF6E0D">
           <div className="text-xs text-slate-400 mb-2">실시간 매칭 {matchedSoFar.length}건</div>
           <div className="bg-[#0B0E15] rounded-xl border border-white/10 overflow-hidden">
             <svg viewBox={`0 0 ${MAP_W} ${MAP_H}`} className="w-full h-auto">
@@ -232,7 +232,7 @@ function Panel({ title, icon, accent, children }: { title: string; icon: React.R
 function MiniKpi({ label, value }: { label: string; value: number | string }) {
   return (
     <div className="bg-white/5 rounded-lg px-2 py-1.5 text-center">
-      <p className="text-base font-black text-[#3B82F6]">{value}</p>
+      <p className="text-base font-black text-[#FF6E0D]">{value}</p>
       <p className="text-[10px] text-slate-500">{label}</p>
     </div>
   )

@@ -89,7 +89,7 @@ export default function JobSearchPage() {
             <button
               onClick={() => setFilters(f => ({ ...f, category: "" }))}
               className={`px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap border ${
-                !filters.category ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-600"
+                !filters.category ? "bg-primary text-white border-primary" : "bg-white text-gray-600"
               }`}
             >
               전체
@@ -99,7 +99,7 @@ export default function JobSearchPage() {
                 key={cat}
                 onClick={() => setFilters(f => ({ ...f, category: f.category === cat ? "" : cat }))}
                 className={`px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap border ${
-                  filters.category === cat ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-600"
+                  filters.category === cat ? "bg-primary text-white border-primary" : "bg-white text-gray-600"
                 }`}
               >
                 {cat}
@@ -176,7 +176,7 @@ export default function JobSearchPage() {
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="bg-blue-50 text-blue-700 text-xs px-2 py-0.5 rounded-full font-medium">
+                        <span className="bg-primary/10 text-primary-dark text-xs px-2 py-0.5 rounded-full font-medium">
                           {job.category}
                         </span>
                         {job.distance && (
@@ -191,7 +191,7 @@ export default function JobSearchPage() {
                       <div className="text-sm text-gray-500">{job.company_name || job.employer_name}</div>
                     </div>
                     <div className="text-right ml-3">
-                      <div className="font-bold text-blue-600">{job.hourly_rate.toLocaleString()}원</div>
+                      <div className="font-bold text-primary">{job.hourly_rate.toLocaleString()}원</div>
                       <div className="text-xs text-gray-400">시급</div>
                     </div>
                   </div>
@@ -215,7 +215,7 @@ export default function JobSearchPage() {
         <Link href="/worker/home" className="flex-1 flex flex-col items-center py-3 text-gray-400">
           <span className="text-xl">🏠</span><span className="text-xs mt-0.5">홈</span>
         </Link>
-        <Link href="/worker/search" className="flex-1 flex flex-col items-center py-3 text-blue-600">
+        <Link href="/worker/search" className="flex-1 flex flex-col items-center py-3 text-primary">
           <span className="text-xl">🔍</span><span className="text-xs mt-0.5">찾기</span>
         </Link>
         <Link href="/worker/jobs" className="flex-1 flex flex-col items-center py-3 text-gray-400">

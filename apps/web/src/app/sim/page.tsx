@@ -76,7 +76,7 @@ export default async function SimHomePage() {
           <EntryCard
             href="/sim/service"
             icon={<Handshake size={24} />}
-            accent="#3B82F6"
+            accent="#FF6E0D"
             track="용역형"
             title="용역 의뢰 둘러보기"
             desc="개인 간 도급 — 심부름·청소·조립·짐옮기기"

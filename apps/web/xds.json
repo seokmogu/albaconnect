@@ -1,0 +1,13 @@
+{
+  "registry": "https://git.jobkorea.co.kr/api/v4/projects/design%2Fxds/repository/files/public%2Fr%2F{name}.json/raw?ref=master",
+  "headers": {
+    "PRIVATE-TOKEN": "${XDS_GITLAB_TOKEN}"
+  },
+  "dirs": {
+    "components": "src/xds/components",
+    "icons": "src/xds/icons",
+    "emojis": "src/xds/emojis",
+    "lib": "src/xds/lib",
+    "styles": "src/xds/styles"
+  }
+}

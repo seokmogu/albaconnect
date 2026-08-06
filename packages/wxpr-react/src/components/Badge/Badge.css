@@ -1,0 +1,49 @@
+.wxpr-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  border-radius: var(--radius-full);
+  font-family: var(--typography-label-small-font-family);
+  font-weight: var(--typography-label-small-font-weight);
+  white-space: nowrap;
+}
+
+.wxpr-badge--small {
+  padding: 2px 8px;
+  font-size: var(--typography-label-small-font-size);
+  line-height: var(--typography-label-small-line-height);
+}
+.wxpr-badge--medium {
+  padding: 4px 10px;
+  font-size: var(--typography-label-medium-font-size);
+  line-height: var(--typography-label-medium-line-height);
+}
+
+.wxpr-badge__icon {
+  flex-shrink: 0;
+}
+
+.wxpr-badge--neutral {
+  background: var(--color-surface-subtle);
+  color: var(--color-text-primary);
+}
+.wxpr-badge--brand {
+  background: var(--color-brand-accent-subtle);
+  color: var(--color-brand-accent);
+}
+.wxpr-badge--success {
+  background: var(--color-semantic-success-subtle);
+  color: var(--color-semantic-success);
+}
+.wxpr-badge--danger {
+  background: var(--color-semantic-danger-subtle);
+  color: var(--color-semantic-danger);
+}
+.wxpr-badge--warning {
+  background: var(--color-semantic-warning-subtle);
+  color: var(--color-semantic-warning);
+}
+.wxpr-badge--info {
+  background: var(--color-semantic-info-subtle);
+  color: var(--color-semantic-info);
+}

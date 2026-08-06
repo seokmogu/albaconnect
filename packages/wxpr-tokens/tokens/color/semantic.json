@@ -1,0 +1,18 @@
+{
+  "color": {
+    "semantic": {
+      "success":         { "value": "#10B981", "darkValue": "#34D399", "type": "color" },
+      "success-hover":   { "value": "#059669", "darkValue": "#10B981", "type": "color" },
+      "success-subtle":  { "value": "#D1FAE5", "darkValue": "#064E3B", "type": "color" },
+      "danger":          { "value": "#EF4444", "darkValue": "#F87171", "type": "color" },
+      "danger-hover":    { "value": "#DC2626", "darkValue": "#EF4444", "type": "color" },
+      "danger-subtle":   { "value": "#FEE2E2", "darkValue": "#7F1D1D", "type": "color" },
+      "warning":         { "value": "#F59E0B", "darkValue": "#FBBF24", "type": "color" },
+      "warning-hover":   { "value": "#D97706", "darkValue": "#F59E0B", "type": "color" },
+      "warning-subtle":  { "value": "#FEF3C7", "darkValue": "#78350F", "type": "color" },
+      "info":            { "value": "#3B82F6", "darkValue": "#60A5FA", "type": "color" },
+      "info-hover":      { "value": "#2563EB", "darkValue": "#3B82F6", "type": "color" },
+      "info-subtle":     { "value": "#DBEAFE", "darkValue": "#1E3A5F", "type": "color" }
+    }
+  }
+}

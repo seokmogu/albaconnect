@@ -119,7 +119,7 @@ export default async function WorkerListPage({
                     </span>
                     <span>신뢰도 {Math.round(w.completionRate * 100)}%</span>
                     {w.verified && (
-                      <span className="flex items-center gap-0.5 text-[#3B82F6]">
+                      <span className="flex items-center gap-0.5 text-[#FF6E0D]">
                         <CheckCircle size={10} />인증
                       </span>
                     )}

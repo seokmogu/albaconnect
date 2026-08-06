@@ -1,34 +1,37 @@
+@import "@wxpr/tokens/css";
+@import "@wxpr/react/styles";
+@import "../xds/styles/xds-tokens.css";
 @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* ── Design Tokens (Albamon JDS) ────────────────────────────── */
-:root {
-  /* Brand Colors — Albamon */
+/* ── Wxpr primitives themed for AlbaConnect ──────────────────── */
+:root:root {
+  /* AlbaConnect keeps the Albamon-style brand palette on top of Wxpr tokens. */
   --color-primary:         #FF6E0D;
   --color-primary-light:   #FF8A3D;
   --color-primary-dark:    #E55E00;
-  --color-secondary:       #1A1A1A;
-  --color-secondary-light: #333333;
-  --color-secondary-dark:  #000000;
-  --color-accent:          #22C55E;
+  --color-secondary:       #182432;
+  --color-secondary-light: #4E5968;
+  --color-secondary-dark:  #0A0F16;
+  --color-accent:          #10B981;
 
   /* Semantic Colors */
-  --color-success:  #22C55E;
+  --color-success:  #10B981;
   --color-warning:  #F59E0B;
-  --color-error:    #FF4D4D;
-  --color-info:     #3B82F6;
+  --color-error:    #EF4444;
+  --color-info:     #2F80ED;
 
-  /* Neutral / Surface — Albamon */
+  /* Neutral / Surface */
   --color-bg:              #FFFFFF;
-  --color-bg-dark:         #0B1220;
-  --color-surface:         #F5F6F8;
-  --color-surface-dark:    #111827;
-  --color-text-primary:    #1A1A1A;
-  --color-text-secondary:  #666666;
-  --color-border:          #EEEEEE;
+  --color-bg-dark:         #0A0F16;
+  --color-surface:         #F8F9FA;
+  --color-surface-dark:    #182432;
+  --color-text-primary:    #182432;
+  --color-text-secondary:  #4E5968;
+  --color-border:          #E5E8EB;
 
   /* Spacing (4px base) */
   --space-1:    4px;
@@ -55,6 +58,16 @@
   /* Typography */
   --font-sans: 'Pretendard Variable', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+
+  /* Wxpr action override for this product surface */
+  --color-brand-primary: #FF6E0D;
+  --color-brand-primary-hover: #E55E00;
+  --color-brand-primary-subtle: #FFF7ED;
+  --color-brand-accent: #FF6E0D;
+  --color-brand-accent-subtle: #FFF7ED;
+  --color-border-brand: #FF6E0D;
+  --color-border-focus: #FF6E0D;
+  --color-text-brand: #FF6E0D;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -87,7 +100,7 @@
 
   /* Global focus ring */
   :focus-visible {
-    outline: 2px solid #FF6E0D;
+    outline: 2px solid var(--color-border-focus);
     outline-offset: 2px;
   }
 
@@ -103,8 +116,8 @@
 @layer components {
   /* Legacy app component classes — kept for existing pages */
   .btn-primary {
-    @apply w-full bg-blue-600 text-white py-3 px-4 rounded-xl font-semibold text-base
-      hover:bg-blue-700 active:bg-blue-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply w-full bg-primary text-white py-3 px-4 rounded-xl font-semibold text-base
+      hover:bg-primary-dark active:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
   }
   .btn-secondary {
     @apply w-full border border-gray-300 text-gray-700 py-3 px-4 rounded-xl font-semibold text-base
@@ -112,7 +125,7 @@
   }
   .input-field {
     @apply w-full border border-gray-300 rounded-xl px-4 py-3 text-base
-      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+      focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent;
   }
   .card {
     @apply bg-white rounded-2xl shadow-sm p-4;

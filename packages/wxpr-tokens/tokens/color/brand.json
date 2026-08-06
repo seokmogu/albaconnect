@@ -1,0 +1,12 @@
+{
+  "color": {
+    "brand": {
+      "primary":        { "value": "#182432", "darkValue": "#FFFFFF", "type": "color" },
+      "primary-hover":  { "value": "#0F1620", "darkValue": "#F1F3F5", "type": "color" },
+      "primary-subtle": { "value": "#F1F3F5", "darkValue": "#1F2D3D", "type": "color" },
+      "accent":         { "value": "#3B82F6", "darkValue": "#60A5FA", "type": "color" },
+      "accent-hover":   { "value": "#2563EB", "darkValue": "#3B82F6", "type": "color" },
+      "accent-subtle":  { "value": "#EFF6FF", "darkValue": "#1E3A5F", "type": "color" }
+    }
+  }
+}

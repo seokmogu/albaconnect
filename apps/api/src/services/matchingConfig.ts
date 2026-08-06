@@ -1,0 +1,2 @@
+export const MATCH_CANDIDATE_POOL_LIMIT = 10_000
+export const MATCH_RESULT_LIMIT = 50

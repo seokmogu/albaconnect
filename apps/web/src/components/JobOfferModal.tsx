@@ -68,19 +68,19 @@ export default function JobOfferModal({ offer, onClose }: Props) {
             {/* Timer bar */}
             <div className="w-full h-2 bg-gray-200 rounded-full mb-5">
               <div
-                className={`h-2 rounded-full transition-all ${isUrgent ? "bg-red-500" : "bg-blue-500"}`}
+                className={`h-2 rounded-full transition-all ${isUrgent ? "bg-red-500" : "bg-primary/100"}`}
                 style={{ width: `${progress}%` }}
               />
             </div>
 
             <div className="flex items-center justify-between mb-4">
               <span className="text-sm text-gray-500">매칭 요청</span>
-              <span className={`text-2xl font-bold tabular-nums ${isUrgent ? "text-red-500" : "text-blue-600"}`}>
+              <span className={`text-2xl font-bold tabular-nums ${isUrgent ? "text-red-500" : "text-primary"}`}>
                 {timeLeft}초
               </span>
             </div>
 
-            <div className="bg-blue-50 rounded-2xl p-4 mb-5">
+            <div className="bg-primary/10 rounded-2xl p-4 mb-5">
               <h3 className="font-bold text-lg text-gray-900 mb-1">{offer.title}</h3>
               <div className="flex flex-wrap gap-2 text-sm text-gray-600">
                 <span className="bg-white px-2 py-0.5 rounded-full border">{offer.category}</span>
@@ -89,7 +89,7 @@ export default function JobOfferModal({ offer, onClose }: Props) {
               <div className="mt-3 grid grid-cols-2 gap-3">
                 <div className="bg-white rounded-xl p-3 text-center">
                   <div className="text-xs text-gray-500">시급</div>
-                  <div className="font-bold text-blue-600">{offer.hourlyRate.toLocaleString()}원</div>
+                  <div className="font-bold text-primary">{offer.hourlyRate.toLocaleString()}원</div>
                 </div>
                 <div className="bg-white rounded-xl p-3 text-center">
                   <div className="text-xs text-gray-500">근무 시간</div>
@@ -115,7 +115,7 @@ export default function JobOfferModal({ offer, onClose }: Props) {
               <button
                 onClick={handleAccept}
                 disabled={loading}
-                className="py-4 rounded-2xl bg-blue-600 text-white font-bold hover:bg-blue-700 transition-colors disabled:opacity-50"
+                className="py-4 rounded-2xl bg-primary text-white font-bold hover:bg-primary-dark transition-colors disabled:opacity-50"
               >
                 {loading ? "처리중..." : "수락 ✓"}
               </button>

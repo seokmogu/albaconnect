@@ -22,7 +22,7 @@ interface EmployerJob {
 
 const STATUS_LABELS: Record<string, { label: string; color: string; emoji: string }> = {
   open: { label: "모집중", color: "bg-green-100 text-green-700", emoji: "🟢" },
-  matched: { label: "매칭완료", color: "bg-blue-100 text-blue-700", emoji: "🔵" },
+  matched: { label: "매칭완료", color: "bg-primary/15 text-primary-dark", emoji: "🔵" },
   in_progress: { label: "진행중", color: "bg-yellow-100 text-yellow-700", emoji: "🟡" },
   completed: { label: "완료", color: "bg-gray-100 text-gray-600", emoji: "✅" },
   cancelled: { label: "취소됨", color: "bg-red-100 text-red-600", emoji: "❌" },
@@ -76,7 +76,7 @@ export default function EmployerDashboard() {
         <div className="grid grid-cols-3 gap-3">
           {[
             { label: "모집중", count: jobs.filter(j => j.status === "open").length, color: "text-green-600" },
-            { label: "매칭완료", count: jobs.filter(j => j.status === "matched").length, color: "text-blue-600" },
+            { label: "매칭완료", count: jobs.filter(j => j.status === "matched").length, color: "text-primary" },
             { label: "전체", count: jobs.length, color: "text-gray-700" },
           ].map(s => (
             <div key={s.label} className="card text-center">
@@ -140,7 +140,7 @@ export default function EmployerDashboard() {
 
       <Link
         href="/employer/jobs/new"
-        className="fixed bottom-6 right-6 w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center text-2xl hover:bg-blue-700 transition-colors"
+        className="fixed bottom-6 right-6 w-14 h-14 bg-primary text-white rounded-full shadow-lg flex items-center justify-center text-2xl hover:bg-primary-dark transition-colors"
       >
         +
       </Link>

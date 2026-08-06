@@ -9,7 +9,7 @@ import { ChevronLeft, Store, MapPin, Star, Tag, Banknote, Clock, Users, CheckCir
 
 const EMPLOYMENT_COLOR: Record<string, string> = {
   gig: "#FF6E0D",
-  daily: "#3B82F6",
+  daily: "#FF6E0D",
   short: "#A855F7",
   long: "#22C55E",
 }

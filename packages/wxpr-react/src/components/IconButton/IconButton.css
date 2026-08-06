@@ -1,0 +1,54 @@
+.wxpr-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: var(--radius-medium);
+  cursor: pointer;
+  padding: 0;
+  transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease, opacity 120ms ease;
+  outline: none;
+}
+
+.wxpr-icon-btn:focus-visible {
+  box-shadow: 0 0 0 2px var(--color-border-focus);
+}
+
+.wxpr-icon-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.wxpr-icon-btn--primary {
+  background: var(--color-brand-primary);
+  color: var(--color-text-inverse);
+}
+.wxpr-icon-btn--primary:hover:not(:disabled) {
+  background: var(--color-brand-primary-hover);
+}
+
+.wxpr-icon-btn--secondary {
+  background: var(--color-surface-default);
+  color: var(--color-text-primary);
+  border-color: var(--color-border-default);
+}
+.wxpr-icon-btn--secondary:hover:not(:disabled) {
+  background: var(--color-surface-subtle);
+}
+
+.wxpr-icon-btn--tertiary {
+  background: var(--color-brand-primary-subtle);
+  color: var(--color-text-primary);
+}
+.wxpr-icon-btn--tertiary:hover:not(:disabled) {
+  background: var(--color-surface-subtle);
+}
+
+.wxpr-icon-btn--ghost {
+  background: transparent;
+  color: var(--color-text-secondary);
+}
+.wxpr-icon-btn--ghost:hover:not(:disabled) {
+  background: var(--color-surface-subtle);
+  color: var(--color-text-primary);
+}

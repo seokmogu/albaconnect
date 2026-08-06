@@ -1,5 +1,6 @@
 import * as React from "react"
 import { clsx } from "clsx"
+import { Button as WxprButton, type ButtonProps as WxprButtonProps } from "@wxpr/react"
 
 export type ButtonVariant = "primary" | "secondary" | "ghost" | "link"
 export type ButtonSize = "sm" | "md" | "lg"
@@ -11,39 +12,33 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode
 }
 
-const variantClasses: Record<ButtonVariant, string> = {
-  primary: [
-    "bg-primary text-white font-semibold rounded-md",
-    "hover:bg-primary-dark",
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
-    "active:scale-[0.98] transition-transform",
-    "disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none",
-  ].join(" "),
-  secondary: [
-    "bg-white border-2 border-primary text-primary font-semibold rounded-md",
-    "hover:bg-primary/5",
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
-    "active:scale-[0.98] transition-transform",
-    "disabled:opacity-50 disabled:cursor-not-allowed",
-  ].join(" "),
-  ghost: [
-    "bg-transparent text-secondary-light font-medium rounded-md",
-    "hover:bg-secondary/5 hover:text-secondary",
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2",
-    "disabled:opacity-40 disabled:cursor-not-allowed",
-    "transition-colors",
-  ].join(" "),
-  link: [
-    "text-primary font-medium underline underline-offset-4 bg-transparent",
-    "hover:text-primary-dark",
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm",
-  ].join(" "),
+const variantMap: Record<ButtonVariant, WxprButtonProps["variant"]> = {
+  primary: "primary",
+  secondary: "secondary",
+  ghost: "secondary",
+  link: "ghost",
 }
 
-const sizeClasses: Record<ButtonSize, string> = {
-  sm: "h-9 px-4 text-sm",
-  md: "h-11 px-6 text-base min-w-[120px]",
-  lg: "h-[52px] px-8 text-lg min-w-[160px]",
+const sizeMap: Record<ButtonSize, WxprButtonProps["size"]> = {
+  sm: "small",
+  md: "medium",
+  lg: "large",
+}
+
+const layoutClassPatterns = [
+  /^(sm:|md:|lg:|xl:)?(w|min-w|max-w)-/,
+  /^(sm:|md:|lg:|xl:)?(m|mt|mr|mb|ml|mx|my)-/,
+  /^(sm:|md:|lg:|xl:)?(self|shrink|grow|basis)-/,
+  /^(sm:|md:|lg:|xl:)?(hidden|block|inline-block|inline-flex|flex)$/,
+]
+
+function keepLayoutClasses(className?: string) {
+  if (!className) return undefined
+  const kept = className
+    .split(/\s+/)
+    .filter((token) => layoutClassPatterns.some((pattern) => pattern.test(token)))
+    .join(" ")
+  return kept || undefined
 }
 
 export function Button({
@@ -58,36 +53,15 @@ export function Button({
   const isDisabled = disabled ?? loading
 
   return (
-    <button
-      className={clsx(
-        "inline-flex items-center justify-center gap-2 transition-colors",
-        variantClasses[variant],
-        sizeClasses[size],
-        className,
-      )}
+    <WxprButton
+      className={clsx(variant === "link" && "underline underline-offset-4", keepLayoutClasses(className))}
       disabled={isDisabled}
-      aria-busy={loading ? "true" : undefined}
+      loading={loading}
+      size={sizeMap[size]}
+      variant={variantMap[variant]}
       {...props}
     >
-      {loading ? (
-        <>
-          <svg
-            className="animate-spin"
-            width={16}
-            height={16}
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2}
-            aria-hidden="true"
-          >
-            <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-          </svg>
-          신청 중...
-        </>
-      ) : (
-        children
-      )}
-    </button>
+      {loading ? "신청 중..." : children}
+    </WxprButton>
   )
 }

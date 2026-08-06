@@ -1,0 +1,11 @@
+{
+  "color": {
+    "surface": {
+      "default": { "value": "#FFFFFF", "darkValue": "#182432", "type": "color" },
+      "subtle":  { "value": "#F8F9FA", "darkValue": "#0F1620", "type": "color" },
+      "raised":  { "value": "#FFFFFF", "darkValue": "#1F2D3D", "type": "color" },
+      "overlay": { "value": "#FFFFFF", "darkValue": "#2A3A4D", "type": "color" },
+      "inverse": { "value": "#182432", "darkValue": "#FFFFFF", "type": "color" }
+    }
+  }
+}

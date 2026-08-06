@@ -192,7 +192,7 @@ export default function WorkerHomePage() {
               <div className="text-right">
                 <div className="text-lg font-bold text-green-700">{earnings.total_earned.toLocaleString()}원</div>
                 {earnings.pending_payout > 0 && (
-                  <div className="text-xs text-orange-500">대기 중: {earnings.pending_payout.toLocaleString()}원</div>
+                  <div className="text-xs text-primary">대기 중: {earnings.pending_payout.toLocaleString()}원</div>
                 )}
               </div>
             </div>
@@ -201,15 +201,15 @@ export default function WorkerHomePage() {
 
         {/* Push Notification Permission Banner */}
         {pushPermission === "default" && (
-          <div className="card bg-amber-50 border border-amber-200 p-4 flex items-center justify-between gap-3">
+          <div className="card bg-primary/10 border border-primary/20 p-4 flex items-center justify-between gap-3">
             <div>
-              <div className="font-semibold text-amber-800 text-sm">🔔 알림 설정</div>
-              <div className="text-xs text-amber-700 mt-0.5">앱 종료 상태에서도 새 알바 제안 알림을 받으세요.</div>
+              <div className="font-semibold text-primary-dark text-sm">🔔 알림 설정</div>
+              <div className="text-xs text-primary-dark mt-0.5">앱 종료 상태에서도 새 알바 제안 알림을 받으세요.</div>
             </div>
             <button
               onClick={handleEnablePush}
               disabled={pushLoading}
-              className="btn-primary text-sm px-4 py-2 whitespace-nowrap bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-semibold disabled:opacity-50"
+              className="btn-primary text-sm px-4 py-2 whitespace-nowrap rounded-lg disabled:opacity-50"
             >
               {pushLoading ? "처리 중..." : "알림 허용"}
             </button>
@@ -222,12 +222,12 @@ export default function WorkerHomePage() {
         )}
 
         {/* Availability Toggle */}
-        <div className={`card p-6 text-center transition-all ${isAvailable ? "bg-blue-600 text-white" : "bg-white"}`}>
+        <div className={`card p-6 text-center transition-all ${isAvailable ? "bg-primary text-white" : "bg-white"}`}>
           <div className="text-5xl mb-3">{isAvailable ? "🟢" : "⚪"}</div>
           <div className="text-xl font-bold mb-1">
             {isAvailable ? "매칭 대기 중" : "오프라인"}
           </div>
-          <div className={`text-sm mb-5 ${isAvailable ? "text-blue-100" : "text-gray-500"}`}>
+          <div className={`text-sm mb-5 ${isAvailable ? "text-white/80" : "text-gray-500"}`}>
             {isAvailable
               ? "주변 알바 요청을 받는 중입니다"
               : "ON을 누르면 주변 알바를 매칭받습니다"}
@@ -237,8 +237,8 @@ export default function WorkerHomePage() {
             disabled={loading}
             className={`px-10 py-4 rounded-full text-lg font-bold transition-all ${
               isAvailable
-                ? "bg-white text-blue-600 hover:bg-blue-50"
-                : "bg-blue-600 text-white hover:bg-blue-700"
+                ? "bg-white text-primary hover:bg-primary/10"
+                : "bg-primary text-white hover:bg-primary-dark"
             } disabled:opacity-50`}
           >
             {loading ? "처리중..." : isAvailable ? "OFF" : "ON"}
@@ -271,9 +271,9 @@ export default function WorkerHomePage() {
               <div className="text-sm font-medium">내 알바</div>
             </Link>
             <Link href="/worker/search"
-              className="bg-blue-50 rounded-xl p-4 text-center hover:bg-blue-100 transition-colors">
+              className="bg-primary/10 rounded-xl p-4 text-center hover:bg-primary/15 transition-colors">
               <div className="text-2xl mb-1">🔍</div>
-              <div className="text-sm font-medium text-blue-700">알바 찾기</div>
+              <div className="text-sm font-medium text-primary-dark">알바 찾기</div>
             </Link>
             <Link href="/worker/profile"
               className="bg-gray-50 rounded-xl p-4 text-center hover:bg-gray-100 transition-colors">
@@ -288,7 +288,7 @@ export default function WorkerHomePage() {
           <div className="card">
             <div className="flex items-center justify-between mb-3">
               <h3 className="font-bold text-gray-700">✨ 추천 공고</h3>
-              <Link href="/worker/search" className="text-xs text-blue-500 font-medium">전체 보기</Link>
+              <Link href="/worker/search" className="text-xs text-primary font-medium">전체 보기</Link>
             </div>
             <div className="space-y-3">
               {recommendedJobs.map(job => {
@@ -299,7 +299,7 @@ export default function WorkerHomePage() {
                     <div className="flex items-start justify-between">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded-full font-medium">
+                          <span className="bg-primary/15 text-primary-dark text-xs px-2 py-0.5 rounded-full font-medium">
                             {job.category}
                           </span>
                           {job.distance !== null && (
@@ -316,7 +316,7 @@ export default function WorkerHomePage() {
                         </div>
                       </div>
                       <div className="ml-3 text-right flex-shrink-0">
-                        <div className="font-bold text-blue-600 text-sm">{job.hourly_rate.toLocaleString()}원</div>
+                        <div className="font-bold text-primary text-sm">{job.hourly_rate.toLocaleString()}원</div>
                         <div className="text-xs text-gray-400">시급</div>
                       </div>
                     </div>
@@ -339,7 +339,7 @@ export default function WorkerHomePage() {
                 { n: "4", t: "일 완료 후 정산", d: "플랫폼이 임금을 안전하게 지급합니다" },
               ].map(step => (
                 <div key={step.n} className="flex items-start gap-3">
-                  <div className="w-7 h-7 rounded-full bg-blue-100 text-blue-600 font-bold text-sm flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <div className="w-7 h-7 rounded-full bg-primary/15 text-primary font-bold text-sm flex items-center justify-center flex-shrink-0 mt-0.5">
                     {step.n}
                   </div>
                   <div>
@@ -355,7 +355,7 @@ export default function WorkerHomePage() {
 
       {/* Bottom Nav */}
       <nav className="fixed bottom-0 inset-x-0 max-w-md mx-auto bg-white border-t flex">
-        <Link href="/worker/home" className="flex-1 flex flex-col items-center py-3 text-blue-600">
+        <Link href="/worker/home" className="flex-1 flex flex-col items-center py-3 text-primary">
           <span className="text-xl">🏠</span>
           <span className="text-xs mt-0.5">홈</span>
         </Link>

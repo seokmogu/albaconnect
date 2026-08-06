@@ -8,6 +8,7 @@ import { LATE_CANCEL_PENALTY_RATE, PLATFORM_FEE_RATE } from "@albaconnect/shared
 import { validateTransition, getValidTransitions } from "../services/jobLifecycle"
 import type { JobStatus, ActorRole } from "../services/jobLifecycle"
 import { workerSockets } from "../services/matching"
+import { previewJobMatches } from "../services/matchingPreview"
 
 const createJobSchema = z.object({
   title: z.string().min(1).max(200),
@@ -220,7 +221,8 @@ export async function jobRoutes(app: FastifyInstance) {
         FROM job_postings jp
         JOIN users u ON u.id = jp.employer_id
         LEFT JOIN employer_profiles ep ON ep.user_id = jp.employer_id
-        WHERE jp.status = ${status}
+        WHERE 1 = 1
+        ${status !== "all" ? sql`AND jp.status = ${status}` : sql``}
         ${category ? sql`AND jp.category = ${category}` : sql``}
         ${min_hourly_rate ? sql`AND jp.hourly_rate >= ${Number(min_hourly_rate)}` : sql``}
         ${start_date ? sql`AND jp.start_at::date = ${start_date}::date` : sql``}
@@ -250,7 +252,8 @@ export async function jobRoutes(app: FastifyInstance) {
         FROM job_postings jp
         JOIN users u ON u.id = jp.employer_id
         LEFT JOIN employer_profiles ep ON ep.user_id = jp.employer_id
-        WHERE jp.status = ${status}
+        WHERE 1 = 1
+        ${status !== "all" ? sql`AND jp.status = ${status}` : sql``}
         ${category ? sql`AND jp.category = ${category}` : sql``}
         ${min_hourly_rate ? sql`AND jp.hourly_rate >= ${Number(min_hourly_rate)}` : sql``}
         ${start_date ? sql`AND jp.start_at::date = ${start_date}::date` : sql``}
@@ -459,6 +462,32 @@ export async function jobRoutes(app: FastifyInstance) {
       penaltiesApplied: penaltyRecords.length,
       totalPenalty: penaltyRecords.reduce((s, p) => s + p.amount, 0),
     })
+  })
+
+  // GET /jobs/:id/match-preview — read-only, PII-minimized matching quality preview
+  app.get("/jobs/:id/match-preview", { preHandler: [requireEmployer] }, async (request, reply) => {
+    const { id } = request.params as { id: string }
+    const query = z.object({
+      limit: z.coerce.number().int().min(1).max(20).default(5),
+    }).safeParse(request.query)
+
+    if (!query.success) {
+      return reply.status(400).send({ error: { code: "VALIDATION_ERROR", message: "limit must be between 1 and 20" } })
+    }
+
+    const [job] = await db
+      .select({ id: jobPostings.id, employerId: jobPostings.employerId })
+      .from(jobPostings)
+      .where(eq(jobPostings.id, id))
+      .limit(1)
+
+    if (!job) return reply.status(404).send({ error: { code: "NOT_FOUND", message: "Job not found" } })
+    if (job.employerId !== request.user.id) {
+      return reply.status(403).send({ error: { code: "FORBIDDEN", message: "Not your job" } })
+    }
+
+    const preview = await previewJobMatches(id, query.data.limit)
+    return reply.send(preview)
   })
 
   // POST /jobs/:id/dispatch — manually trigger dispatch for an open job

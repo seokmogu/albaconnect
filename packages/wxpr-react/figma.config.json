@@ -1,0 +1,26 @@
+{
+  "codeConnect": {
+    "parser": "react",
+    "include": [
+      "src/components/**/*.figma.tsx",
+      "src/components/**/*.tsx"
+    ],
+    "exclude": [
+      "**/node_modules/**",
+      "**/dist/**",
+      "**/*.stories.tsx"
+    ],
+    "documentUrlSubstitutions": {},
+    "importPaths": {
+      "src/components/Button/Button.tsx": "@wxpr/react",
+      "src/components/IconButton/IconButton.tsx": "@wxpr/react",
+      "src/components/Input/Input.tsx": "@wxpr/react",
+      "src/components/Card/Card.tsx": "@wxpr/react",
+      "src/components/Badge/Badge.tsx": "@wxpr/react",
+      "src/components/Tab/Tab.tsx": "@wxpr/react",
+      "src/components/Modal/Modal.tsx": "@wxpr/react",
+      "src/components/Toast/Toast.tsx": "@wxpr/react",
+      "src/components/Dropdown/Dropdown.tsx": "@wxpr/react"
+    }
+  }
+}

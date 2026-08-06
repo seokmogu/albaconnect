@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "items": {
+    "badge": {
+      "version": "1.0.1",
+      "ref": "registry-v13",
+      "hashes": {
+        "components/Badge/Badge.tsx": "sha256-05ad5fa42df14d6edd59cd6780998c7cdad315171c2e6c413377a9c7f55e0625"
+      }
+    },
+    "button": {
+      "version": "1.0.0",
+      "ref": "registry-v13",
+      "hashes": {
+        "components/Button/Button.tsx": "sha256-451d687e22bf48b322561c05a705d15760bb66d26cbf4a7faad00ab1f1162afc"
+      }
+    },
+    "icon-arrow-left": {
+      "version": "1.0.0",
+      "ref": "registry-v13",
+      "hashes": {
+        "icons/IconArrowLeft.tsx": "sha256-be6abed196741c1bbc6cf9b8cc70750e999289e3be09c9efb39ae47de429a785"
+      }
+    },
+    "icon-calendar": {
+      "version": "1.0.0",
+      "ref": "registry-v13",
+      "hashes": {
+        "icons/IconCalendar.tsx": "sha256-5812a28d445af01f9d449b93d5976f048c810b59cd3c593794d4a566cfbc31aa"
+      }
+    },
+    "icon-clock-line": {
+      "version": "1.0.0",
+      "ref": "registry-v13",
+      "hashes": {
+        "icons/IconClockLine.tsx": "sha256-f0e8aaa537ec92afe1332fd00c170feefc00cf1ca49809cb17ebadad4016c39b"
+      }
+    },
+    "icon-info": {
+      "version": "1.0.0",
+      "ref": "registry-v13",
+      "hashes": {
+        "icons/IconInfo.tsx": "sha256-d4b765b073921f5890133a5041129f0984287c5db550589590714ea58f26cac6"
+      }
+    },
+    "icon-pin-fill": {
+      "version": "1.0.0",
+      "ref": "registry-v13",
+      "hashes": {
+        "icons/IconPinFill.tsx": "sha256-15a1f14a6784cdb3897a51250635d7baa051035675cd0d250d47a5daf065578b"
+      }
+    },
+    "icon-won-line": {
+      "version": "1.0.0",
+      "ref": "registry-v13",
+      "hashes": {
+        "icons/IconWonLine.tsx": "sha256-86de2c25f174c0663a2d79865e431d104a616e641e7c57d458d7737033ab0c1b"
+      }
+    },
+    "info-banner": {
+      "version": "1.0.1",
+      "ref": "registry-v13",
+      "hashes": {
+        "components/InfoBanner/InfoBanner.tsx": "sha256-83fa47526c038b64fd7b98dec109d4874f124cd7eacc84f2024627d94e05a4bc"
+      }
+    },
+    "setup": {
+      "version": "1.1.1",
+      "ref": "registry-v13",
+      "hashes": {
+        "styles/xds-tokens.css": "sha256-9d29b838093d8a40a02e3a25d2551785ab2c0ff0765f367972ce2347307da36a",
+        "styles/xds.preset.cjs": "sha256-adc5014266412ab60e314b9ef7abc8d8796964962b537ccbf08e38237fdc50c4"
+      }
+    },
+    "theme-provider": {
+      "version": "1.0.0",
+      "ref": "registry-v13",
+      "hashes": {
+        "components/ThemeProvider/ThemeProvider.tsx": "sha256-b51778f72e54fd8d52b0c13cf344f5b6ac0cb6cf7a321bca32072a97fad33677"
+      }
+    },
+    "utils": {
+      "version": "1.0.0",
+      "ref": "registry-v13",
+      "hashes": {
+        "lib/utils.ts": "sha256-c6063da035db5e4f3f5e183cd9aaecc50577af54fd7f612b1ce7febb80d79e65"
+      }
+    }
+  }
+}

@@ -73,16 +73,16 @@ export default async function JobDetailPage({
       />
       <main className="min-h-screen bg-gray-50">
         {/* Header */}
-        <div className="bg-gradient-to-br from-blue-600 to-blue-700 text-white px-6 py-8">
+        <div className="bg-gradient-to-br from-primary to-primary-dark text-white px-6 py-8">
           <div className="max-w-2xl mx-auto">
-            <Link href="/jobs" className="text-blue-200 text-sm mb-4 block hover:text-white">
+            <Link href="/jobs" className="text-white/70 text-sm mb-4 block hover:text-white">
               ← 구인게시판으로
             </Link>
             <span className="text-xs font-semibold bg-white/20 px-2.5 py-1 rounded-full">
               {job.category}
             </span>
             <h1 className="text-xl font-bold mt-3 mb-1">{job.title}</h1>
-            <p className="text-blue-100 text-sm">{job.company_name}</p>
+            <p className="text-white/80 text-sm">{job.company_name}</p>
           </div>
         </div>
 
@@ -92,7 +92,7 @@ export default async function JobDetailPage({
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <span className="text-2xl font-bold text-blue-600">
+                <span className="text-2xl font-bold text-primary">
                   {job.hourly_rate.toLocaleString()}원
                 </span>
                 <span className="text-sm text-gray-400 ml-1">/시간</span>
@@ -141,7 +141,7 @@ export default async function JobDetailPage({
           <div className="pt-2 pb-8">
             <Link
               href={`/login?redirect=${redirectUrl}`}
-              className="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 rounded-2xl transition-colors text-base shadow-md"
+              className="block w-full text-center bg-primary hover:bg-primary-dark text-white font-semibold py-4 rounded-2xl transition-colors text-base shadow-md"
             >
               지원하기 →
             </Link>

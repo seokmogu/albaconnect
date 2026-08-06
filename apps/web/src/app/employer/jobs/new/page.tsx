@@ -113,7 +113,7 @@ export default function NewJobPage() {
                 <button key={cat} type="button"
                   onClick={() => setForm(f => ({ ...f, category: cat }))}
                   className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
-                    form.category === cat ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-600 border-gray-300"
+                    form.category === cat ? "bg-primary text-white border-primary" : "bg-white text-gray-600 border-gray-300"
                   }`}
                 >
                   {cat}
@@ -146,15 +146,15 @@ export default function NewJobPage() {
 
           {/* Payment summary */}
           {durationHours > 0 && totalAmount > 0 && (
-            <div className="bg-blue-50 rounded-xl p-4">
-              <div className="text-sm text-blue-700 space-y-1">
+            <div className="bg-primary/10 rounded-xl p-4">
+              <div className="text-sm text-primary-dark space-y-1">
                 <div className="flex justify-between"><span>근무 시간</span><span>{durationHours}시간</span></div>
                 <div className="flex justify-between"><span>1인 임금</span><span>{Math.round(Number(form.hourlyRate) * durationHours).toLocaleString()}원</span></div>
-                <div className="flex justify-between font-bold border-t border-blue-200 pt-1 mt-1">
+                <div className="flex justify-between font-bold border-t border-primary/20 pt-1 mt-1">
                   <span>총 예치금 ({form.headcount}명)</span>
                   <span>{totalAmount.toLocaleString()}원</span>
                 </div>
-                <div className="text-xs text-blue-500">* 플랫폼 수수료 10% 별도</div>
+                <div className="text-xs text-primary">* 플랫폼 수수료 10% 별도</div>
               </div>
             </div>
           )}

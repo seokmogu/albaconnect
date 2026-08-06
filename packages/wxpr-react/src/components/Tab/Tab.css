@@ -1,0 +1,45 @@
+.wxpr-tab-group {
+  display: inline-flex;
+  gap: var(--spacing-5);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.wxpr-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-4) var(--spacing-2);
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  font-family: var(--typography-label-medium-font-family);
+  font-size: var(--typography-label-medium-font-size);
+  line-height: var(--typography-label-medium-line-height);
+  font-weight: var(--typography-label-medium-font-weight);
+  margin-bottom: -1px;
+  transition: color 120ms ease, border-color 120ms ease;
+}
+
+.wxpr-tab:hover:not([disabled]) {
+  color: var(--color-text-primary);
+}
+
+.wxpr-tab:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-x-small);
+}
+
+.wxpr-tab--active {
+  color: var(--color-text-primary);
+  border-bottom-color: var(--color-brand-primary);
+}
+
+.wxpr-tab[disabled] {
+  color: var(--color-text-disabled);
+  cursor: not-allowed;
+}
+
+.wxpr-tab__icon { flex-shrink: 0; }

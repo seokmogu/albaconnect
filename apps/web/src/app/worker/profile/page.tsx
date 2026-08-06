@@ -52,7 +52,7 @@ export default function WorkerProfilePage() {
     <div className="min-h-screen bg-gray-50 pb-20">
       <div className="bg-white px-4 py-4 shadow-sm sticky top-0 z-10 flex items-center justify-between">
         <h1 className="font-bold text-xl">내 프로필</h1>
-        <button onClick={() => setEditing(!editing)} className="text-blue-600 font-medium text-sm">
+        <button onClick={() => setEditing(!editing)} className="text-primary font-medium text-sm">
           {editing ? "취소" : "수정"}
         </button>
       </div>
@@ -60,7 +60,7 @@ export default function WorkerProfilePage() {
       <div className="px-4 py-6 space-y-4">
         {/* Profile Card */}
         <div className="card text-center">
-          <div className="w-20 h-20 rounded-full bg-blue-100 flex items-center justify-center text-3xl mx-auto mb-3">
+          <div className="w-20 h-20 rounded-full bg-primary/15 flex items-center justify-center text-3xl mx-auto mb-3">
             👤
           </div>
           <div className="font-bold text-xl">{user?.name}</div>
@@ -83,7 +83,7 @@ export default function WorkerProfilePage() {
                   onClick={() => toggleCategory(cat)}
                   className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
                     form.categories.includes(cat)
-                      ? "bg-blue-600 text-white border-blue-600"
+                      ? "bg-primary text-white border-primary"
                       : "bg-white text-gray-600 border-gray-300"
                   }`}
                 >
@@ -94,7 +94,7 @@ export default function WorkerProfilePage() {
           ) : (
             <div className="flex flex-wrap gap-2">
               {(profile.categories ?? []).map((cat: string) => (
-                <span key={cat} className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">{cat}</span>
+                <span key={cat} className="bg-primary/10 text-primary-dark px-3 py-1 rounded-full text-sm font-medium">{cat}</span>
               ))}
               {(profile.categories ?? []).length === 0 && (
                 <span className="text-gray-400 text-sm">선택된 직종 없음</span>
@@ -135,7 +135,7 @@ export default function WorkerProfilePage() {
         <Link href="/worker/jobs" className="flex-1 flex flex-col items-center py-3 text-gray-400">
           <span className="text-xl">📋</span><span className="text-xs mt-0.5">알바</span>
         </Link>
-        <Link href="/worker/profile" className="flex-1 flex flex-col items-center py-3 text-blue-600">
+        <Link href="/worker/profile" className="flex-1 flex flex-col items-center py-3 text-primary">
           <span className="text-xl">👤</span><span className="text-xs mt-0.5">프로필</span>
         </Link>
       </nav>

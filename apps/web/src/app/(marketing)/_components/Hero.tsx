@@ -21,7 +21,7 @@ function MatchingDemoStatic() {
       {/* Worker pins */}
       <div className="flex items-center gap-3 px-1">
         {[
-          { color: "#FF6B00", label: "W1", matched: true },
+          { color: "#FF6E0D", label: "W1", matched: true },
           { color: "#334155", label: "W2", matched: false },
           { color: "#334155", label: "W3", matched: false },
         ].map((w) => (
@@ -146,7 +146,7 @@ function MatchingDemoAnimated() {
               {/* Worker pins */}
               <div className="flex gap-2">
                 {[
-                  { color: "#FF6B00", delay: 0.0 },
+                  { color: "#FF6E0D", delay: 0.0 },
                   { color: "#334155", delay: 0.1 },
                   { color: "#334155", delay: 0.2 },
                 ].map((w, idx) => (

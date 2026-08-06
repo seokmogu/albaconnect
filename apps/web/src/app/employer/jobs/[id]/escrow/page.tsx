@@ -67,8 +67,8 @@ export default function EscrowPage() {
         </div>
       </div>
 
-      <div className="card mb-6 bg-blue-50 border border-blue-100">
-        <div className="text-sm text-blue-700 space-y-1">
+      <div className="card mb-6 bg-primary/10 border border-primary/20">
+        <div className="text-sm text-primary-dark space-y-1">
           <div className="font-semibold mb-2">💡 예치금 보호 정책</div>
           <div>• 예치금은 플랫폼이 안전하게 보관합니다</div>
           <div>• 근무 완료 확인 후 구직자에게 지급됩니다</div>

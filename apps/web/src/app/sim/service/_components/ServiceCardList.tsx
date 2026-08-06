@@ -174,10 +174,10 @@ function ServiceAgreementModal({ req, onClose }: { req: ServiceRequest; onClose:
         ) : (
           <div className="px-5 py-4 space-y-4">
             {/* 계약 성격 — 도급, 근로계약 아님 */}
-            <section className="bg-[#F0F9FF] border border-blue-200 rounded-xl p-4">
+            <section className="bg-[#FFF7ED] border border-primary/20 rounded-xl p-4">
               <div className="flex items-start gap-2">
-                <Scale size={13} className="text-blue-500 shrink-0 mt-0.5" />
-                <p className="text-xs text-blue-700 leading-relaxed">
+                <Scale size={13} className="text-primary shrink-0 mt-0.5" />
+                <p className="text-xs text-primary-dark leading-relaxed">
                   본 합의서는 <span className="font-bold">민법상 도급계약</span>입니다. 일의 완성을
                   목적으로 하며 <span className="font-bold">근로계약이 아닙니다</span>. 근로기준법·
                   최저임금법·4대보험은 적용되지 않으며, 의뢰자·수행자는 모두 개인입니다.

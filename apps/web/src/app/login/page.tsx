@@ -83,13 +83,13 @@ export default function LoginPage() {
         <p className="text-gray-500 mt-1">로그인</p>
       </div>
 
-      <Suspense fallback={<div className="space-y-4 animate-pulse"><div className="h-12 bg-gray-100 rounded-xl" /><div className="h-12 bg-gray-100 rounded-xl" /><div className="h-12 bg-blue-100 rounded-xl" /></div>}>
+      <Suspense fallback={<div className="space-y-4 animate-pulse"><div className="h-12 bg-gray-100 rounded-xl" /><div className="h-12 bg-gray-100 rounded-xl" /><div className="h-12 bg-primary/15 rounded-xl" /></div>}>
         <LoginForm />
       </Suspense>
 
       <p className="text-center text-sm text-gray-500 mt-6">
         계정이 없으신가요?{" "}
-        <Link href="/signup" className="text-blue-600 font-medium">회원가입</Link>
+        <Link href="/signup" className="text-primary font-medium">회원가입</Link>
       </p>
     </div>
   )

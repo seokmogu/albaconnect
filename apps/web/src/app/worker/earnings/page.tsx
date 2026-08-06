@@ -36,10 +36,10 @@ export default function WorkerEarningsPage() {
 
       <div className="px-4 py-6 space-y-4">
         {/* Summary card */}
-        <div className="bg-blue-600 text-white rounded-2xl p-5">
-          <div className="text-sm text-blue-200 mb-1">총 수입 ({earnings.length}건)</div>
+        <div className="bg-primary text-white rounded-2xl p-5">
+          <div className="text-sm text-white/70 mb-1">총 수입 ({earnings.length}건)</div>
           <div className="text-3xl font-bold mb-3">{netEarned.toLocaleString()}원</div>
-          <div className="flex gap-4 text-sm text-blue-200">
+          <div className="flex gap-4 text-sm text-white/70">
             <span>총 임금: {totalEarned.toLocaleString()}원</span>
             <span>수수료: -{platformFee.toLocaleString()}원</span>
           </div>
@@ -85,7 +85,7 @@ export default function WorkerEarningsPage() {
         <Link href="/worker/jobs" className="flex-1 flex flex-col items-center py-3 text-gray-400">
           <span className="text-xl">📋</span><span className="text-xs mt-0.5">알바</span>
         </Link>
-        <Link href="/worker/earnings" className="flex-1 flex flex-col items-center py-3 text-blue-600">
+        <Link href="/worker/earnings" className="flex-1 flex flex-col items-center py-3 text-primary">
           <span className="text-xl">💰</span><span className="text-xs mt-0.5">수입</span>
         </Link>
       </nav>

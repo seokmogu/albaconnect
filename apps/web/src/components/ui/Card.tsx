@@ -1,5 +1,6 @@
 import * as React from "react"
 import { clsx } from "clsx"
+import { Card as WxprCard, type CardProps as WxprCardProps } from "@wxpr/react"
 
 export type CardVariant = "default" | "elevated" | "dark-surface"
 
@@ -9,10 +10,14 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode
 }
 
-const variantClasses: Record<CardVariant, string> = {
-  default: "bg-white border border-[#E2E8F0] rounded-xl p-6 shadow-card",
-  elevated: "bg-white rounded-xl p-6 shadow-hover",
-  "dark-surface": "bg-white/5 border border-white/10 rounded-xl p-6",
+const variantMap: Record<CardVariant, WxprCardProps["variant"]> = {
+  default: "outlined",
+  elevated: "raised",
+  "dark-surface": "default",
+}
+
+const variantClasses: Partial<Record<CardVariant, string>> = {
+  "dark-surface": "bg-white/5 border border-white/10 text-white",
 }
 
 const interactiveClasses: Record<CardVariant, string> = {
@@ -23,11 +28,13 @@ const interactiveClasses: Record<CardVariant, string> = {
 
 export function Card({ variant = "default", interactive = false, className, children, ...props }: CardProps) {
   return (
-    <div
+    <WxprCard
       className={clsx(variantClasses[variant], interactive && interactiveClasses[variant], className)}
+      padding="large"
+      variant={variantMap[variant]}
       {...props}
     >
       {children}
-    </div>
+    </WxprCard>
   )
 }

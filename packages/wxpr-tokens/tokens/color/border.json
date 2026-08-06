@@ -1,0 +1,11 @@
+{
+  "color": {
+    "border": {
+      "default": { "value": "#E5E8EB", "darkValue": "#2A3A4D", "type": "color" },
+      "subtle":  { "value": "#F1F3F5", "darkValue": "#1F2D3D", "type": "color" },
+      "strong":  { "value": "#A0A8B4", "darkValue": "#4A5568", "type": "color" },
+      "brand":   { "value": "#3B82F6", "darkValue": "#60A5FA", "type": "color" },
+      "focus":   { "value": "#3B82F6", "darkValue": "#60A5FA", "type": "color" }
+    }
+  }
+}

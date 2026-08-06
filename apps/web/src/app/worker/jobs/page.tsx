@@ -15,7 +15,7 @@ interface WorkerApplication {
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
   offered: { label: "수락 대기", color: "bg-yellow-100 text-yellow-700" },
-  accepted: { label: "확정", color: "bg-blue-100 text-blue-700" },
+  accepted: { label: "확정", color: "bg-primary/15 text-primary-dark" },
   completed: { label: "완료", color: "bg-green-100 text-green-700" },
   rejected: { label: "거절", color: "bg-gray-100 text-gray-500" },
   timeout: { label: "시간초과", color: "bg-gray-100 text-gray-500" },
@@ -55,7 +55,7 @@ export default function WorkerJobsPage() {
             key={f.key}
             onClick={() => setFilter(f.key)}
             className={`px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-              filter === f.key ? "bg-blue-600 text-white" : "bg-white text-gray-600 border"
+              filter === f.key ? "bg-primary text-white" : "bg-white text-gray-600 border"
             }`}
           >
             {f.label}
@@ -70,7 +70,7 @@ export default function WorkerJobsPage() {
           <div className="text-center py-12">
             <div className="text-4xl mb-3">📋</div>
             <div className="text-gray-500">알바 내역이 없습니다</div>
-            <Link href="/worker/home" className="text-blue-600 text-sm mt-2 block">홈에서 매칭받기</Link>
+            <Link href="/worker/home" className="text-primary text-sm mt-2 block">홈에서 매칭받기</Link>
           </div>
         ) : (
           filtered.map((app) => {
@@ -109,7 +109,7 @@ export default function WorkerJobsPage() {
         <Link href="/worker/home" className="flex-1 flex flex-col items-center py-3 text-gray-400">
           <span className="text-xl">🏠</span><span className="text-xs mt-0.5">홈</span>
         </Link>
-        <Link href="/worker/jobs" className="flex-1 flex flex-col items-center py-3 text-blue-600">
+        <Link href="/worker/jobs" className="flex-1 flex flex-col items-center py-3 text-primary">
           <span className="text-xl">📋</span><span className="text-xs mt-0.5">알바</span>
         </Link>
         <Link href="/worker/profile" className="flex-1 flex flex-col items-center py-3 text-gray-400">

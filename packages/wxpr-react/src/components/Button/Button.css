@@ -1,0 +1,111 @@
+.wxpr-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-3);
+  border-radius: var(--radius-medium);
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-family: var(--typography-label-medium-font-family);
+  font-weight: var(--typography-label-medium-font-weight);
+  letter-spacing: var(--typography-label-medium-letter-spacing);
+  transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease, opacity 120ms ease;
+  white-space: nowrap;
+  user-select: none;
+  outline: none;
+}
+
+.wxpr-btn:focus-visible {
+  box-shadow: 0 0 0 2px var(--color-border-focus);
+}
+
+.wxpr-btn:disabled,
+.wxpr-btn[aria-busy="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.wxpr-btn--full {
+  width: 100%;
+}
+
+.wxpr-btn__label {
+  display: inline-block;
+}
+
+.wxpr-btn__icon {
+  flex-shrink: 0;
+}
+
+/* Sizes */
+.wxpr-btn--small {
+  padding: 6px 12px;
+  font-size: var(--typography-label-small-font-size);
+  line-height: var(--typography-label-small-line-height);
+}
+.wxpr-btn--medium {
+  padding: 8px 16px;
+  font-size: var(--typography-label-medium-font-size);
+  line-height: var(--typography-label-medium-line-height);
+}
+.wxpr-btn--large {
+  padding: 12px 20px;
+  font-size: var(--typography-label-large-font-size);
+  line-height: var(--typography-label-large-line-height);
+}
+
+/* Variants */
+.wxpr-btn--primary {
+  background: var(--color-brand-primary);
+  color: var(--color-text-inverse);
+}
+.wxpr-btn--primary:hover:not(:disabled) {
+  background: var(--color-brand-primary-hover);
+}
+
+.wxpr-btn--secondary {
+  background: var(--color-surface-default);
+  color: var(--color-text-primary);
+  border-color: var(--color-border-default);
+}
+.wxpr-btn--secondary:hover:not(:disabled) {
+  background: var(--color-surface-subtle);
+  border-color: var(--color-border-strong);
+}
+
+.wxpr-btn--tertiary {
+  background: var(--color-brand-primary-subtle);
+  color: var(--color-text-primary);
+}
+.wxpr-btn--tertiary:hover:not(:disabled) {
+  background: var(--color-surface-subtle);
+}
+
+.wxpr-btn--ghost {
+  background: transparent;
+  color: var(--color-text-primary);
+}
+.wxpr-btn--ghost:hover:not(:disabled) {
+  background: var(--color-surface-subtle);
+}
+
+.wxpr-btn--danger {
+  background: var(--color-semantic-danger);
+  color: var(--color-text-inverse);
+}
+.wxpr-btn--danger:hover:not(:disabled) {
+  background: var(--color-semantic-danger-hover);
+}
+
+/* Spinner */
+.wxpr-btn__spinner {
+  width: 14px;
+  height: 14px;
+  border-radius: var(--radius-full);
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  animation: wxpr-btn-spin 720ms linear infinite;
+}
+@keyframes wxpr-btn-spin {
+  to { transform: rotate(360deg); }
+}

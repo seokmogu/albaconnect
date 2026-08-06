@@ -1,0 +1,16 @@
+{
+  "icon": {
+    "default": {
+      "default":   { "value": "{color.text.primary}",   "type": "color" },
+      "secondary": { "value": "{color.text.secondary}", "type": "color" },
+      "tertiary":  { "value": "{color.text.tertiary}",  "type": "color" }
+    },
+    "brand":    { "default": { "value": "{color.brand.accent}",        "type": "color" } },
+    "positive": { "default": { "value": "{color.semantic.success}",    "type": "color" } },
+    "danger":   { "default": { "value": "{color.semantic.danger}",     "type": "color" } },
+    "warning":  { "default": { "value": "{color.semantic.warning}",    "type": "color" } },
+    "info":     { "default": { "value": "{color.semantic.info}",       "type": "color" } },
+    "inverse":  { "default": { "value": "{color.text.inverse}",        "type": "color" } },
+    "disabled": { "value": "{color.text.disabled}", "type": "color" }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "color": {
+    "text": {
+      "primary":   { "value": "#182432", "darkValue": "#FFFFFF", "type": "color" },
+      "secondary": { "value": "#4E5968", "darkValue": "#B0B8C1", "type": "color" },
+      "tertiary":  { "value": "#8B95A1", "darkValue": "#8B95A1", "type": "color" },
+      "disabled":  { "value": "#D1D6DB", "darkValue": "#4A5568", "type": "color" },
+      "inverse":   { "value": "#FFFFFF", "darkValue": "#182432", "type": "color" },
+      "brand":     { "value": "#3B82F6", "darkValue": "#60A5FA", "type": "color" }
+    }
+  }
+}

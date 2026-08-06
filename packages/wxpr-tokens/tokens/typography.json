@@ -1,0 +1,28 @@
+{
+  "typography": {
+    "display": {
+      "x-large": { "value": { "fontFamily": "Pretendard", "fontSize": "72px", "lineHeight": "80px", "fontWeight": 700, "letterSpacing": "-1.44px" }, "type": "typography" },
+      "large":   { "value": { "fontFamily": "Pretendard", "fontSize": "60px", "lineHeight": "68px", "fontWeight": 700, "letterSpacing": "-1.2px" },  "type": "typography" },
+      "medium":  { "value": { "fontFamily": "Pretendard", "fontSize": "48px", "lineHeight": "56px", "fontWeight": 700, "letterSpacing": "-0.72px" }, "type": "typography" }
+    },
+    "heading": {
+      "x-large": { "value": { "fontFamily": "Pretendard", "fontSize": "36px", "lineHeight": "44px", "fontWeight": 700, "letterSpacing": "-0.36px" }, "type": "typography" },
+      "large":   { "value": { "fontFamily": "Pretendard", "fontSize": "28px", "lineHeight": "36px", "fontWeight": 700, "letterSpacing": "-0.28px" }, "type": "typography" },
+      "medium":  { "value": { "fontFamily": "Pretendard", "fontSize": "24px", "lineHeight": "32px", "fontWeight": 600, "letterSpacing": "-0.12px" }, "type": "typography" },
+      "small":   { "value": { "fontFamily": "Pretendard", "fontSize": "20px", "lineHeight": "28px", "fontWeight": 600, "letterSpacing": "-0.1px" },  "type": "typography" }
+    },
+    "body": {
+      "large":   { "value": { "fontFamily": "Pretendard", "fontSize": "18px", "lineHeight": "28px", "fontWeight": 400, "letterSpacing": "0px" }, "type": "typography" },
+      "medium":  { "value": { "fontFamily": "Pretendard", "fontSize": "16px", "lineHeight": "24px", "fontWeight": 400, "letterSpacing": "0px" }, "type": "typography" },
+      "small":   { "value": { "fontFamily": "Pretendard", "fontSize": "14px", "lineHeight": "20px", "fontWeight": 400, "letterSpacing": "0px" }, "type": "typography" },
+      "x-small": { "value": { "fontFamily": "Pretendard", "fontSize": "12px", "lineHeight": "16px", "fontWeight": 400, "letterSpacing": "0px" }, "type": "typography" }
+    },
+    "label": {
+      "large":  { "value": { "fontFamily": "Pretendard", "fontSize": "16px", "lineHeight": "20px", "fontWeight": 500, "letterSpacing": "0px" }, "type": "typography" },
+      "medium": { "value": { "fontFamily": "Pretendard", "fontSize": "14px", "lineHeight": "20px", "fontWeight": 500, "letterSpacing": "0px" }, "type": "typography" },
+      "small":  { "value": { "fontFamily": "Pretendard", "fontSize": "12px", "lineHeight": "16px", "fontWeight": 500, "letterSpacing": "0px" }, "type": "typography" }
+    },
+    "caption": { "default": { "value": { "fontFamily": "Pretendard", "fontSize": "11px", "lineHeight": "16px", "fontWeight": 400, "letterSpacing": "0.055px" }, "type": "typography" } },
+    "code":    { "default": { "value": { "fontFamily": "JetBrains Mono", "fontSize": "14px", "lineHeight": "20px", "fontWeight": 400, "letterSpacing": "0px" }, "type": "typography" } }
+  }
+}

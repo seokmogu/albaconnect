@@ -34,7 +34,7 @@ const EMPLOYMENT_LABEL: Record<string, string> = {
 }
 const EMPLOYMENT_COLOR: Record<string, string> = {
   gig: "#FF6E0D",
-  daily: "#3B82F6",
+  daily: "#FF6E0D",
   short: "#A855F7",
   long: "#22C55E",
 }
@@ -844,10 +844,10 @@ function AgreementModal({ dispatchView, workerName, onConfirm, onCancel }: Agree
           </section>
 
           {/* 플랫폼 지위 명시 */}
-          <section className="bg-[#F0F9FF] border border-blue-200 rounded-xl p-4">
+          <section className="bg-[#FFF7ED] border border-primary/20 rounded-xl p-4">
             <div className="flex items-start gap-2">
-              <Shield size={13} className="text-blue-500 shrink-0 mt-0.5" />
-              <p className="text-xs text-blue-700 leading-relaxed">
+              <Shield size={13} className="text-primary shrink-0 mt-0.5" />
+              <p className="text-xs text-primary-dark leading-relaxed">
                 알바몬 커넥트는 중개자이며 근로계약 당사자는 사업주와 워커입니다. 본 합의서는 양 당사자 간 근로조건 확인 기록으로 사용됩니다.
               </p>
             </div>

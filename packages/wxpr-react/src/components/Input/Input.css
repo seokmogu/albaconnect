@@ -1,0 +1,96 @@
+.wxpr-input-field {
+  display: inline-flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.wxpr-input-field--full {
+  display: flex;
+  width: 100%;
+}
+
+.wxpr-input__label {
+  font-family: var(--typography-label-medium-font-family);
+  font-size: var(--typography-label-medium-font-size);
+  line-height: var(--typography-label-medium-line-height);
+  font-weight: var(--typography-label-medium-font-weight);
+  color: var(--color-text-primary);
+}
+
+.wxpr-input {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  background: var(--color-surface-default);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-medium);
+  color: var(--color-text-primary);
+  transition: border-color 120ms ease, box-shadow 120ms ease, background-color 120ms ease;
+}
+
+.wxpr-input:focus-within {
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 0 2px var(--color-border-focus);
+}
+
+.wxpr-input--error {
+  border-color: var(--color-semantic-danger);
+}
+.wxpr-input--error:focus-within {
+  box-shadow: 0 0 0 2px var(--color-semantic-danger);
+}
+
+.wxpr-input--disabled {
+  background: var(--color-surface-subtle);
+  color: var(--color-text-disabled);
+  cursor: not-allowed;
+}
+
+.wxpr-input--small {
+  padding: 6px 10px;
+  font-size: var(--typography-body-small-font-size);
+  line-height: var(--typography-body-small-line-height);
+}
+.wxpr-input--medium {
+  padding: 8px 12px;
+  font-size: var(--typography-body-medium-font-size);
+  line-height: var(--typography-body-medium-line-height);
+}
+.wxpr-input--large {
+  padding: 12px 16px;
+  font-size: var(--typography-body-large-font-size);
+  line-height: var(--typography-body-large-line-height);
+}
+
+.wxpr-input__icon {
+  color: var(--color-text-tertiary);
+  flex-shrink: 0;
+}
+
+.wxpr-input__control {
+  border: 0;
+  background: transparent;
+  outline: none;
+  flex: 1;
+  font: inherit;
+  color: inherit;
+  min-width: 0;
+}
+.wxpr-input__control::placeholder {
+  color: var(--color-text-tertiary);
+}
+.wxpr-input__control:disabled {
+  cursor: not-allowed;
+  color: var(--color-text-disabled);
+}
+
+.wxpr-input__message {
+  margin: 0;
+  font-family: var(--typography-body-small-font-family);
+  font-size: var(--typography-body-small-font-size);
+  line-height: var(--typography-body-small-line-height);
+  color: var(--color-text-secondary);
+}
+.wxpr-input__message--error {
+  color: var(--color-semantic-danger);
+}
