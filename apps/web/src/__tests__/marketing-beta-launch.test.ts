@@ -1,22 +1,20 @@
 import { describe, expect, it } from "vitest"
-import { copy } from "../app/(marketing)/_content/copy"
+import { pocContent } from "../app/(marketing)/_content/poc"
 
-describe("marketing beta launch copy", () => {
-  it("does not expose pre-registration language on the landing copy", () => {
-    const landingCopy = JSON.stringify(copy)
+describe("marketing POC landing copy", () => {
+  it("does not present the internal matching POC as a paid live service", () => {
+    const landingCopy = JSON.stringify(pocContent)
 
-    expect(landingCopy).not.toContain("사전 신청")
-    expect(landingCopy).not.toContain("우선 초대")
-    expect(landingCopy).not.toContain("정식 오픈 전")
-    expect(landingCopy).not.toContain("대기자")
+    expect(landingCopy).not.toContain("30초")
+    expect(landingCopy).not.toContain("수수료")
+    expect(landingCopy).not.toContain("토스")
+    expect(landingCopy).not.toContain("바로 가입")
   })
 
-  it("routes beta conversion CTAs to real signup and login flows", () => {
-    expect(copy.finalCta.cards.map(card => card.href)).toEqual([
-      "/signup?role=employer",
-      "/signup?role=worker",
-    ])
-    expect(copy.header.ctaPrimary).toContain("베타")
-    expect(copy.header.ctaSecondary).toBe("로그인")
+  it("routes the primary conversion to the click-through demo and states its boundaries", () => {
+    expect(pocContent.header.cta).toBe("클릭형 데모 시작")
+    expect(pocContent.hero.primaryCta).toBe("클릭형 데모 시작")
+    expect(pocContent.boundaries).toContain("실제 내부 DB 미연결")
+    expect(pocContent.boundaries).toContain("결제·정산 제외")
   })
 })
