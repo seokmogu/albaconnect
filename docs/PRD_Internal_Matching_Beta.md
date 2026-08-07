@@ -260,11 +260,31 @@ sequenceDiagram
 | [HireNow PRD](https://app.notion.com/p/32b7d8322b0481cdaafbd0c7a1521a96) | 기업 주도 후보 탐색과 제안 자동화 | 대규모 채용 운영이 아니라 한 개의 시간·장소 슬롯 충원 경험을 검증 |
 | [공고 제안 화면 PRD](https://app.notion.com/p/9d87d8322b0482aca6b381c15dfee47f) | 제안 수신·비교·수락 UX | 수락을 지원 생성이 아닌 근무 슬롯 확정 가설로 분리해 검증 |
 
-## 사내 목업 체험
+## 사내 배포 목업과 화면 캡처
 
-* **실시간 3자 관점 데모**: [http://172.16.110.192:3000/sim/demo](http://172.16.110.192:3000/sim/demo)
-* **접속 조건**: 동일 사내망에서 접근하며, 현재 POC 호스트와 Podman 컨테이너가 실행 중이어야 한다.
-* **확인 가능**: 구인자 등록 → 조건 기반 매칭 → 워커 제안 → 수락 → 관리자 상태 변화의 3분할 목업 흐름
-* **데모 데이터**: 합성 사업장 312개, 합성 구직자 9,950명, dispatch 624건
+* **제안 랜딩**: [https://albaconnect.dev.jobko.io/](https://albaconnect.dev.jobko.io/)
+* **클릭형 데모**: [https://albaconnect.dev.jobko.io/sim/demo](https://albaconnect.dev.jobko.io/sim/demo)
+* **사내 GitLab**: [b-pipeline/ai-product/albaconnect](https://git.jobkorea.co.kr/b-pipeline/ai-product/albaconnect)
+* **배포 파이프라인**: [#140649](https://git.jobkorea.co.kr/b-pipeline/ai-product/albaconnect/-/pipelines/140649)
+* **확인일**: 2026-08-06 — 랜딩과 데모 HTTP 200, 수동 클릭 흐름과 390px 가로 넘침 없음 확인
+* **확인 가능**: 제안의 문제·차별점·검증 범위와 구인자 요청 → 구직자 수락 → 양쪽 확정의 2자 관점 흐름
 * **확인 불가**: 실제 알바몬 DB 매칭 품질, 실사용자 제안 전달, 실제 근무 확정, 결제·정산
-* **운영 성격**: 방향성 공유용 임시 사내 POC이며 외부 공개 또는 상시 가용성을 보장하지 않는다.
+* **운영 성격**: 합성 데이터로 방향성을 공유하는 사내 POC이며, 내부 DB 연동 전까지 매칭 품질의 근거로 사용하지 않는다.
+
+### 제안 랜딩
+
+첫 화면은 구인자·구직자 시연 화면이 아니라, 해결하려는 문제와 기존 알바몬과 다른 제안·수락형 접근, 현재 검증 경계를 설명한다. 반반 시연 화면은 `클릭형 데모 시작` 이후에만 노출한다.
+
+![알바커넥트 제안 랜딩](assets/prd-screenshots/albaconnect-live-landing-2026-08-06.jpg)
+
+### 구인자 요청 후 구직자 제안
+
+구인자가 왼쪽 화면에서 `매칭 요청하기`를 누르면 오른쪽 구직자 화면에 추천 이유와 함께 제안이 나타난다. 자동재생 없이 시연자가 직접 다음 상태를 만든다.
+
+![구인자 요청 후 구직자 제안 상태](assets/prd-screenshots/albaconnect-live-demo-offer-2026-08-06.jpg)
+
+### 구직자 수락 후 양쪽 확정
+
+구직자가 `제안 수락`을 누르면 구인자와 구직자 화면에 동일 매칭의 확정 결과가 동시에 표시된다. 결제·정산 화면은 포함하지 않는다.
+
+![구직자 수락 후 양쪽 매칭 확정 상태](assets/prd-screenshots/albaconnect-live-demo-confirmed-2026-08-06.jpg)
